@@ -1,8 +1,8 @@
 #include "PetriEngine/ExplicitColored/GuardExpression.h"
+#include "PetriEngine/ExplicitColored/VariableExtractorVisitor.h"
 #include <string>
 namespace PetriEngine {
-    namespace ExplicitColored { 
-
+    namespace ExplicitColored {
         class ColorSeqEvaluationVisitor : public Colored::ColorExpressionVisitor {
         public:
             ColorSeqEvaluationVisitor(const Colored::ColorTypeMap& colorTypeMap, const Binding& binding, const std::unordered_map<std::string, Variable_t>& variable_map)
@@ -54,8 +54,11 @@ namespace PetriEngine {
                 colorTypeSequence.push_back(_binding->getValue(test->second));
             }
 
+            void accept(const Colored::UserOperatorExpression* expr) override {
+                colorTypeSequence.push_back(expr->user_operator()->getId());
+            }
+
             void accept(const Colored::DotConstantExpression*) override {unexpectedExpression();}
-            void accept(const Colored::UserOperatorExpression*) override {unexpectedExpression();}
             void accept(const Colored::LessThanExpression*) override {unexpectedExpression();}
             void accept(const Colored::LessThanEqExpression*) override {unexpectedExpression();}
             void accept(const Colored::EqualityExpression*) override {unexpectedExpression();}
@@ -128,7 +131,7 @@ namespace PetriEngine {
                 _sequenceVisitor.reset();
                 (*expr)[0]->visit(_sequenceVisitor);
                 auto left = std::move(_sequenceVisitor.colorTypeSequence);
-                
+
                 _sequenceVisitor.reset();
                 (*expr)[1]->visit(_sequenceVisitor);
                 auto right = std::move(_sequenceVisitor.colorTypeSequence);
@@ -215,12 +218,20 @@ namespace PetriEngine {
         )
             : _colorTypeMap(std::move(colorTypeMap)),
             _guardExpression(std::move(guardExpression)),
-            _variableMap(std::move(variableMap)) {}
+            _variableMap(std::move(variableMap)) {
+            VariableExtractorVisitor visitor(*_variableMap);
+            _guardExpression->visit(visitor);
+            _variables = std::move(visitor.collectedVariables);
+        }
         
-        bool GuardExpression::eval(const Binding &binding) {
+        bool GuardExpression::eval(const Binding &binding) const {
             BooleanEvaluationVisitor visitor(*_colorTypeMap, binding, *_variableMap);
             _guardExpression->visit(visitor);
             return visitor.evaluation;
+        }
+
+        const std::set<Variable_t> & GuardExpression::getVariables() const {
+            return _variables;
         }
     }
 }

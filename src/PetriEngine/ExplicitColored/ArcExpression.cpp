@@ -1,5 +1,5 @@
 #include "PetriEngine/ExplicitColored/ArcExpression.h"
-
+#include "PetriEngine/ExplicitColored/VariableExtractorVisitor.h"
 namespace PetriEngine {
     namespace ExplicitColored {
         class ColorVisitor : public Colored::ColorExpressionVisitor {
@@ -29,11 +29,8 @@ namespace PetriEngine {
                 if (color == ALL_COLOR) {
                     return;
                 }
-                if (color >= expr->getColorType(*_colorTypeMap)->size()) {
-                    color = 0;
-                } else {
-                    color += 1;
-                }
+
+                color = (color + 1) % expr->getColorType(*_colorTypeMap)->size();
             }
 
             void accept(const Colored::PredecessorExpression* expr) override {
@@ -52,7 +49,9 @@ namespace PetriEngine {
                 color = ALL_COLOR;
             }
 
-            void accept(const Colored::UserOperatorExpression*) override { unexpectedExpression(); }
+            void accept(const Colored::UserOperatorExpression* expr) override { 
+                color = expr->user_operator()->getId();
+            }
             void accept(const Colored::TupleExpression*) override { unexpectedExpression(); }
             void accept(const Colored::LessThanExpression*) override { unexpectedExpression(); }
             void accept(const Colored::LessThanEqExpression*) override { unexpectedExpression(); }
@@ -114,20 +113,23 @@ namespace PetriEngine {
                     }
                 }
                 for (std::vector<Color_t>& colorSequence : colorSequences) {
-                    result.setCount(std::move(colorSequence), 1);
+                    result.setCount(ColorSequence(std::move(colorSequence)), 1);
                 }
             }
 
             void accept(const Colored::NumberOfExpression* expr) override {
+                (*expr)[0]->visit(*this);
                 result *= expr->number();
             }
             
             void accept(const Colored::AddExpression* expr) override {
-                (*expr)[0]->visit(*this);
-                auto lhs = std::move(result);
-                result = CPNMultiSet();
-                (*expr)[1]->visit(*this);
-                result += lhs;
+                CPNMultiSet sum;
+                for (auto constituent : *expr) {
+                    constituent->visit(*this);
+                    sum += result;
+                    result = CPNMultiSet();
+                }
+                result = std::move(sum);
             }
 
             void accept(const Colored::SubtractExpression* expr) override {
@@ -139,7 +141,36 @@ namespace PetriEngine {
             }
 
             void accept(const Colored::ScalarProductExpression* expr) override {
+                expr->child()->visit(*this);
                 result *= expr->scalar();
+            }
+
+            void accept(const Colored::DotConstantExpression* expr) override {
+                result.setCount(ColorSequence({DOT_COLOR}), 1);
+            }
+
+            void accept(const Colored::UserOperatorExpression* expr) override {
+                result.setCount(ColorSequence({expr->user_operator()->getId()}), 1);
+            }
+
+            void accept(const Colored::VariableExpression* expr) override {
+                const auto variableIt = _variableMap->find(expr->variable()->name);
+                if (variableIt == _variableMap->end()) {
+                    throw base_error("Unknown variable ", variableIt->second);
+                }
+                result.setCount(ColorSequence({_binding->getValue(variableIt->second)}), 1);
+            }
+
+            void accept(const Colored::SuccessorExpression* expr) override {
+                ColorVisitor visitor(*_variableMap, *_binding, *_colorTypeMap);
+                expr->visit(visitor);
+                result.setCount(ColorSequence({visitor.color}), 1);
+            }
+
+            void accept(const Colored::PredecessorExpression* expr) override {
+                ColorVisitor visitor(*_variableMap, *_binding, *_colorTypeMap);
+                expr->visit(visitor);
+                result.setCount(ColorSequence({visitor.color}), 1);
             }
 
             void accept(const Colored::LessThanExpression* expr) override {unexpectedExpression();}
@@ -149,11 +180,6 @@ namespace PetriEngine {
             void accept(const Colored::AllExpression* expr) override {unexpectedExpression();}
             void accept(const Colored::AndExpression* expr) override {unexpectedExpression();}
             void accept(const Colored::OrExpression* expr) override {unexpectedExpression();}
-            void accept(const Colored::DotConstantExpression* expr) override { unexpectedExpression(); }
-            void accept(const Colored::VariableExpression* expr) override { unexpectedExpression(); }
-            void accept(const Colored::UserOperatorExpression* expr) override {unexpectedExpression();}
-            void accept(const Colored::SuccessorExpression* expr) override {unexpectedExpression();}
-            void accept(const Colored::PredecessorExpression* expr) override {unexpectedExpression();}
 
             CPNMultiSet result;
         private:
@@ -166,15 +192,21 @@ namespace PetriEngine {
             }
         };
 
-        ArcExpression::ArcExpression(Colored::GuardExpression_ptr guardExpression, std::shared_ptr<Colored::ColorTypeMap> colorTypeMap)
-            : _colorTypeMap(std::move(colorTypeMap)), _arcExpression(std::move(guardExpression)) {
+        ArcExpression::ArcExpression(Colored::ArcExpression_ptr arcExpression, std::shared_ptr<Colored::ColorTypeMap> colorTypeMap, std::shared_ptr<std::unordered_map<std::string, Variable_t>> variableMap)
+            : _colorTypeMap(std::move(colorTypeMap)), _variableMap(std::move(variableMap)), _arcExpression(std::move(arcExpression)) {
+            VariableExtractorVisitor variableExtractor(*_variableMap);
+            _arcExpression->visit(variableExtractor);
+            _variables = std::move(variableExtractor.collectedVariables);
         }
 
-        CPNMultiSet ArcExpression::eval(const Binding& binding) {
+        CPNMultiSet ArcExpression::eval(const Binding& binding) const {
             ColorTypeVisitor colorTypeVisitor(*_variableMap, binding, *_colorTypeMap);
             _arcExpression->visit(colorTypeVisitor);
             return colorTypeVisitor.result;
         }
-        
+
+        const std::set<Variable_t>& ArcExpression::getVariables() const {
+            return _variables;
+        }
     }
 }
