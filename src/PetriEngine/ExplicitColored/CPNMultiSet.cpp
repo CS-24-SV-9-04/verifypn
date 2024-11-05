@@ -1,9 +1,12 @@
 #include "PetriEngine/ExplicitColored/CPNMultiSet.h"
 #include "utils/errors.h"
+#include <algorithm>
 namespace PetriEngine {
     namespace ExplicitColored {
         MarkingCount_t CPNMultiSet::getCount(const ColorSequence& color) const {
-            const auto colorIt = _counts.find(color);
+            auto colorIt = std::lower_bound(_counts.begin(), _counts.end(), color, [](const std::pair<ColorSequence, MarkingCount_t>& a, const ColorSequence& b) {
+                return a.first < b;
+            });
             if (colorIt == _counts.end()) {
                 return 0;
             }
