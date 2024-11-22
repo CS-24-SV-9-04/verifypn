@@ -26,25 +26,6 @@ namespace PetriEngine{
             }
         }
 
-//        void ColoredSuccessorGenerator::getVariables(Transition_t tid){
-//            if (_variables.find(tid) != _variables.end()){
-//                return;
-//            }
-//            auto variableMap = std::map<Variable_t, std::vector<uint32_t>>{};
-//
-//            //Gets possible values of all variables, will overestimate possible values
-//            for (auto i = _net._transitionArcs[tid].first; i < _net._transitionArcs[tid + 1].first; i++){
-//                updateVariableMap(variableMap, _net._invariants[i]->validVariables);
-//            }
-//
-//            updateVariableMap(variableMap, _net._transitions[tid].validVariables);
-//            uint32_t totalSize = variableMap.empty() ? 0 : 1;//Gets possible values of all variables, will overestimate possible values
-//            for (auto&& var : variableMap){
-//                totalSize *= var.second.size();
-//            }
-//            _variables[tid] = TransitionVariables{std::move(variableMap),totalSize};
-//        }
-
         Binding ColoredSuccessorGenerator::getBinding(Transition_t tid, uint32_t bid){
             auto map = std::map<Variable_t, Color_t>{};
             auto& possibleValues = _net._transitions[tid].validVariables.second;

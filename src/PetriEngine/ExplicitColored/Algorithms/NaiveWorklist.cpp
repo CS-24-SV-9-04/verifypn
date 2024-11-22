@@ -292,6 +292,8 @@ namespace PetriEngine {
                     return _bfs();
                 case SearchStrategy::RDFS:
                     return _rdfs(randomSeed);
+                case SearchStrategy::BestFS:
+                    return _bestfs(randomSeed);
                 default:
                     throw base_error("Unsupported exploration type");
             }
@@ -373,6 +375,10 @@ namespace PetriEngine {
 
         bool NaiveWorklist::_rdfs(size_t seed) {
             return _genericSearch<RDFSStructure>(RDFSStructure(seed));
+        }
+
+        bool NaiveWorklist::_bestfs(size_t seed) {
+            return _genericSearch<BestFSStructure>(BestFSStructure(seed, _gammaQuery, _placeNameIndices, _quantifier == Quantifier::AG));
         }
     }
 }

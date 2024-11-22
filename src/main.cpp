@@ -114,6 +114,9 @@ int main(int argc, const char** argv) {
                     case Strategy::RDFS:
                         result = naiveWorkList.check(ExplicitColored::SearchStrategy::RDFS, options.seed());
                         break;
+                    case Strategy::HEUR:
+                        result = naiveWorkList.check(ExplicitColored::SearchStrategy::BestFS, options.seed());
+                    break;
                     default:
                         std::cerr << "Strategy is not supported for explicit colored engine" << std::endl;
                         std::cout << "UNSUPPORTED STRATEGY" << std::endl;

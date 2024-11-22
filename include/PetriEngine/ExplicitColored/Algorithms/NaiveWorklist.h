@@ -21,7 +21,8 @@ namespace PetriEngine {
         enum class SearchStrategy {
             DFS,
             BFS,
-            RDFS
+            RDFS,
+            BestFS
         };
 
         struct SearchStatistics {
@@ -53,6 +54,7 @@ namespace PetriEngine {
             bool _dfs();
             bool _bfs();
             bool _rdfs(size_t seed);
+            bool _bestfs(size_t seed);
 
             template<typename WaitingList>
             bool _genericSearch(WaitingList waiting);
