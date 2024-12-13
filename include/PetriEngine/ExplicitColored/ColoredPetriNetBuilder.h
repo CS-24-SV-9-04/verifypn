@@ -30,6 +30,9 @@ namespace PetriEngine {
             void sort() override;
 
             std::unordered_map<std::string, uint32_t> takePlaceIndices();
+            std::unordered_map<std::string, uint32_t> takeTransitionIndices();
+            std::unordered_map<std::string, Variable_t> takeVariableMap() const;
+
             ColoredPetriNetBuilderStatus build();
             ColoredPetriNet takeNet();
         private:

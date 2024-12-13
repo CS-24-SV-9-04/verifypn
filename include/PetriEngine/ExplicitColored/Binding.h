@@ -5,7 +5,8 @@
 #include <map>
 #include <string>
 #include <limits>
-
+#include <ostream>
+#include <sstream>
 namespace PetriEngine {
     namespace ExplicitColored {
         struct Binding
@@ -24,6 +25,31 @@ namespace PetriEngine {
 
             void setValue(const Variable_t v, const Color_t color) {
                 _values.insert(std::make_pair(v, color));
+            }
+
+            friend std::ostream& operator<<(std::ostream& stream, const Binding &binding) {
+                stream << "[";
+                for (auto it = binding._values.begin(); it != binding._values.end();) {
+                    stream << it->first << " -> " << it->second;
+                    if (++it != binding._values.end()) {
+                        stream << ", ";
+                    }
+                }
+                stream << "]";
+                return stream;
+            }
+
+            std::string toString() const {
+                std::stringstream stream;
+                stream << "[";
+                for (auto it = _values.begin(); it != _values.end();) {
+                    stream << it->first << " -> " << it->second;
+                    if (++it != _values.end()) {
+                        stream << ", ";
+                    }
+                }
+                stream << "]";
+                return stream.str();
             }
         private:
             std::map<Variable_t, Color_t> _values;

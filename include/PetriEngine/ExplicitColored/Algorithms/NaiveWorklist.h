@@ -2,6 +2,8 @@
 #define NAIVEWORKLIST_H
 
 
+#include <PetriEngine/ExplicitColored/ColoredMarkingSet.h>
+
 #include "PetriEngine/ExplicitColored/ColoredPetriNet.h"
 #include "PetriEngine/ExplicitColored/ColoredResultPrinter.h"
 #include "PetriEngine/ExplicitColored/SearchStatistics.h"
@@ -35,7 +37,9 @@ namespace PetriEngine {
                 const ColoredPetriNet& net,
                 const PQL::Condition_ptr &query,
                 const std::unordered_map<std::string, uint32_t>& placeNameIndices,
-                const IColoredResultPrinter& coloredResultPrinter
+                const IColoredResultPrinter& coloredResultPrinter,
+                const std::unordered_map<std::string, Variable_t>& variableMap,
+                const std::unordered_map<std::string, Transition_t>& transitionIndices
             );
 
             bool check(SearchStrategy searchStrategy, size_t seed);
@@ -45,6 +49,8 @@ namespace PetriEngine {
             Quantifier _quantifier;
             const ColoredPetriNet& _net;
             const std::unordered_map<std::string, uint32_t>& _placeNameIndices;
+            const std::unordered_map<std::string, Variable_t>& _variableMap;
+            const std::unordered_map<std::string, Transition_t>& _transitionIndices;
 
             ConditionalBool _check(const ColoredPetriNetMarking& state, ConditionalBool deadlockValue) const;
 
@@ -57,11 +63,8 @@ namespace PetriEngine {
             bool _genericSearch(WaitingList waiting);
             bool _rdfsSearch(RDFSStructure waiting);
             bool _getResult(bool found) const;
-
             SearchStatistics _searchStatistics;
             const IColoredResultPrinter& _coloredResultPrinter;
-
-
         };
     }
 }

@@ -10,17 +10,19 @@
 #include "PetriEngine/ExplicitColored/ColoredMarkingSet.h"
 #include "PetriEngine/PQL/Visitor.h"
 #include "PetriEngine/ExplicitColored/Algorithms/ColoredSearchTypes.h"
-#include <fstream>
-
 namespace PetriEngine {
     namespace ExplicitColored {
         NaiveWorklist::NaiveWorklist(
             const ColoredPetriNet& net,
             const PQL::Condition_ptr &query,
             const std::unordered_map<std::string, uint32_t>& placeNameIndices,
-            const IColoredResultPrinter& coloredResultPrinter
+            const IColoredResultPrinter& coloredResultPrinter,
+            const std::unordered_map<std::string, Variable_t>& variableMap,
+            const std::unordered_map<std::string, Transition_t>& transitionIndices
         ) : _net(std::move(net)),
             _placeNameIndices(placeNameIndices),
+            _variableMap(variableMap),
+            _transitionIndices(transitionIndices),
             _coloredResultPrinter(coloredResultPrinter)
         {
             if (const auto efGammaQuery = dynamic_cast<PQL::EFCondition*>(query.get())) {
@@ -67,23 +69,27 @@ namespace PetriEngine {
             passed.add(initialState);
             _searchStatistics.passedCount = 1;
             _searchStatistics.checkedStates = 1;
+            auto getTrace = true; //Change me
             const auto earlyTerminationCondition = (_quantifier == Quantifier::EF)
                 ? ConditionalBool::TRUE
                 : ConditionalBool::FALSE;
 
             if (_check(initialState, ConditionalBool::UNKNOWN) == earlyTerminationCondition) {
+                if (getTrace) {
+                    passed.printTrace(initialState, _placeNameIndices, _variableMap, _transitionIndices, successorGenerator);
+                }
                 return _getResult(true);
             }
             while (!waiting.empty()){
                 auto& next = waiting.next();
                 auto successor = successorGenerator.next(next);
                 if constexpr (std::is_same_v<WaitingList, RDFSStructure>) {
-                    if (successor.lastBinding == std::numeric_limits<uint32_t>::max() && successor.lastTrans == std::numeric_limits<uint32_t>::max()){
+                    if (successor.lastBinding == std::numeric_limits<Binding_t>::max() && successor.lastTrans == std::numeric_limits<Transition_t>::max()){
                         waiting.remove();
                         waiting.shuffle();
                         continue;
                     }
-                    if (successor.lastTrans == std::numeric_limits<uint32_t>::max()) {
+                    if (successor.lastTrans == std::numeric_limits<Transition_t>::max()) {
                         if (!next.hasAdded) {
                             auto newState = ColoredPetriNetState(next);
                             ++newState.lastTrans;
@@ -108,10 +114,14 @@ namespace PetriEngine {
                     if (_check(marking, ConditionalBool::UNKNOWN) == earlyTerminationCondition) {
                         _searchStatistics.passedCount = passed.size();
                         _searchStatistics.endWaitingStates = waiting.size();
+                        if (getTrace) {
+                            passed.add(successor, next);
+                            passed.printTrace(marking, _placeNameIndices, _variableMap, _transitionIndices, successorGenerator);
+                        }
                         return _getResult(true);
                     }
                     successor.shrink();
-                    passed.add(std::move(marking));
+                    passed.add(successor, next);
                     if constexpr (std::is_same_v<WaitingList, RDFSStructure>) {
                         successor.hasAdded = false;
                         waiting.add(std::move(successor));
@@ -125,7 +135,6 @@ namespace PetriEngine {
                     }else {
                         waiting.add(std::move(successor));
                     }
-                    passed.add(marking);
                     _searchStatistics.passedCount = passed.size();
                     _searchStatistics.endWaitingStates = waiting.size();
                     _searchStatistics.peakWaitingStates = std::max(waiting.size(), _searchStatistics.peakWaitingStates);
@@ -133,6 +142,9 @@ namespace PetriEngine {
             }
             _searchStatistics.passedCount = passed.size();
             _searchStatistics.endWaitingStates = waiting.size(); //0
+            if (getTrace) {
+                std::cout << "There is no trace, since no example was found" << std::endl;
+            }
             return _getResult(false);
         }
 
