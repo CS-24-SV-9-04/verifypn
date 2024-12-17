@@ -178,8 +178,9 @@ namespace PetriEngine {
             Color_t maxColor;
             bool constant;
         private:
-            const std::unordered_map<std::string, Variable_t>* const _variableMap;
             const Colored::ColorTypeMap* const _colorTypeMap;
+            const std::unordered_map<std::string, Variable_t>* const _variableMap;
+
 
             void unexpectedExpression() {
                 throw base_error("Unexpected expression");
