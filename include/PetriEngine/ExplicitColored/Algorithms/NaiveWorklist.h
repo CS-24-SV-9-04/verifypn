@@ -25,7 +25,7 @@ namespace PetriEngine {
             EDFS,
             EBFS,
             ERDFS,
-            EHEUR,
+            EHEUR
         };
 
         class NaiveWorklist {
@@ -50,16 +50,16 @@ namespace PetriEngine {
             bool _check(const ColoredPetriNetMarking& state);
 
             template <typename T>
-            bool _dfs();
+            bool _dfs(size_t seed);
             template <typename T>
-            bool _bfs();
+            bool _bfs(size_t seed);
             template <typename T>
             bool _rdfs(size_t seed);
             template <typename T>
             bool _bestfs(size_t seed);
 
             template <template <typename> typename WaitingList, typename T>
-            bool _genericSearch(WaitingList<T> waiting);
+            bool _genericSearch(WaitingList<T> waiting, size_t seed);
             bool _getResult(bool found) const;
 
             SearchStatistics _searchStatistics;

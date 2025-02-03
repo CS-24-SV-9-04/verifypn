@@ -7,8 +7,8 @@
 
 namespace PetriEngine{
     namespace ExplicitColored{
-        ColoredSuccessorGenerator::ColoredSuccessorGenerator(const ColoredPetriNet& net)
-        : _net(net) {}
+        ColoredSuccessorGenerator::ColoredSuccessorGenerator(const ColoredPetriNet& net, const size_t seed)
+        : _net(net), _random_engine(seed) {}
 
         ColoredSuccessorGenerator::~ColoredSuccessorGenerator() = default;
 
@@ -108,6 +108,16 @@ namespace PetriEngine{
         void ColoredSuccessorGenerator::_fire(ColoredPetriNetMarking& state, Transition_t tid, const Binding& binding) const{
             consumePreset(state, tid, binding);
             producePostset(state, tid, binding);
+        }
+
+        bool ColoredSuccessorGenerator::hasMinimalCardinality(const ColoredPetriNetMarking &marking, Transition_t transition) const {
+            for (auto i = _net._transitionArcs[transition].first; i < _net._transitionArcs[transition].second; i++) {
+                auto& arc = _net._arcs[i];
+                if (marking.markings[arc.from].totalCount() < arc.expression->getMinimalMarkingCount()) {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
