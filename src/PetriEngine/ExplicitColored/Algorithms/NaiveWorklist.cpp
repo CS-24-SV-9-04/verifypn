@@ -73,17 +73,18 @@ namespace PetriEngine {
             ColoredSuccessorGenerator successorGenerator(_net);
             ptrie::set<uint8_t> passed;
             std::vector<uint8_t> scratchpad;
+            auto factory = RandomOrderFactory{5, true};
             const auto& initialState = _net.initial();
             const auto earlyTerminationCondition = _quantifier == Quantifier::EF;
             size_t size = initialState.compressedEncode(scratchpad);
 
             if constexpr (std::is_same_v<T, ColoredPetriNetStateOneTrans>) {
                 std::cout << "EVEN" << std::endl;
-                auto initial = ColoredPetriNetStateOneTrans{initialState, _net.getTransitionCount()};
+                auto initial = ColoredPetriNetStateOneTrans{initialState, _net.getTransitionCount(), factory};
                 waiting.add(std::move(initial));
             }else {
                 std::cout << "FIXED" << std::endl;
-                auto initial = ColoredPetriNetState{initialState};
+                auto initial = ColoredPetriNetState{initialState, _net.getTransitionCount(),  factory};
                 waiting.add(std::move(initial));
             }
             passed.insert(scratchpad.data(), size);

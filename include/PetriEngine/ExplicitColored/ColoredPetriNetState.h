@@ -2,14 +2,15 @@
 #define COLOREDPETRINETSTATE_H
 
 #include <utility>
-
+#include "RandomOrder.h"
 #include "ColoredPetriNetMarking.h"
+#include "memory"
 namespace PetriEngine{
     namespace ExplicitColored{
-
         struct ColoredPetriNetState{
-            ColoredPetriNetState(const ColoredPetriNetState& oldState) : marking(oldState.marking){};
-            explicit ColoredPetriNetState(ColoredPetriNetMarking marking) : marking(std::move(marking)) {};
+            ColoredPetriNetState(const ColoredPetriNetState& oldState) : marking(oldState.marking), _numberOfTransitions(oldState._numberOfTransitions), _randomOrder(oldState._randomOrder) {};
+            explicit ColoredPetriNetState(ColoredPetriNetMarking marking, const Transition_t numberOfTransitions, RandomOrderFactory& factory) : marking(
+                std::move(marking)), _numberOfTransitions(numberOfTransitions), _randomOrder(RandomOrder{std::make_shared<RandomOrderFactory>(factory), numberOfTransitions}) {};
             ColoredPetriNetState(ColoredPetriNetState&&) = default;
             ColoredPetriNetState& operator=(const ColoredPetriNetState&) = default;
             ColoredPetriNetState& operator=(ColoredPetriNetState&&) = default;
@@ -34,18 +35,21 @@ namespace PetriEngine{
             ColoredPetriNetMarking marking;
             bool done = false;
             private:
+                Transition_t _numberOfTransitions{};
+                RandomOrder _randomOrder;
                 Binding_t _currentBinding = 0;
                 Transition_t _currentTransition = 0;
         };
 
         struct ColoredPetriNetStateOneTrans {
-            ColoredPetriNetStateOneTrans(const ColoredPetriNetStateOneTrans& state) : marking(state.marking), _map(state._map), _currentIndex(state._currentIndex) {};
-            ColoredPetriNetStateOneTrans(const ColoredPetriNetStateOneTrans& oldState, const size_t& numberOfTransitions) : marking(oldState.marking) {
+            ColoredPetriNetStateOneTrans(const ColoredPetriNetStateOneTrans& state) : marking(state.marking), _randomOrder(state._randomOrder), _map(state._map), _currentIndex(state._currentIndex) {};
+            ColoredPetriNetStateOneTrans(const ColoredPetriNetStateOneTrans& oldState, const Transition_t& numberOfTransitions) : marking(oldState.marking), _randomOrder(oldState._randomOrder), _currentIndex(oldState._currentIndex) {
                 _map = std::vector<Binding_t>(numberOfTransitions);
             }
-            ColoredPetriNetStateOneTrans(ColoredPetriNetMarking marking, const size_t& numberOfTransitions) : marking(std::move(marking)){
+            ColoredPetriNetStateOneTrans(ColoredPetriNetMarking marking, const Transition_t& numberOfTransitions, RandomOrderFactory& factory) : marking(std::move(marking)), _randomOrder(RandomOrder{std::make_shared<RandomOrderFactory>(factory), numberOfTransitions}) {
                 _map = std::vector<Binding_t>(numberOfTransitions);
             }
+            ColoredPetriNetStateOneTrans(ColoredPetriNetMarking marking, const Transition_t& numberOfTransitions) : marking(std::move(marking)), _randomOrder(nullptr, 0) {}
             ColoredPetriNetStateOneTrans(ColoredPetriNetStateOneTrans&& state) = default;
 
             ColoredPetriNetStateOneTrans& operator=(const ColoredPetriNetStateOneTrans&) = default;
@@ -92,6 +96,7 @@ namespace PetriEngine{
             bool done = false;
             bool shuffle = false;
         private:
+            RandomOrder _randomOrder;
             std::vector<Binding_t> _map;
             uint32_t _currentIndex = 0;
             uint32_t _completedTransitions = 0;

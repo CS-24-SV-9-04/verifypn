@@ -229,7 +229,7 @@ namespace PetriEngine {
 
             void consume(CPNMultiSet &out, const Binding &binding) const override {
                 for (const auto& colorSequence : _parameterizedColorSequence) {
-                    out.addCount(getColorSequence(colorSequence, binding), -_count);
+                    out.addCount(getColorSequence(colorSequence, binding), _count);
                 }
                 out.fixNegative();
             }
