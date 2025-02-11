@@ -1,9 +1,8 @@
 #ifndef COLOREDSUCCESSORGENERATOR_CPP
 #define COLOREDSUCCESSORGENERATOR_CPP
 
-#include "PetriEngine/ExplicitColored/ColoredSuccessorGenerator.h"
-#include <set>
 #include <memory>
+#include "PetriEngine/ExplicitColored/ColoredSuccessorGenerator.h"
 
 namespace PetriEngine{
     namespace ExplicitColored{

@@ -4,10 +4,10 @@
 
 #ifndef FIREABILITYCHECKER_H
 #define FIREABILITYCHECKER_H
+#include "ColoredSuccessorGenerator.h"
 #include "ColoredPetriNetMarking.h"
 #include "ColoredPetriNet.h"
 #include "Binding.h"
-#include "ColoredSuccessorGenerator.h"
 
 namespace PetriEngine::ExplicitColored {
     class FireabilityChecker {

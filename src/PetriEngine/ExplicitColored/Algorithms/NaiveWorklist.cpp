@@ -23,6 +23,7 @@ namespace PetriEngine {
             const IColoredResultPrinter& coloredResultPrinter,
             const size_t seed
         ) : _net(std::move(net)),
+            _successorGenerator(ColoredSuccessorGenerator{_net}),
             _placeNameIndices(placeNameIndices),
             _transitionNameIndices(transitionNameIndices),
             _seed(seed),
@@ -54,12 +55,11 @@ namespace PetriEngine {
         }
 
         bool NaiveWorklist::_check(const ColoredPetriNetMarking& state) const {
-            return GammaQueryVisitor::eval(_gammaQuery, state, _placeNameIndices, _transitionNameIndices, _net);
+            return GammaQueryVisitor::eval(_gammaQuery, state, _placeNameIndices, _transitionNameIndices, _successorGenerator);
         }
 
         template <template <typename> typename WaitingList, typename T>
         bool NaiveWorklist::_genericSearch(WaitingList<T> waiting) {
-            ColoredSuccessorGenerator successorGenerator(_net);
             ptrie::set<uint8_t> passed;
             std::vector<uint8_t> scratchpad;
             const auto& initialState = _net.initial();
@@ -83,7 +83,7 @@ namespace PetriEngine {
 
             while (!waiting.empty()){
                 auto& next = waiting.next();
-                auto successor = successorGenerator.next(next);
+                auto successor = _successorGenerator.next(next);
                 if (next.done()) {
                     waiting.remove();
                     continue;

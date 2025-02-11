@@ -5,6 +5,7 @@
 #include "PetriEngine/ExplicitColored/ColoredPetriNet.h"
 #include "PetriEngine/ExplicitColored/ColoredResultPrinter.h"
 #include "PetriEngine/ExplicitColored/SearchStatistics.h"
+#include "PetriEngine/ExplicitColored/ColoredSuccessorGenerator.h"
 
 namespace PetriEngine {
     namespace ExplicitColored {
@@ -41,6 +42,7 @@ namespace PetriEngine {
             PQL::Condition_ptr _gammaQuery;
             Quantifier _quantifier;
             const ColoredPetriNet& _net;
+            const ColoredSuccessorGenerator _successorGenerator;
             const std::unordered_map<std::string, uint32_t>& _placeNameIndices;
             const std::unordered_map<std::string, Transition_t> _transitionNameIndices;
             const size_t _seed;

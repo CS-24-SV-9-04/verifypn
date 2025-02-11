@@ -33,6 +33,8 @@ namespace PetriEngine{
             [[nodiscard]] const ColoredPetriNet& net() const {
                 return _net;
             }
+
+            [[nodiscard]] Binding_t findNextValidBinding(const ColoredPetriNetMarking& marking, Transition_t tid, Binding_t bid, uint64_t totalBindings, Binding& binding) const;
         protected:
             void getBinding(Transition_t tid, Binding_t bid, Binding& binding) const;
             bool check(const ColoredPetriNetMarking& state, Transition_t tid, const Binding& binding) const;
@@ -40,7 +42,16 @@ namespace PetriEngine{
             bool checkPresetAndGuard(const ColoredPetriNetMarking& state, Transition_t tid, const Binding& binding) const;
             void consumePreset(ColoredPetriNetMarking& state, Transition_t tid, const Binding& binding) const;
             void producePostset(ColoredPetriNetMarking& state, Transition_t tid, const Binding& binding) const;
-
+        private:
+            const ColoredPetriNet& _net;
+            [[nodiscard]] bool _hasMinimalCardinality(const ColoredPetriNetMarking& marking, Transition_t tid) const;
+            [[nodiscard]] bool _shouldEarlyTerminateTransition(const ColoredPetriNetMarking& marking, const Transition_t tid) const {
+                if (!checkInhibitor(marking, tid))
+                    return true;
+                if (!_hasMinimalCardinality(marking, tid))
+                    return true;
+                return false;
+            }
             void _fire(ColoredPetriNetMarking& state, Transition_t tid, const Binding& binding) const;
 
             ColoredPetriNetState _next(ColoredPetriNetState &state) const {
@@ -85,18 +96,6 @@ namespace PetriEngine{
                     totalBindings = _net._transitions[tid].validVariables.second;
                 }
                 return {{},0};
-            }
-            [[nodiscard]] Binding_t findNextValidBinding(const ColoredPetriNetMarking& marking, Transition_t tid, Binding_t bid, uint64_t totalBindings, Binding& binding) const;
-            friend FireabilityChecker;
-        private:
-            const ColoredPetriNet& _net;
-            [[nodiscard]] bool _hasMinimalCardinality(const ColoredPetriNetMarking& marking, Transition_t tid) const;
-            [[nodiscard]] bool _shouldEarlyTerminateTransition(const ColoredPetriNetMarking& marking, const Transition_t tid) const {
-                if (!checkInhibitor(marking, tid))
-                    return true;
-                if (!_hasMinimalCardinality(marking, tid))
-                    return true;
-                return false;
             }
         };
     }
