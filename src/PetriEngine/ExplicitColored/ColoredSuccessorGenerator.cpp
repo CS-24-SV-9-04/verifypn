@@ -26,7 +26,7 @@ namespace PetriEngine{
             }
         }
 
-        Binding ColoredSuccessorGenerator::getBinding(const Transition_t tid, const Binding_t bid) const {
+        void ColoredSuccessorGenerator::getBinding(const Transition_t tid, const Binding_t bid, Binding& binding) const {
             auto map = std::map<Variable_t, Color_t>{};
             const auto& possibleValues = _net._transitions[tid].validVariables.second;
             if (possibleValues != 0){
@@ -38,34 +38,11 @@ namespace PetriEngine{
                     map.emplace(varName, varValues.at((bid / interval) % size));
                 }
             }
-            return Binding{std::move(map)};
+            binding = std::move(map);
         }
 
         bool ColoredSuccessorGenerator::check(const ColoredPetriNetMarking& state, const Transition_t tid, const Binding& binding) const{
             return checkInhibitor(state, tid) && checkPresetAndGuard(state, tid, binding);
-        }
-        CheckingBool ColoredSuccessorGenerator::firstCheckPresetAndGuard(const ColoredPetriNetMarking& state, const Transition_t tid, const Binding& binding) const {
-            if (_net._transitions[tid].guardExpression != nullptr && !_net._transitions[tid].guardExpression->eval(binding)){
-                if (_net._transitions[tid].variables.empty()){
-                    return CheckingBool::NEVERTRUE;
-                }
-                return CheckingBool::FALSE;
-            }
-
-            for (auto i = _net._transitionArcs[tid].first; i < _net._transitionArcs[tid].second; i++) {
-                auto& arc = _net._arcs[i];
-                if (state.markings[arc.from].totalCount() < arc.expression->getMinimalMarkingCount()) {
-                    return CheckingBool::NEVERTRUE;
-                }
-            }
-
-            for (auto i = _net._transitionArcs[tid].first; i < _net._transitionArcs[tid].second; i++){
-                auto& arc = _net._arcs[i];
-                if (!arc.expression->isSubSet(state.markings[arc.from], binding)) {
-                    return CheckingBool::FALSE;
-                }
-            }
-            return CheckingBool::TRUE;
         }
 
         bool ColoredSuccessorGenerator::checkPresetAndGuard(const ColoredPetriNetMarking& state, const Transition_t tid, const Binding& binding) const {
@@ -105,19 +82,37 @@ namespace PetriEngine{
             }
         }
 
-        void ColoredSuccessorGenerator::_fire(ColoredPetriNetMarking& state, Transition_t tid, const Binding& binding) const{
+        void ColoredSuccessorGenerator::_fire(ColoredPetriNetMarking& state, const Transition_t tid, const Binding& binding) const{
             consumePreset(state, tid, binding);
             producePostset(state, tid, binding);
         }
 
-        bool ColoredSuccessorGenerator::hasMinimalCardinality(const ColoredPetriNetMarking &marking, Transition_t transition) const {
-            for (auto i = _net._transitionArcs[transition].first; i < _net._transitionArcs[transition].second; i++) {
+        bool ColoredSuccessorGenerator::_hasMinimalCardinality(const ColoredPetriNetMarking &marking, const Transition_t tid) const {
+            for (auto i = _net._transitionArcs[tid].first; i < _net._transitionArcs[tid].second; i++) {
                 auto& arc = _net._arcs[i];
                 if (marking.markings[arc.from].totalCount() < arc.expression->getMinimalMarkingCount()) {
                     return false;
                 }
             }
             return true;
+        }
+
+        [[nodiscard]] Binding_t ColoredSuccessorGenerator::findNextValidBinding(const ColoredPetriNetMarking& marking, const Transition_t tid, const Binding_t bid, const uint64_t totalBindings, Binding& binding) const {
+            if (!(bid == 0 && _shouldEarlyTerminateTransition(marking, tid))) {
+                if (totalBindings == 0) {
+                    if (checkPresetAndGuard(marking, tid, Binding{})) {
+                        return bid;
+                    }
+                }else {
+                    for (auto i = bid; i < totalBindings; i++) {
+                        getBinding(tid, i, binding);
+                        if (checkPresetAndGuard(marking, tid, binding)) {
+                            return i;
+                        }
+                    }
+                }
+            }
+            return std::numeric_limits<Binding_t>::max();
         }
     }
 }

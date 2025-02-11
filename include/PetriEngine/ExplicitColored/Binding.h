@@ -14,6 +14,7 @@ namespace PetriEngine {
             explicit Binding(std::map<Variable_t, Color_t> map)
                 : _values(std::move(map)) { };
 
+
             Color_t getValue(const Variable_t v) const{
                 if (auto ret = _values.find(v); ret != _values.end()) {
                     return ret->second;
@@ -24,6 +25,15 @@ namespace PetriEngine {
 
             void setValue(const Variable_t v, const Color_t color) {
                 _values.insert_or_assign(v, color);
+            }
+
+            // void setValues(std::map<Variable_t, Color_t>&& map) {
+            //     _values = std::move(map);
+            // }
+
+            Binding& operator=(std::map<Variable_t, Color_t>&& map) {
+                this->_values = std::move(map);
+                return *this;
             }
 
             friend std::ostream& operator<<(std::ostream& out, const Binding& binding) {
