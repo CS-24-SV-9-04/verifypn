@@ -80,6 +80,9 @@ namespace PetriEngine {
             if (_check(initialState) == earlyTerminationCondition) {
                 return _getResult(true);
             }
+            if (_net.getTransitionCount() == 0) {
+                return _getResult(false);
+            }
 
             while (!waiting.empty()){
                 auto& next = waiting.next();
