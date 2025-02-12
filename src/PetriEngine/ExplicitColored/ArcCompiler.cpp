@@ -383,7 +383,6 @@ namespace PetriEngine::ExplicitColored {
                 colorExpr->visit(visitor);
                 colorMaxes.push_back(visitor.getMaxColor());
                 if (visitor.getColor().isAll()) {
-                    std::cout << "uses all" << std::endl;
                     for (auto& colorSequence : colorSequences) {
                         colorSequence.push_back(ParameterizedColor::fromColor(0));
                     }
