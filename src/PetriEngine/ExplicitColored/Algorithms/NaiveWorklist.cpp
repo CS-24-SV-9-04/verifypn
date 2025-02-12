@@ -11,6 +11,7 @@
 #include "PetriEngine/PQL/Visitor.h"
 #include "PetriEngine/ExplicitColored/Algorithms/ColoredSearchTypes.h"
 #include "PetriEngine/ExplicitColored/FireabilityChecker.h"
+#include "PetriEngine/ExplicitColored/ExplicitErrors.h"
 #include <fstream>
 
 namespace PetriEngine {
@@ -36,7 +37,7 @@ namespace PetriEngine {
                 _quantifier = Quantifier::AG;
                 _gammaQuery = agGammaQuery->getCond();
             } else {
-                throw base_error("Unsupported query quantifier");
+                throw explicit_error{unsupported_query};
             }
         }
 
@@ -47,7 +48,7 @@ namespace PetriEngine {
             if (colored_successor_generator_option == ColoredSuccessorGeneratorOption::EVEN) {
                 return _search<ColoredPetriNetStateOneTrans>(searchStrategy);
             }
-            throw base_error("Unsupported successor generator");
+            throw explicit_error(unsupported_generator);
         }
 
         const SearchStatistics & NaiveWorklist::GetSearchStatistics() const {
@@ -65,7 +66,6 @@ namespace PetriEngine {
             const auto& initialState = _net.initial();
             const auto earlyTerminationCondition = _quantifier == Quantifier::EF;
             size_t size = initialState.compressedEncode(scratchpad);
-
             if constexpr (std::is_same_v<T, ColoredPetriNetStateOneTrans>) {
                 auto initial = ColoredPetriNetStateOneTrans{initialState, _net.getTransitionCount()};
                 waiting.add(std::move(initial));
@@ -111,6 +111,9 @@ namespace PetriEngine {
                     }
                     successor.shrink();
                     waiting.add(std::move(successor));
+                    if (size >= std::numeric_limits<uint16_t>::max()) {
+                        throw explicit_error{ptrie_too_small};
+                    }
                     passed.insert(scratchpad.data(), size);
                     _searchStatistics.passedCount += 1;
                     _searchStatistics.peakWaitingStates = std::max(waiting.size(), _searchStatistics.peakWaitingStates);
