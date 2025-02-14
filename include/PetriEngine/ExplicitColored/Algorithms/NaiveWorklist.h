@@ -2,6 +2,7 @@
 #define NAIVEWORKLIST_H
 
 
+#include <PetriEngine/ExplicitColored/GammaQueryCompiler.h>
 #include "PetriEngine/ExplicitColored/ColoredPetriNet.h"
 #include "PetriEngine/ExplicitColored/ColoredResultPrinter.h"
 #include "PetriEngine/ExplicitColored/SearchStatistics.h"
@@ -38,7 +39,8 @@ namespace PetriEngine::ExplicitColored {
 
         bool check(SearchStrategy searchStrategy, ColoredSuccessorGeneratorOption colored_successor_generator_option);
         const SearchStatistics& GetSearchStatistics() const;
-        PQL::Condition_ptr _gammaQuery;
+    private:
+        std::shared_ptr<CompiledGammaQueryExpression> _gammaQuery;
         Quantifier _quantifier;
         const ColoredPetriNet& _net;
         const ColoredSuccessorGenerator _successorGenerator;

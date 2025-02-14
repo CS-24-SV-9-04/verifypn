@@ -27,12 +27,13 @@ namespace PetriEngine::ExplicitColored {
         _seed(seed),
         _coloredResultPrinter(coloredResultPrinter)
     {
+        const GammaQueryCompiler queryCompiler(placeNameIndices, transitionNameIndices, _successorGenerator);
         if (const auto efGammaQuery = dynamic_cast<PQL::EFCondition*>(query.get())) {
             _quantifier = Quantifier::EF;
-            _gammaQuery = efGammaQuery->getCond();
+            _gammaQuery = queryCompiler.compile(efGammaQuery->getCond());
         } else if (const auto agGammaQuery = dynamic_cast<PQL::AGCondition*>(query.get())) {
             _quantifier = Quantifier::AG;
-            _gammaQuery = agGammaQuery->getCond();
+            _gammaQuery = queryCompiler.compile(agGammaQuery->getCond());
         } else {
             throw explicit_error{unsupported_query};
         }
@@ -53,7 +54,7 @@ namespace PetriEngine::ExplicitColored {
     }
 
     bool NaiveWorklist::_check(const ColoredPetriNetMarking& state) const {
-        return GammaQueryVisitor::eval(_gammaQuery, state, _placeNameIndices, _transitionNameIndices, _successorGenerator);
+        return _gammaQuery->eval(_successorGenerator, state);
     }
 
     template <template <typename> typename WaitingList, typename T>
@@ -154,7 +155,6 @@ namespace PetriEngine::ExplicitColored {
             BestFSStructure<T>(
                 _seed,
                 _gammaQuery,
-                _placeNameIndices,
                 _quantifier == Quantifier::AG
                 )
             );
