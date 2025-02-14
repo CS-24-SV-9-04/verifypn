@@ -5,6 +5,7 @@
 
 #include "vector"
 #include "CPNMultiSet.h"
+#include "ExplicitErrors.h"
 
 namespace PetriEngine::ExplicitColored{
     struct ColoredPetriNetMarking{
@@ -78,6 +79,9 @@ namespace PetriEngine::ExplicitColored{
                     bytes.resize(cursor + 1);
                 }
                 bytes[cursor++] = 0;
+            }
+            if (cursor >= std::numeric_limits<uint16_t>::max()) {
+                throw explicit_error{ptrie_too_small};
             }
             return cursor;
         }
