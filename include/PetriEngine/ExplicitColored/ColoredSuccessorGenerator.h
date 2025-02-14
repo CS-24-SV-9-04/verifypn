@@ -82,14 +82,13 @@ namespace PetriEngine{
                 while (bid != std::numeric_limits<Binding_t>::max()){
                     {
                         const auto nextBid = findNextValidBinding(state.marking, tid, bid, totalBindings, binding);
+                        state.updatePair(tid, nextBid);
                         if (nextBid != std::numeric_limits<Binding_t>::max()) {
                             auto newState = ColoredPetriNetStateOneTrans{state, _net.getTransitionCount()};
                             _fire(newState.marking, tid, binding);
-                            state.updatePair(tid, nextBid);
                             return newState;
                         }
                     }
-                    state.updatePair(tid, std::numeric_limits<Binding_t>::max());
                     auto [nextTid, nextBid] = state.getNextPair();
                     tid = nextTid;
                     bid = nextBid;
