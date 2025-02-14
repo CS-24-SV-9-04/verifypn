@@ -5,125 +5,124 @@
 #include <utility>
 
 #include "ColoredPetriNetMarking.h"
-namespace PetriEngine{
-    namespace ExplicitColored{
 
-        struct ColoredPetriNetState{
-            explicit ColoredPetriNetState(ColoredPetriNetMarking marking) : marking(std::move(marking)) {};
-            ColoredPetriNetState(const ColoredPetriNetState& oldState) = default;
-            ColoredPetriNetState(ColoredPetriNetState&&) = default;
-            ColoredPetriNetState& operator=(const ColoredPetriNetState&) = default;
-            ColoredPetriNetState& operator=(ColoredPetriNetState&&) = default;
-            
-            void shrink() {
-                marking.shrink();
-            }
+namespace PetriEngine::ExplicitColored{
+    struct ColoredPetriNetState{
+        explicit ColoredPetriNetState(ColoredPetriNetMarking marking) : marking(std::move(marking)) {};
+        ColoredPetriNetState(const ColoredPetriNetState& oldState) = default;
+        ColoredPetriNetState(ColoredPetriNetState&&) = default;
+        ColoredPetriNetState& operator=(const ColoredPetriNetState&) = default;
+        ColoredPetriNetState& operator=(ColoredPetriNetState&&) = default;
 
-            void setDone() {
-                _done = true;
-            }
+        void shrink() {
+            marking.shrink();
+        }
 
-            [[nodiscard]] bool done() const {
-                return _done;
-            }
+        void setDone() {
+            _done = true;
+        }
 
-            [[nodiscard]] const Transition_t& getCurrentTransition() const {
-                return _currentTransition;
-            }
+        [[nodiscard]] bool done() const {
+            return _done;
+        }
 
-            [[nodiscard]] const Binding_t& getCurrentBinding() const {
-                return _currentBinding;
-            }
+        [[nodiscard]] const Transition_t& getCurrentTransition() const {
+            return _currentTransition;
+        }
 
-            void nextTransition() {
-                _currentTransition += 1;
-                _currentBinding = 0;
-            }
+        [[nodiscard]] const Binding_t& getCurrentBinding() const {
+            return _currentBinding;
+        }
 
-            void nextBinding() {
-                _currentBinding += 1;
-            }
+        void nextTransition() {
+            _currentTransition += 1;
+            _currentBinding = 0;
+        }
 
-            void nextBinding(const Binding_t bid) {
-                _currentBinding = bid + 1;
-            }
+        void nextBinding() {
+            _currentBinding += 1;
+        }
 
-            ColoredPetriNetMarking marking;
-        private:
-            bool _done = false;
+        void nextBinding(const Binding_t bid) {
+            _currentBinding = bid + 1;
+        }
 
-            Binding_t _currentBinding = 0;
-            Transition_t _currentTransition = 0;
-        };
+        ColoredPetriNetMarking marking;
+    private:
+        bool _done = false;
 
-        struct ColoredPetriNetStateOneTrans {
-            ColoredPetriNetStateOneTrans(const ColoredPetriNetStateOneTrans& state) : marking(state.marking), _map(state._map), _currentIndex(state._currentIndex) {};
-            ColoredPetriNetStateOneTrans(const ColoredPetriNetStateOneTrans& oldState, const size_t& numberOfTransitions) : marking(oldState.marking) {
-                _map = std::vector<Binding_t>(numberOfTransitions);
-            }
-            ColoredPetriNetStateOneTrans(ColoredPetriNetMarking marking, const size_t& numberOfTransitions) : marking(std::move(marking)){
-                _map = std::vector<Binding_t>(numberOfTransitions);
-            }
-            ColoredPetriNetStateOneTrans(ColoredPetriNetStateOneTrans&& state) = default;
+        Binding_t _currentBinding = 0;
+        Transition_t _currentTransition = 0;
+    };
 
-            ColoredPetriNetStateOneTrans& operator=(const ColoredPetriNetStateOneTrans&) = default;
-            ColoredPetriNetStateOneTrans& operator=(ColoredPetriNetStateOneTrans&&) = default;
-            std::pair<Transition_t, Binding_t> getNextPair() {
-                Transition_t tid = _currentIndex;
-                Binding_t bid = std::numeric_limits<Binding_t>::max();
-                if (done()) {
-                    return {tid,bid};
-                }
-                auto it = _map.begin() + _currentIndex;
-                while (it != _map.end() && *it == std::numeric_limits<Transition_t>::max()) {
-                    ++it;
-                    ++_currentIndex;
-                }
-                if (it == _map.end()) {
-                    _currentIndex = 0;
-                    shuffle = true;
-                }else {
-                    tid = _currentIndex;
-                    bid = *it;
-                    ++_currentIndex;
-                }
+    struct ColoredPetriNetStateOneTrans {
+        ColoredPetriNetStateOneTrans(const ColoredPetriNetStateOneTrans& state) : marking(state.marking), _map(state._map), _currentIndex(state._currentIndex) {};
+        ColoredPetriNetStateOneTrans(const ColoredPetriNetStateOneTrans& oldState, const size_t& numberOfTransitions) : marking(oldState.marking) {
+            _map = std::vector<Binding_t>(numberOfTransitions);
+        }
+        ColoredPetriNetStateOneTrans(ColoredPetriNetMarking marking, const size_t& numberOfTransitions) : marking(std::move(marking)){
+            _map = std::vector<Binding_t>(numberOfTransitions);
+        }
+        ColoredPetriNetStateOneTrans(ColoredPetriNetStateOneTrans&& state) = default;
+
+        ColoredPetriNetStateOneTrans& operator=(const ColoredPetriNetStateOneTrans&) = default;
+        ColoredPetriNetStateOneTrans& operator=(ColoredPetriNetStateOneTrans&&) = default;
+        std::pair<Transition_t, Binding_t> getNextPair() {
+            Transition_t tid = _currentIndex;
+            Binding_t bid = std::numeric_limits<Binding_t>::max();
+            if (done()) {
                 return {tid,bid};
             }
+            auto it = _map.begin() + _currentIndex;
+            while (it != _map.end() && *it == std::numeric_limits<Transition_t>::max()) {
+                ++it;
+                ++_currentIndex;
+            }
+            if (it == _map.end()) {
+                _currentIndex = 0;
+                shuffle = true;
+            }else {
+                tid = _currentIndex;
+                bid = *it;
+                ++_currentIndex;
+            }
+            return {tid,bid};
+        }
 
-            //Takes last fired transition-binding pair, so next binding is bid + 1
-            void updatePair(const Transition_t tid, const Binding_t bid) {
-                if (tid < _map.size()) {
-                    auto& oldBid = _map[tid];
-                    if (bid == std::numeric_limits<Binding_t>::max()) {
-                        if (bid != _map[tid]) {
-                            oldBid = bid;
-                            _completedTransitions += 1;
-                            if (_completedTransitions == _map.size()) {
-                                _done = true;
-                            }
+        //Takes last fired transition-binding pair, so next binding is bid + 1
+        void updatePair(const Transition_t tid, const Binding_t bid) {
+            if (tid < _map.size()) {
+                auto& oldBid = _map[tid];
+                if (bid == std::numeric_limits<Binding_t>::max()) {
+                    if (bid != _map[tid]) {
+                        oldBid = bid;
+                        _completedTransitions += 1;
+                        if (_completedTransitions == _map.size()) {
+                            _done = true;
                         }
-                    } else {
-                        oldBid = bid + 1;
                     }
+                } else {
+                    oldBid = bid + 1;
                 }
             }
+        }
 
-            void shrink() {
-                marking.shrink();
-            }
+        void shrink() {
+            marking.shrink();
+        }
 
-            [[nodiscard]] bool done() const {
-                return _done;
-            }
+        [[nodiscard]] bool done() const {
+            return _done;
+        }
 
-            ColoredPetriNetMarking marking;
-            bool shuffle = false;
-        private:
-            bool _done = false;
-            std::vector<Binding_t> _map;
-            uint32_t _currentIndex = 0;
-            uint32_t _completedTransitions = 0;
-        };
-    }
+        ColoredPetriNetMarking marking;
+        bool shuffle = false;
+    private:
+        bool _done = false;
+        std::vector<Binding_t> _map;
+        uint32_t _currentIndex = 0;
+        uint32_t _completedTransitions = 0;
+    };
 }
+
 #endif //COLOREDPETRINETSTATE_H
