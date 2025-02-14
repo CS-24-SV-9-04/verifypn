@@ -108,9 +108,6 @@ namespace PetriEngine::ExplicitColored {
                 }
                 successor.shrink();
                 waiting.add(std::move(successor));
-                if (size >= std::numeric_limits<uint16_t>::max()) {
-                    throw explicit_error{ptrie_too_small};
-                }
                 passed.insert(scratchpad.data(), size);
                 _searchStatistics.passedCount += 1;
                 _searchStatistics.peakWaitingStates = std::max(waiting.size(), _searchStatistics.peakWaitingStates);
