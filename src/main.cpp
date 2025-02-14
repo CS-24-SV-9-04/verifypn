@@ -646,7 +646,23 @@ int explicitColored(options_t& options, shared_string_set& string_set, std::vect
                 case ExplicitColored::unsupported_generator:
                     std::cout << "Type of successor generator not supported" << std::endl
                     << "UNSUPPORTED GENERATOR" << std::endl;
-                return to_underlying(ReturnValue::ErrorCode);
+                    return to_underlying(ReturnValue::ErrorCode);
+                case ExplicitColored::unsupported_net:
+                    std::cout << "Net is not suppoted" << std::endl
+                    << "UNSUPPORTED NET" << std::endl;
+                    return to_underlying(ReturnValue::ErrorCode);
+                case ExplicitColored::unexpected_expression:
+                    std::cout << "Unexpected expression in arc" << std::endl
+                    << "UNEXPECTED EXPRESSION" << std::endl;
+                    return to_underlying(ReturnValue::ErrorCode);
+                case ExplicitColored::unknown_variable:
+                    std::cout << "Unknown variable in arc" << std::endl
+                    << "UNKNOWN VARIABLE" << std::endl;
+                    return to_underlying(ReturnValue::ErrorCode);
+                case ExplicitColored::too_many_tokens:
+                    std::cout << "Too many tokens to represent" << std::endl
+                    << "TOO MANY TOKENS" << std::endl;
+                    return to_underlying(ReturnValue::ErrorCode);
                 default:
                     std::cout << "Something went wrong in explicit colored exploration" << std::endl
                     << "UNKNOWN EXPLICIT COLORED ERROR" << std::endl;

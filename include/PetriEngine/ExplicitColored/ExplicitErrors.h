@@ -14,11 +14,15 @@ namespace PetriEngine::ExplicitColored {
         unsupported_query = 1,
         unsupported_strategy = 2,
         unsupported_generator = 3,
+        unsupported_net = 4,
+        unexpected_expression = 5,
+        unknown_variable = 6,
+        too_many_tokens = 7,
     };
 
     class explicit_error : public std::exception {
     public:
-        explicit_error(ExplicitErrorType type) : std::exception(), type(type) {}
+        explicit explicit_error(ExplicitErrorType type) : std::exception(), type(type) {}
         ExplicitErrorType type;
     };
 }
