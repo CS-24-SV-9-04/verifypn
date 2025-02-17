@@ -47,13 +47,12 @@
 
 #include <PetriEngine/Colored/PnmlWriter.h>
 #include <PetriEngine/ExplicitColored/ExplicitErrors.h>
-
 #include "VerifyPN.h"
 #include "PetriEngine/Synthesis/SimpleSynthesis.h"
 #include "LTL/LTLSearch.h"
 #include "PetriEngine/PQL/PQL.h"
 #include "PetriEngine/ExplicitColored/ColoredPetriNetBuilder.h"
-#include "PetriEngine/ExplicitColored/Algorithms/NaiveWorklist.h"
+#include "PetriEngine/ExplicitColored/Algorithms/ExplicitWorklist.h"
 #include "utils/NullStream.h"
 using namespace PetriEngine;
 using namespace PetriEngine::PQL;
@@ -611,7 +610,7 @@ int explicitColored(options_t& options, shared_string_set& string_set, std::vect
         const auto seed = options.seed();
         ExplicitColored::ColoredResultPrinter resultPrinter(i, fullStatisticOut, queryNames, seed);
         try {
-            ExplicitColored::NaiveWorklist naiveWorkList(net, queries[i], placeIndices, transitionIndices, resultPrinter, seed);
+            ExplicitColored::ExplicitWorklist naiveWorkList(net, queries[i], placeIndices, transitionIndices, resultPrinter, seed);
             switch (options.strategy) {
                 case Strategy::DEFAULT:
                 case Strategy::DFS:

@@ -63,11 +63,11 @@ namespace PetriEngine::ExplicitColored {
                 state.nextTransition();
             }
             state.setDone();
-            return ColoredPetriNetState{{}};
+            return ColoredPetriNetStateFixed{{}};
         }
 
         // SuccessorGenerator but only considers current transition
-        ColoredPetriNetStateOneTrans _nextOneTrans(ColoredPetriNetStateOneTrans &state) const {
+        ColoredPetriNetStateEven _nextEven(ColoredPetriNetStateEven &state) const {
             auto [tid, bid] = state.getNextPair();
             auto totalBindings = _net._transitions[tid].validVariables.second;
             Binding binding;
