@@ -23,8 +23,6 @@ namespace PetriEngine::ExplicitColored {
         const size_t seed
     ) : _net(std::move(net)),
         _successorGenerator(ColoredSuccessorGenerator{_net}),
-        _placeNameIndices(placeNameIndices),
-        _transitionNameIndices(transitionNameIndices),
         _seed(seed),
         _coloredResultPrinter(coloredResultPrinter)
     {

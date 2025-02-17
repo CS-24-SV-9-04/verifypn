@@ -610,20 +610,20 @@ int explicitColored(options_t& options, shared_string_set& string_set, std::vect
         const auto seed = options.seed();
         ExplicitColored::ColoredResultPrinter resultPrinter(i, fullStatisticOut, queryNames, seed);
         try {
-            ExplicitColored::ExplicitWorklist naiveWorkList(net, queries[i], placeIndices, transitionIndices, resultPrinter, seed);
+            ExplicitColored::ExplicitWorklist worklist(net, queries[i], placeIndices, transitionIndices, resultPrinter, seed);
             switch (options.strategy) {
                 case Strategy::DEFAULT:
                 case Strategy::DFS:
-                    result = naiveWorkList.check(ExplicitColored::SearchStrategy::DFS, options.colored_sucessor_generator);
+                    result = worklist.check(ExplicitColored::SearchStrategy::DFS, options.colored_sucessor_generator);
                 break;
                 case Strategy::BFS:
-                    result = naiveWorkList.check(ExplicitColored::SearchStrategy::BFS, options.colored_sucessor_generator);
+                    result = worklist.check(ExplicitColored::SearchStrategy::BFS, options.colored_sucessor_generator);
                 break;
                 case Strategy::RDFS:
-                    result = naiveWorkList.check(ExplicitColored::SearchStrategy::RDFS, options.colored_sucessor_generator);
+                    result = worklist.check(ExplicitColored::SearchStrategy::RDFS, options.colored_sucessor_generator);
                 break;
                 case Strategy::HEUR:
-                    result = naiveWorkList.check(ExplicitColored::SearchStrategy::HEUR, options.colored_sucessor_generator);
+                    result = worklist.check(ExplicitColored::SearchStrategy::HEUR, options.colored_sucessor_generator);
                 break;
                 default:
                     throw ExplicitColored::explicit_error{ExplicitColored::ExplicitErrorType::unsupported_strategy};

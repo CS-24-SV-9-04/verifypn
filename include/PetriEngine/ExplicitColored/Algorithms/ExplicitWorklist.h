@@ -39,14 +39,12 @@ namespace PetriEngine::ExplicitColored {
         );
 
         bool check(SearchStrategy searchStrategy, ColoredSuccessorGeneratorOption colored_successor_generator_option);
-        const SearchStatistics& GetSearchStatistics() const;
+        [[nodiscard]] const SearchStatistics& GetSearchStatistics() const;
     private:
         std::shared_ptr<CompiledGammaQueryExpression> _gammaQuery;
         Quantifier _quantifier;
         const ColoredPetriNet& _net;
         const ColoredSuccessorGenerator _successorGenerator;
-        const std::unordered_map<std::string, uint32_t>& _placeNameIndices;
-        const std::unordered_map<std::string, Transition_t> _transitionNameIndices;
         const size_t _seed;
 
         template<typename SuccessorGeneratorState>

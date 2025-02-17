@@ -16,12 +16,12 @@ namespace PetriEngine::ExplicitColored {
         explicit ColoredSuccessorGenerator(const ColoredPetriNet& net);
         ~ColoredSuccessorGenerator() = default;
 
-        ColoredPetriNetState next(ColoredPetriNetState& state) const {
-            return _next(state);
+        ColoredPetriNetStateFixed next(ColoredPetriNetStateFixed& state) const {
+            return _nextFixed(state);
         }
 
-        ColoredPetriNetStateOneTrans next(ColoredPetriNetStateOneTrans& state) const {
-            return _nextOneTrans(state);
+        ColoredPetriNetStateEven next(ColoredPetriNetStateEven& state) const {
+            return _nextEven(state);
         }
 
         [[nodiscard]] const ColoredPetriNet& net() const {
@@ -47,7 +47,7 @@ namespace PetriEngine::ExplicitColored {
             return false;
         }
 
-        ColoredPetriNetState _next(ColoredPetriNetState &state) const {
+        ColoredPetriNetStateFixed _nextFixed(ColoredPetriNetStateFixed &state) const {
             const auto& tid = state.getCurrentTransition();
             const auto& bid = state.getCurrentBinding();
             Binding binding;
@@ -55,7 +55,7 @@ namespace PetriEngine::ExplicitColored {
                 const auto totalBindings = _net._transitions[state.getCurrentTransition()].validVariables.second;
                 const auto nextBid = findNextValidBinding(state.marking, tid, bid, totalBindings, binding);
                 if (nextBid != std::numeric_limits<Binding_t>::max()) {
-                    auto newState = ColoredPetriNetState(state.marking);
+                    auto newState = ColoredPetriNetStateFixed(state.marking);
                     _fire(newState.marking, tid, binding);
                     state.nextBinding(nextBid);
                     return newState;
@@ -77,7 +77,7 @@ namespace PetriEngine::ExplicitColored {
                     const auto nextBid = findNextValidBinding(state.marking, tid, bid, totalBindings, binding);
                     state.updatePair(tid, nextBid);
                     if (nextBid != std::numeric_limits<Binding_t>::max()) {
-                        auto newState = ColoredPetriNetStateOneTrans{state, _net.getTransitionCount()};
+                        auto newState = ColoredPetriNetStateEven{state, _net.getTransitionCount()};
                         _fire(newState.marking, tid, binding);
                         return newState;
                     }
