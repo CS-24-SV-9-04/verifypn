@@ -34,8 +34,11 @@ namespace PetriEngine::ExplicitColored{
                 interval /= size;
                 map.emplace(varName, varValues.at((bid / interval) % size));
             }
+            binding = std::move(map);
+        }else {
+            binding = std::move(Binding{});
         }
-        binding = std::move(map);
+
     }
 
     bool ColoredSuccessorGenerator::check(const ColoredPetriNetMarking& state, const Transition_t tid, const Binding& binding) const{
@@ -97,7 +100,7 @@ namespace PetriEngine::ExplicitColored{
     [[nodiscard]] Binding_t ColoredSuccessorGenerator::findNextValidBinding(const ColoredPetriNetMarking& marking, const Transition_t tid, const Binding_t bid, const uint64_t totalBindings, Binding& binding) const {
         if (!(bid == 0 && _shouldEarlyTerminateTransition(marking, tid))) {
             if (totalBindings == 0) {
-                if (checkPresetAndGuard(marking, tid, Binding{})) {
+                if (bid == 0 && checkPresetAndGuard(marking, tid, Binding{})) {
                     return bid;
                 }
             }else {
