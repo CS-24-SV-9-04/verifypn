@@ -46,7 +46,9 @@ namespace PetriEngine::ExplicitColored {
         const ColoredPetriNet& _net;
         const ColoredSuccessorGenerator _successorGenerator;
         const size_t _seed;
-
+        bool _fullStatespace = true;
+        SearchStatistics _searchStatistics;
+        const IColoredResultPrinter& _coloredResultPrinter;
         template<typename SuccessorGeneratorState>
         [[nodiscard]] bool _search(SearchStrategy searchStrategy);
         [[nodiscard]] bool _check(const ColoredPetriNetMarking& state) const;
@@ -64,8 +66,7 @@ namespace PetriEngine::ExplicitColored {
         [[nodiscard]] bool _genericSearch(WaitingList<T> waiting);
         [[nodiscard]] bool _getResult(bool found) const;
 
-        SearchStatistics _searchStatistics;
-        const IColoredResultPrinter& _coloredResultPrinter;
+
     };
 }
 

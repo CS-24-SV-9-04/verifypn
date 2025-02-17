@@ -60,13 +60,13 @@ namespace PetriEngine::ExplicitColored{
             return marking;
         }
 
-        size_t compressedEncode(std::vector<uint8_t>& bytes) const {
+        size_t compressedEncode(std::vector<uint8_t>& bytes, bool& success) const {
             size_t cursor = 0;
             for (const auto& marking : markings) {
-                for (const auto& pair : marking.counts()) {
-                    if (pair.second > 0) {
-                        encodeVarInt(bytes, cursor, pair.second);
-                        for (auto c : pair.first.getSequence()) {
+                for (const auto& [set, count] : marking.counts()) {
+                    if (count > 0) {
+                        encodeVarInt(bytes, cursor, count);
+                        for (const auto c : set.getSequence()) {
                             encodeVarInt(bytes, cursor, c + 1);
                         }
                         if (bytes.size() < cursor + 1) {
@@ -81,7 +81,10 @@ namespace PetriEngine::ExplicitColored{
                 bytes[cursor++] = 0;
             }
             if (cursor >= std::numeric_limits<uint16_t>::max()) {
-                throw explicit_error{ptrie_too_small};
+                if (success) {
+                    std::cout << "Too big for ptrie, not exploring fullstatespace" << std::endl;
+                }
+                success = false;
             }
             return cursor;
         }

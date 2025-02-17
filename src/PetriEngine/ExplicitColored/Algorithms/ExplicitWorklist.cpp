@@ -60,9 +60,10 @@ namespace PetriEngine::ExplicitColored {
     bool ExplicitWorklist::_genericSearch(WaitingList<T> waiting) {
         ptrie::set<uint8_t> passed;
         std::vector<uint8_t> scratchpad;
+        _fullStatespace = true;
         const auto& initialState = _net.initial();
         const auto earlyTerminationCondition = _quantifier == Quantifier::EF;
-        size_t size = initialState.compressedEncode(scratchpad);
+        size_t size = initialState.compressedEncode(scratchpad, _fullStatespace);
 
         if constexpr (std::is_same_v<T, ColoredPetriNetStateEven>) {
             auto initial = ColoredPetriNetStateEven{initialState, _net.getTransitionCount()};
@@ -99,7 +100,7 @@ namespace PetriEngine::ExplicitColored {
             }
 
             auto& marking = successor.marking;
-            size = marking.compressedEncode(scratchpad);
+            size = marking.compressedEncode(scratchpad, _fullStatespace);
             _searchStatistics.exploredStates++;
             if (!passed.exists(scratchpad.data(), size).first) {
                 _searchStatistics.checkedStates += 1;
@@ -161,11 +162,16 @@ namespace PetriEngine::ExplicitColored {
     }
 
     bool ExplicitWorklist::_getResult(const bool found) const {
-        const auto res = (
-            (!found && _quantifier == Quantifier::AG) ||
-            (found && _quantifier == Quantifier::EF))
-                ? Reachability::ResultPrinter::Result::Satisfied
-                : Reachability::ResultPrinter::Result::NotSatisfied;
+        Reachability::ResultPrinter::Result res;
+        if (!found && !_fullStatespace) {
+            res = Reachability::ResultPrinter::Result::Unknown;
+        }else {
+            res = (
+           (!found && _quantifier == Quantifier::AG) ||
+           (found && _quantifier == Quantifier::EF))
+               ? Reachability::ResultPrinter::Result::Satisfied
+               : Reachability::ResultPrinter::Result::NotSatisfied;
+        }
         _coloredResultPrinter.printResults(_searchStatistics, res);
         return res == Reachability::ResultPrinter::Result::Satisfied;
     }
