@@ -32,21 +32,27 @@ namespace PetriEngine::ExplicitColored {
         }
     };
 
-    class CompiledGuardAndExpression final : public CompiledGuardExpression {
-    public:
-        explicit CompiledGuardAndExpression(std::vector<std::unique_ptr<CompiledGuardExpression>> compiledGuardExpressions)
-            : _expressions(std::move(compiledGuardExpressions)) {}
-        bool eval(const Binding& binding) override {
-            for (const auto& expression : _expressions) {
-                if (!expression->eval(binding)) {
-                    return false;
+        class CompiledGuardAndExpression final : public CompiledGuardExpression {
+        public:
+            explicit CompiledGuardAndExpression(std::vector<std::unique_ptr<CompiledGuardExpression>> copmiledGuardExpressions)
+                : _expressions(std::move(copmiledGuardExpressions)) {}
+            bool eval(const Binding& binding) override {
+                for (const auto& expression : _expressions) {
+                    if (!expression->eval(binding)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            void collectVariables(std::set<Variable_t> &out) const override {
+                for (const auto& expression : _expressions) {
+                    expression->collectVariables(out);
                 }
             }
-            return true;
-        }
-    private:
-        std::vector<std::unique_ptr<CompiledGuardExpression>> _expressions;
-    };
+        private:
+            std::vector<std::unique_ptr<CompiledGuardExpression>> _expressions;
+        };
 
     class CompiledGuardOrExpression final : public CompiledGuardExpression {
     public:
@@ -60,6 +66,12 @@ namespace PetriEngine::ExplicitColored {
             }
             return false;
         }
+
+        void collectVariables(std::set<Variable_t> &out) const override {
+            for (const auto& expression : _expressions) {
+                expression->collectVariables(out);
+            }
+        }
     private:
         std::vector<std::unique_ptr<CompiledGuardExpression>> _expressions;
     };
@@ -71,6 +83,15 @@ namespace PetriEngine::ExplicitColored {
 
         bool eval(const Binding& binding) override {
             return _lhs.getLhs(binding, _typeFlag) < _rhs.getRhs(binding, _typeFlag);
+        }
+
+        void collectVariables(std::set<Variable_t> &out) const override {
+            if (_typeFlag & TypeFlag::LHS_VAR) {
+                out.insert(_lhs.value.variable);
+            }
+            if (_typeFlag & TypeFlag::RHS_VAR) {
+                out.insert(_rhs.value.variable);
+            }
         }
     private:
         VarOrColorWithOffset _lhs;
@@ -85,6 +106,15 @@ namespace PetriEngine::ExplicitColored {
 
         bool eval(const Binding& binding) override {
             return _lhs.getLhs(binding, _typeFlag) <= _rhs.getRhs(binding, _typeFlag);
+        }
+
+        void collectVariables(std::set<Variable_t> &out) const override {
+            if (_typeFlag & TypeFlag::LHS_VAR) {
+                out.insert(_lhs.value.variable);
+            }
+            if (_typeFlag & TypeFlag::RHS_VAR) {
+                out.insert(_rhs.value.variable);
+            }
         }
     private:
         VarOrColorWithOffset _lhs;
@@ -111,6 +141,17 @@ namespace PetriEngine::ExplicitColored {
             }
             return true;
         }
+
+        void collectVariables(std::set<Variable_t> &out) const override {
+            for (auto i = 0; i < _typeFlags.size(); ++i) {
+                if (_typeFlags[i] & TypeFlag::LHS_VAR) {
+                    out.insert(_lhs[i].value.variable);
+                }
+                if (_typeFlags[i] & TypeFlag::RHS_VAR) {
+                    out.insert(_rhs[i].value.variable);
+                }
+            }
+        }
     private:
         std::vector<TypeFlag_t> _typeFlags;
         std::vector<VarOrColorWithOffset> _lhs;
@@ -135,6 +176,17 @@ namespace PetriEngine::ExplicitColored {
                 ++typeFlagIt;
             }
             return false;
+        }
+
+        void collectVariables(std::set<Variable_t> &out) const override {
+            for (auto i = 0; i < _typeFlags.size(); ++i) {
+                if (_typeFlags[i] & TypeFlag::LHS_VAR) {
+                    out.insert(_lhs[i].value.variable);
+                }
+                if (_typeFlags[i] & TypeFlag::RHS_VAR) {
+                    out.insert(_rhs[i].value.variable);
+                }
+            }
         }
     private:
         std::vector<TypeFlag_t> _typeFlags;

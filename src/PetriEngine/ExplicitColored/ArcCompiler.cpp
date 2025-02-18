@@ -46,6 +46,14 @@ namespace PetriEngine::ExplicitColored {
         std::unique_ptr<CompiledArcExpression>& getRhs() {
             return _rhs;
         }
+
+        [[nodiscard]] std::set<Color_t> getPossibleBindings(const Variable_t variable, const CPNMultiSet& inputPlaceTokens) const override {
+            std::set<Color_t> result = _lhs->getPossibleBindings(variable, inputPlaceTokens);
+            std::set<Color_t> rhs = _rhs->getPossibleBindings(variable, inputPlaceTokens);
+            result.insert(rhs.begin(), rhs.end());
+            return result;
+        }
+
     private:
         std::unique_ptr<CompiledArcExpression> _lhs;
         std::unique_ptr<CompiledArcExpression> _rhs;
@@ -102,6 +110,16 @@ namespace PetriEngine::ExplicitColored {
         std::unique_ptr<CompiledArcExpression>& getRhs() {
             return _rhs;
         }
+
+        [[nodiscard]] std::set<Color_t> getPossibleBindings(const Variable_t variable, const CPNMultiSet& inputPlaceTokens) const override {
+            std::set<Color_t> result = _lhs->getPossibleBindings(variable, inputPlaceTokens);
+            std::set<Color_t> rhs = _rhs->getPossibleBindings(variable, inputPlaceTokens);
+            if (rhs.find(variable) != rhs.end()) {
+                return {ALL_COLOR};
+            }
+            result.insert(rhs.begin(), rhs.end());
+            return result;
+        }
     private:
         std::unique_ptr<CompiledArcExpression> _lhs;
         std::unique_ptr<CompiledArcExpression> _rhs;
@@ -152,6 +170,10 @@ namespace PetriEngine::ExplicitColored {
         MarkingCount_t getScale() const {
             return _scale;
         }
+
+        [[nodiscard]] std::set<Color_t> getPossibleBindings(Variable_t variable, const CPNMultiSet& inputPlaceTokens) const override {
+            return _expr->getPossibleBindings(variable, inputPlaceTokens);
+        }
     private:
         std::unique_ptr<CompiledArcExpression> _expr;
         MarkingCount_t _scale;
@@ -194,6 +216,10 @@ namespace PetriEngine::ExplicitColored {
 
         [[nodiscard]] CPNMultiSet getConstant() const {
             return _constant;
+        }
+
+        [[nodiscard]] std::set<Color_t> getPossibleBindings(Variable_t variable, const CPNMultiSet& inputPlaceTokens) const override {
+            return std::set<Color_t>{};
         }
     private:
         CPNMultiSet _constant;
@@ -252,6 +278,23 @@ namespace PetriEngine::ExplicitColored {
 
         MarkingCount_t getCount() const {
             return _count;
+        }
+
+        [[nodiscard]] std::set<Color_t> getPossibleBindings(const Variable_t variable, const CPNMultiSet& inputPlaceTokens) const override {
+            std::set<Color_t> result;
+            for (const auto& colorSequence : _parameterizedColorSequence) {
+                for (size_t colorIndex = 0; colorIndex < colorSequence.size(); ++colorIndex) {
+                    if (colorSequence[colorIndex].isVariable && colorSequence[colorIndex].value.variable == variable) {
+                        for (const auto& count : inputPlaceTokens.counts()) {
+                            result.insert(
+                                signed_wrap(static_cast<ColorOffset_t>(count.first.getSequence()[colorIndex]
+                                    - colorSequence[colorIndex].offset),
+                                    static_cast<ColorOffset_t>(_colorSizes[colorIndex])));
+                        }
+                    }
+                }
+            }
+            return result;
         }
 
         sMarkingCount_t getSignedCount() const {

@@ -123,6 +123,69 @@ namespace PetriEngine::ExplicitColored {
         uint32_t _currentIndex = 0;
         uint32_t _completedTransitions = 0;
     };
+
+    struct ColoredPetriNetStateConstrained {
+        explicit ColoredPetriNetStateConstrained(ColoredPetriNetMarking marking) : marking(std::move(marking)) {};
+        ColoredPetriNetStateConstrained(const ColoredPetriNetStateConstrained& oldState) = default;
+        ColoredPetriNetStateConstrained(ColoredPetriNetStateConstrained&&) = default;
+        ColoredPetriNetStateConstrained& operator=(const ColoredPetriNetStateConstrained&) = default;
+        ColoredPetriNetStateConstrained& operator=(ColoredPetriNetStateConstrained&&) = default;
+
+        void shrink() {
+            marking.shrink();
+        }
+
+        void setDone() {
+            _done = true;
+        }
+
+        [[nodiscard]] bool done() const {
+            return _done;
+        }
+
+        [[nodiscard]] Transition_t getCurrentTransition() const {
+            return _currentTransition;
+        }
+
+        void nextTransition() {
+            _currentTransition += 1;
+            _checkedEarlyTermination = false;
+            variableIndices.clear();
+            variableValues.clear();
+            stateMaxes.clear();
+        }
+
+        void checkedEarlyTermination() {
+            _checkedEarlyTermination = true;
+        }
+
+        [[nodiscard]] bool shouldCheckEarlyTermination() const {
+            return !_checkedEarlyTermination;
+        }
+
+        bool incrementVariableIndices(const std::vector<size_t>& stateMaxes, const size_t startIndex = 0) {
+            variableIndices[startIndex] += 1;
+            if (variableIndices[startIndex] >= stateMaxes[startIndex]) {
+                if (startIndex + 1 >= variableIndices.size()) {
+                    return true;
+                }
+                variableIndices[startIndex] = 0;
+                return incrementVariableIndices(stateMaxes, startIndex + 1);
+            }
+            return false;
+        }
+
+        std::vector<size_t> variableIndices;
+        ColoredPetriNetMarking marking;
+        std::vector<size_t> stateMaxes;
+        std::vector<std::pair<Variable_t, std::vector<Color_t>>> variableValues;
+
+    private:
+        bool _done = false;
+        bool _checkedEarlyTermination = false;
+        Transition_t _currentTransition = 0;
+    };
+
 }
 
 #endif //COLOREDPETRINETSTATE_H

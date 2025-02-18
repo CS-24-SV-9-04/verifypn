@@ -45,6 +45,9 @@ namespace PetriEngine::ExplicitColored {
         if (colored_successor_generator_option == ColoredSuccessorGeneratorOption::EVEN) {
             return _search<ColoredPetriNetStateEven>(searchStrategy);
         }
+        if (colored_successor_generator_option == ColoredSuccessorGeneratorOption::CONSTRAINED) {
+            return _search<ColoredPetriNetStateConstrained>(searchStrategy);
+        }
         throw explicit_error(unsupported_generator);
     }
 
@@ -67,6 +70,9 @@ namespace PetriEngine::ExplicitColored {
 
         if constexpr (std::is_same_v<T, ColoredPetriNetStateEven>) {
             auto initial = ColoredPetriNetStateEven{initialState, _net.getTransitionCount()};
+            waiting.add(std::move(initial));
+        } else if constexpr (std::is_same_v<T, ColoredPetriNetStateConstrained>) {
+            auto initial = ColoredPetriNetStateConstrained {initialState};
             waiting.add(std::move(initial));
         } else {
             auto initial = ColoredPetriNetStateFixed{initialState};
