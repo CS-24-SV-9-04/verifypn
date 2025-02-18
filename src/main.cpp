@@ -647,7 +647,7 @@ int explicitColored(options_t& options, shared_string_set& string_set, std::vect
                     << "UNSUPPORTED GENERATOR" << std::endl;
                     return to_underlying(ReturnValue::ErrorCode);
                 case ExplicitColored::unsupported_net:
-                    std::cout << "Net is not suppoted" << std::endl
+                    std::cout << "Net is not supported" << std::endl
                     << "UNSUPPORTED NET" << std::endl;
                     return to_underlying(ReturnValue::ErrorCode);
                 case ExplicitColored::unexpected_expression:
