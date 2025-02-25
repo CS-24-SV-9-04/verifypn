@@ -123,6 +123,70 @@ namespace PetriEngine::ExplicitColored {
         uint32_t _currentIndex = 0;
         uint32_t _completedTransitions = 0;
     };
+
+    struct ColoredPetriNetStateConstrained {
+        explicit ColoredPetriNetStateConstrained(ColoredPetriNetMarking marking) : marking(std::move(marking)) {};
+        ColoredPetriNetStateConstrained(const ColoredPetriNetStateConstrained& oldState) = default;
+        ColoredPetriNetStateConstrained(ColoredPetriNetStateConstrained&&) = default;
+        ColoredPetriNetStateConstrained& operator=(const ColoredPetriNetStateConstrained&) = default;
+        ColoredPetriNetStateConstrained& operator=(ColoredPetriNetStateConstrained&&) = default;
+
+        void shrink() {
+            marking.shrink();
+        }
+
+        void setDone() {
+            _done = true;
+        }
+
+        [[nodiscard]] bool done() const {
+            return _done;
+        }
+
+        [[nodiscard]] Transition_t getCurrentTransition() const {
+            return _currentTransition;
+        }
+
+        void nextTransition() {
+            _currentTransition += 1;
+            _checkedEarlyTermination = false;
+            variableIndices.clear();
+            stateMaxes.clear();
+        }
+
+        void checkedEarlyTermination() {
+            _checkedEarlyTermination = true;
+        }
+
+        [[nodiscard]] bool shouldCheckEarlyTermination() const {
+            return !_checkedEarlyTermination;
+        }
+
+        [[nodiscard]] bool incrementVariableIndices() {
+            return _incrementVariableIndices(variableIndices.begin());
+        }
+
+        std::map<Variable_t, size_t> variableIndices;
+        std::map<Variable_t, size_t> stateMaxes;
+        ColoredPetriNetMarking marking;
+    private:
+        bool _incrementVariableIndices(std::map<Variable_t, size_t>::iterator variableIndex) {
+            variableIndex->second += 1;
+            if (variableIndex->second >= stateMaxes[variableIndex->first]) {
+                variableIndex->second = 0;
+                if (++variableIndex == variableIndices.end()) {
+                    return true;
+                }
+                return _incrementVariableIndices(variableIndex);
+            }
+            return false;
+        }
+
+        bool _done = false;
+        bool _checkedEarlyTermination = false;
+        Transition_t _currentTransition = 0;
+    };
+
 }
 
 #endif //COLOREDPETRINETSTATE_H
