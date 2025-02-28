@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<property-set xmlns="http://tapaal.net/">
+  
+  <property>
+    <id>Query Comment/Name Here</id>
+    <description>Query Comment/Name Here</description>
+    <formula>
+      <disjunction>
+        <exists-path>
+          <finally>
+            <all-paths>
+              <finally>
+                <integer-eq>
+                  <tokens-count>
+                    <place>P0</place>
+                  </tokens-count>
+                  <integer-constant>1</integer-constant>
+                </integer-eq>
+              </finally>
+            </all-paths>
+          </finally>
+        </exists-path>
+        <all-paths>
+          <finally>
+            <integer-eq>
+              <tokens-count>
+                <place>P0</place>
+              </tokens-count>
+              <integer-constant>1</integer-constant>
+            </integer-eq>
+          </finally>
+        </all-paths>
+      </disjunction>
+    </formula>
+  </property>
+  <property>
+    <id>Query Comment/Name Here</id>
+    <description>Query Comment/Name Here</description>
+    <formula>
+      <is-fireable>
+        <transition>T0</transition>
+      </is-fireable>
+    </formula>
+  </property>
+  <property>
+    <id>Query Comment/Name Here</id>
+    <description>Query Comment/Name Here</description>
+    <formula>
+      <exists-path>
+        <finally>
+          <deadlock/>
+        </finally>
+      </exists-path>
+    </formula>
+  </property>
+  <property>
+    <id>Query Comment/Name Here</id>
+    <description>Query Comment/Name Here</description>
+    <formula>
+      <all-paths>
+        <globally>
+          <deadlock/>
+        </globally>
+      </all-paths>
+    </formula>
+  </property>
+</property-set>

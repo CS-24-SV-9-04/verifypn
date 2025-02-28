@@ -1,0 +1,7560 @@
+<?xml version="1.0"?>
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+	<net id="MODELID" type="http://www.pnml.org/version-2009/grammar/symmetricnet">
+		<name><text>MODELNAME</text></name>
+		<!-- Page meta -->
+		<page id="page0">
+			<name>
+				<text>DefaultPage</text>
+			</name>
+			<!-- List of places -->
+			<place id="cJobCnt">
+				<name>
+					<text>cJobCnt</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>10'(dot)</text>
+					<structure>
+						<add>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="10">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<dotconstant/>
+									</subterm>
+								</numberof>
+							</subterm>
+						</add>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="JobCnt">
+				<name>
+					<text>JobCnt</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+			</place>
+			<place id="AwakeTasks">
+				<name>
+					<text>AwakeTasks</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="IdleTasks">
+				<name>
+					<text>IdleTasks</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>0'(Threads1) + 1'(Threads2) + 1'(Threads3) + 1'(Threads4) + 1'(Threads5) + 1'(Threads6)</text>
+					<structure>
+						<add>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="Threads2"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="Threads3"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="Threads4"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="Threads5"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="Threads6"/>
+									</subterm>
+								</numberof>
+							</subterm>
+						</add>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="NotifyEventJobQueuedE">
+				<name>
+					<text>NotifyEventJobQueuedE</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="NotifyEventJobQueuedB">
+				<name>
+					<text>NotifyEventJobQueuedB</text>
+				</name>
+				<type>
+					<text>d1</text>
+					<structure>
+						<usersort declaration="d1"/>
+					</structure>
+				</type>
+			</place>
+			<place id="QueueJobE">
+				<name>
+					<text>QueueJobE</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="QueueJobB">
+				<name>
+					<text>QueueJobB</text>
+				</name>
+				<type>
+					<text>d1</text>
+					<structure>
+						<usersort declaration="d1"/>
+					</structure>
+				</type>
+			</place>
+			<place id="P_2321">
+				<name>
+					<text>P_2321</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="TryAllocateOneTaskE">
+				<name>
+					<text>TryAllocateOneTaskE</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="TryAllocateOneTaskB">
+				<name>
+					<text>TryAllocateOneTaskB</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="P_2318">
+				<name>
+					<text>P_2318</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="EnablePollingE">
+				<name>
+					<text>EnablePollingE</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="EnablePollingB">
+				<name>
+					<text>EnablePollingB</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="cBlockedTasks">
+				<name>
+					<text>cBlockedTasks</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>9'(dot)</text>
+					<structure>
+						<add>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="9">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<dotconstant/>
+									</subterm>
+								</numberof>
+							</subterm>
+						</add>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="PollingAbort">
+				<name>
+					<text>PollingAbort</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+			</place>
+			<place id="cPollingAbort">
+				<name>
+					<text>cPollingAbort</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="BlockedTasks">
+				<name>
+					<text>BlockedTasks</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="DisablePollingE">
+				<name>
+					<text>DisablePollingE</text>
+				</name>
+				<type>
+					<text>d4</text>
+					<structure>
+						<usersort declaration="d4"/>
+					</structure>
+				</type>
+			</place>
+			<place id="DisablePollingB">
+				<name>
+					<text>DisablePollingB</text>
+				</name>
+				<type>
+					<text>d4</text>
+					<structure>
+						<usersort declaration="d4"/>
+					</structure>
+				</type>
+			</place>
+			<place id="MarkerWrite">
+				<name>
+					<text>MarkerWrite</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="P_1727">
+				<name>
+					<text>P_1727</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+			</place>
+			<place id="P_1726">
+				<name>
+					<text>P_1726</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+			</place>
+			<place id="P_1725">
+				<name>
+					<text>P_1725</text>
+				</name>
+				<type>
+					<text>Jobs</text>
+					<structure>
+						<usersort declaration="Jobs"/>
+					</structure>
+				</type>
+			</place>
+			<place id="P_1724">
+				<name>
+					<text>P_1724</text>
+				</name>
+				<type>
+					<text>Jobs</text>
+					<structure>
+						<usersort declaration="Jobs"/>
+					</structure>
+				</type>
+			</place>
+			<place id="FetchJobE">
+				<name>
+					<text>FetchJobE</text>
+				</name>
+				<type>
+					<text>d1</text>
+					<structure>
+						<usersort declaration="d1"/>
+					</structure>
+				</type>
+			</place>
+			<place id="MarkerRead">
+				<name>
+					<text>MarkerRead</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="P_1717">
+				<name>
+					<text>P_1717</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+			</place>
+			<place id="P_1716">
+				<name>
+					<text>P_1716</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+			</place>
+			<place id="FetchJobB">
+				<name>
+					<text>FetchJobB</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="P_1712">
+				<name>
+					<text>P_1712</text>
+				</name>
+				<type>
+					<text>Jobs</text>
+					<structure>
+						<usersort declaration="Jobs"/>
+					</structure>
+				</type>
+			</place>
+			<place id="ScheduleTaskE_Check">
+				<name>
+					<text>ScheduleTaskE_Check</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="ScheduleTaskB">
+				<name>
+					<text>ScheduleTaskB</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="CanInjectEvent">
+				<name>
+					<text>CanInjectEvent</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="DataOnSrc">
+				<name>
+					<text>DataOnSrc</text>
+				</name>
+				<type>
+					<text>Sources</text>
+					<structure>
+						<usersort declaration="Sources"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>1'(Sources1) + 1'(Sources2)</text>
+					<structure>
+						<add>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="Sources1"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="Sources2"/>
+									</subterm>
+								</numberof>
+							</subterm>
+						</add>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="Abort_Check_Sources_E">
+				<name>
+					<text>Abort_Check_Sources_E</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="Abort_Check_Sources_B">
+				<name>
+					<text>Abort_Check_Sources_B</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="SigAbort">
+				<name>
+					<text>SigAbort</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+			</place>
+			<place id="PlaceSources">
+				<name>
+					<text>PlaceSources</text>
+				</name>
+				<type>
+					<text>Sources</text>
+					<structure>
+						<usersort declaration="Sources"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>1'(Sources1) + 1'(Sources2)</text>
+					<structure>
+						<add>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="Sources1"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="Sources2"/>
+									</subterm>
+								</numberof>
+							</subterm>
+						</add>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="NoSigAbort">
+				<name>
+					<text>NoSigAbort</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="NotifyEventSourceAddedB">
+				<name>
+					<text>NotifyEventSourceAddedB</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="Insert_Source_B">
+				<name>
+					<text>Insert_Source_B</text>
+				</name>
+				<type>
+					<text>d4</text>
+					<structure>
+						<usersort declaration="d4"/>
+					</structure>
+				</type>
+			</place>
+			<place id="Insert_Source_E">
+				<name>
+					<text>Insert_Source_E</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="NotifyEventSourceAddedE">
+				<name>
+					<text>NotifyEventSourceAddedE</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="AvailableJobId">
+				<name>
+					<text>AvailableJobId</text>
+				</name>
+				<type>
+					<text>Jobs</text>
+					<structure>
+						<usersort declaration="Jobs"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>1'(Jobs0) + 1'(Jobs1) + 1'(Jobs2) + 1'(Jobs3) + 1'(Jobs4)</text>
+					<structure>
+						<add>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="Jobs0"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="Jobs1"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="Jobs2"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="Jobs3"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="Jobs4"/>
+									</subterm>
+								</numberof>
+							</subterm>
+						</add>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="P_1093">
+				<name>
+					<text>P_1093</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+			</place>
+			<place id="P_1095">
+				<name>
+					<text>P_1095</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+			</place>
+			<place id="P_1097">
+				<name>
+					<text>P_1097</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+			</place>
+			<place id="P_1099">
+				<name>
+					<text>P_1099</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+			</place>
+			<place id="P_1113">
+				<name>
+					<text>P_1113</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="P_1119">
+				<name>
+					<text>P_1119</text>
+				</name>
+				<type>
+					<text>d4</text>
+					<structure>
+						<usersort declaration="d4"/>
+					</structure>
+				</type>
+			</place>
+			<place id="CreatedJobs">
+				<name>
+					<text>CreatedJobs</text>
+				</name>
+				<type>
+					<text>d6</text>
+					<structure>
+						<usersort declaration="d6"/>
+					</structure>
+				</type>
+			</place>
+			<place id="cSources">
+				<name>
+					<text>cSources</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>10'(dot)</text>
+					<structure>
+						<add>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="10">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<dotconstant/>
+									</subterm>
+								</numberof>
+							</subterm>
+						</add>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="ProcessingEvt">
+				<name>
+					<text>ProcessingEvt</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="P_1155">
+				<name>
+					<text>P_1155</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="nyo">
+				<name>
+					<text>nyo</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="P_1158">
+				<name>
+					<text>P_1158</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="P_1159">
+				<name>
+					<text>P_1159</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="P_1160">
+				<name>
+					<text>P_1160</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="NotifyEventEndOfCheckSourcesB">
+				<name>
+					<text>NotifyEventEndOfCheckSourcesB</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="NotifyEventEndOfCheckSourcesE">
+				<name>
+					<text>NotifyEventEndOfCheckSourcesE</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="Check_Sources_B">
+				<name>
+					<text>Check_Sources_B</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>1'(Threads1)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<useroperator declaration="Threads1"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="Check_Sources_E">
+				<name>
+					<text>Check_Sources_E</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="ModifiedSrc">
+				<name>
+					<text>ModifiedSrc</text>
+				</name>
+				<type>
+					<text>Sources</text>
+					<structure>
+						<usersort declaration="Sources"/>
+					</structure>
+				</type>
+			</place>
+			<place id="Idle">
+				<name>
+					<text>Idle</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>0'(Threads1) + 1'(Threads2) + 1'(Threads3) + 1'(Threads4) + 1'(Threads5) + 1'(Threads6)</text>
+					<structure>
+						<add>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="Threads2"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="Threads3"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="Threads4"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="Threads5"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="Threads6"/>
+									</subterm>
+								</numberof>
+							</subterm>
+						</add>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="NotifyEventJobCompletedE">
+				<name>
+					<text>NotifyEventJobCompletedE</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="NotifyEventJobCompletedB">
+				<name>
+					<text>NotifyEventJobCompletedB</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="RunE">
+				<name>
+					<text>RunE</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="RunB">
+				<name>
+					<text>RunB</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="Perform_Work_E">
+				<name>
+					<text>Perform_Work_E</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="Try_Check_Sources_B">
+				<name>
+					<text>Try_Check_Sources_B</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="Try_Check_Sources_E">
+				<name>
+					<text>Try_Check_Sources_E</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="cIsMonitoring">
+				<name>
+					<text>cIsMonitoring</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+			</place>
+			<place id="IsMonitoring">
+				<name>
+					<text>IsMonitoring</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="P_1617">
+				<name>
+					<text>P_1617</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="cIdleTasks">
+				<name>
+					<text>cIdleTasks</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="ORB_Lock">
+				<name>
+					<text>ORB_Lock</text>
+				</name>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="AbourtToModifySrc">
+				<name>
+					<text>AbourtToModifySrc</text>
+				</name>
+				<type>
+					<text>Sources</text>
+					<structure>
+						<usersort declaration="Sources"/>
+					</structure>
+				</type>
+			</place>
+			<place id="P_2579">
+				<name>
+					<text>P_2579</text>
+				</name>
+				<type>
+					<text>d4</text>
+					<structure>
+						<usersort declaration="d4"/>
+					</structure>
+				</type>
+			</place>
+			<place id="ScheduleTaskE_Idle">
+				<name>
+					<text>ScheduleTaskE_Idle</text>
+				</name>
+				<type>
+					<text>Threads</text>
+					<structure>
+						<usersort declaration="Threads"/>
+					</structure>
+				</type>
+			</place>
+			<place id="ScheduleTaskE_Work">
+				<name>
+					<text>ScheduleTaskE_Work</text>
+				</name>
+				<type>
+					<text>d1</text>
+					<structure>
+						<usersort declaration="d1"/>
+					</structure>
+				</type>
+			</place>
+			<!-- List of transitions -->
+			<transition id="T_2317">
+				<name>
+					<text>T_2317</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_2315">
+				<name>
+					<text>T_2315</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_2311">
+				<name>
+					<text>T_2311</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="NOPDP">
+				<name>
+					<text>NOPDP</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="WaitCompleted">
+				<name>
+					<text>WaitCompleted</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="WaitforBlockedTasks">
+				<name>
+					<text>WaitforBlockedTasks</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_2296">
+				<name>
+					<text>T_2296</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_2294">
+				<name>
+					<text>T_2294</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_2285">
+				<name>
+					<text>T_2285</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_2283">
+				<name>
+					<text>T_2283</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_2280">
+				<name>
+					<text>T_2280</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1730">
+				<name>
+					<text>T_1730</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1729">
+				<name>
+					<text>T_1729</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1722">
+				<name>
+					<text>T_1722</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1721">
+				<name>
+					<text>T_1721</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1713">
+				<name>
+					<text>T_1713</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1711">
+				<name>
+					<text>T_1711</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="SetSigAbort">
+				<name>
+					<text>SetSigAbort</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="NopAbort">
+				<name>
+					<text>NopAbort</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="IsAbort">
+				<name>
+					<text>IsAbort</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_0383">
+				<name>
+					<text>T_0383</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_0376">
+				<name>
+					<text>T_0376</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<condition>
+					<text>vars eq vars2</text>
+					<structure>
+						<equality>
+							<subterm>
+								<variable refvariable="vars"/>
+							</subterm>
+							<subterm>
+								<variable refvariable="vars2"/>
+							</subterm>
+						</equality>
+					</structure>
+				</condition>
+			</transition>
+			<transition id="IsEvt">
+				<name>
+					<text>IsEvt</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="NotifyEventSourceAdded">
+				<name>
+					<text>NotifyEventSourceAdded</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="EnterCSIS">
+				<name>
+					<text>EnterCSIS</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="LeaveCSIS">
+				<name>
+					<text>LeaveCSIS</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="DummyIS">
+				<name>
+					<text>DummyIS</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1094">
+				<name>
+					<text>T_1094</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1096">
+				<name>
+					<text>T_1096</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1098">
+				<name>
+					<text>T_1098</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1100">
+				<name>
+					<text>T_1100</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1114">
+				<name>
+					<text>T_1114</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1115">
+				<name>
+					<text>T_1115</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1123">
+				<name>
+					<text>T_1123</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1124">
+				<name>
+					<text>T_1124</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1125">
+				<name>
+					<text>T_1125</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1126">
+				<name>
+					<text>T_1126</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="LeaveCSTCS">
+				<name>
+					<text>LeaveCSTCS</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="EnterCSTCS">
+				<name>
+					<text>EnterCSTCS</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1145">
+				<name>
+					<text>T_1145</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1146">
+				<name>
+					<text>T_1146</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1147">
+				<name>
+					<text>T_1147</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1148">
+				<name>
+					<text>T_1148</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1170">
+				<name>
+					<text>T_1170</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1171">
+				<name>
+					<text>T_1171</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="DummyOR2">
+				<name>
+					<text>DummyOR2</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="DummyOR1">
+				<name>
+					<text>DummyOR1</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="GoIdle">
+				<name>
+					<text>GoIdle</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="GoCheckSource">
+				<name>
+					<text>GoCheckSource</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="GoPerformWork">
+				<name>
+					<text>GoPerformWork</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="LeaveIdle">
+				<name>
+					<text>LeaveIdle</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<condition>
+					<text>vart eq vart2</text>
+					<structure>
+						<equality>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart2"/>
+							</subterm>
+						</equality>
+					</structure>
+				</condition>
+			</transition>
+			<transition id="EnterCSPW">
+				<name>
+					<text>EnterCSPW</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="NotifyEventJobCompleted">
+				<name>
+					<text>NotifyEventJobCompleted</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="Run">
+				<name>
+					<text>Run</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1444">
+				<name>
+					<text>T_1444</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="LeaveCSPW">
+				<name>
+					<text>LeaveCSPW</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="NeedMonitoring">
+				<name>
+					<text>NeedMonitoring</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="NoMonitoring">
+				<name>
+					<text>NoMonitoring</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_1618">
+				<name>
+					<text>T_1618</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="NoCheck">
+				<name>
+					<text>NoCheck</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="WillPerformWork">
+				<name>
+					<text>WillPerformWork</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="NOPEP">
+				<name>
+					<text>NOPEP</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_2541">
+				<name>
+					<text>T_2541</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_2577">
+				<name>
+					<text>T_2577</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="T_2578">
+				<name>
+					<text>T_2578</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<!-- List of arcs -->
+			<arc id="EnablePollingB_to_T_2317" source="EnablePollingB" target="T_2317" type="normal">
+				<name>
+					<text>EnablePollingB_to_T_2317</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="cPollingAbort_to_T_2317" source="cPollingAbort" target="T_2317" type="normal">
+				<name>
+					<text>cPollingAbort_to_T_2317</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2317_to_P_2321" source="T_2317" target="P_2321" type="normal">
+				<name>
+					<text>T_2317_to_P_2321</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2317_to_TryAllocateOneTaskB" source="T_2317" target="TryAllocateOneTaskB" type="normal">
+				<name>
+					<text>T_2317_to_TryAllocateOneTaskB</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2317_to_cPollingAbort" source="T_2317" target="cPollingAbort" type="normal">
+				<name>
+					<text>T_2317_to_cPollingAbort</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_2321_to_T_2315" source="P_2321" target="T_2315" type="normal">
+				<name>
+					<text>P_2321_to_T_2315</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="TryAllocateOneTaskE_to_T_2315" source="TryAllocateOneTaskE" target="T_2315" type="normal">
+				<name>
+					<text>TryAllocateOneTaskE_to_T_2315</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2315_to_EnablePollingE" source="T_2315" target="EnablePollingE" type="normal">
+				<name>
+					<text>T_2315_to_EnablePollingE</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="BlockedTasks_to_T_2311" source="BlockedTasks" target="T_2311" type="normal">
+				<name>
+					<text>BlockedTasks_to_T_2311</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NotifyEventEndOfCheckSourcesB_to_T_2311" source="NotifyEventEndOfCheckSourcesB" target="T_2311" type="normal">
+				<name>
+					<text>NotifyEventEndOfCheckSourcesB_to_T_2311</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="IsMonitoring_to_T_2311" source="IsMonitoring" target="T_2311" type="normal">
+				<name>
+					<text>IsMonitoring_to_T_2311</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2311_to_cBlockedTasks" source="T_2311" target="cBlockedTasks" type="normal">
+				<name>
+					<text>T_2311_to_cBlockedTasks</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2311_to_NotifyEventEndOfCheckSourcesE" source="T_2311" target="NotifyEventEndOfCheckSourcesE" type="normal">
+				<name>
+					<text>T_2311_to_NotifyEventEndOfCheckSourcesE</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2311_to_cIsMonitoring" source="T_2311" target="cIsMonitoring" type="normal">
+				<name>
+					<text>T_2311_to_cIsMonitoring</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="cBlockedTasks_to_NOPDP" source="cBlockedTasks" target="NOPDP" type="normal">
+				<name>
+					<text>cBlockedTasks_to_NOPDP</text>
+				</name>
+				<hlinscription>
+					<text>10'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="10">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="DisablePollingB_to_NOPDP" source="DisablePollingB" target="NOPDP" type="normal">
+				<name>
+					<text>DisablePollingB_to_NOPDP</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,vars))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="vars"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NOPDP_to_cBlockedTasks" source="NOPDP" target="cBlockedTasks" type="normal">
+				<name>
+					<text>NOPDP_to_cBlockedTasks</text>
+				</name>
+				<hlinscription>
+					<text>10'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="10">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NOPDP_to_DisablePollingE" source="NOPDP" target="DisablePollingE" type="normal">
+				<name>
+					<text>NOPDP_to_DisablePollingE</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,vars))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="vars"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="cBlockedTasks_to_WaitCompleted" source="cBlockedTasks" target="WaitCompleted" type="normal">
+				<name>
+					<text>cBlockedTasks_to_WaitCompleted</text>
+				</name>
+				<hlinscription>
+					<text>10'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="10">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="PollingAbort_to_WaitCompleted" source="PollingAbort" target="WaitCompleted" type="normal">
+				<name>
+					<text>PollingAbort_to_WaitCompleted</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="Abort_Check_Sources_E_to_WaitCompleted" source="Abort_Check_Sources_E" target="WaitCompleted" type="normal">
+				<name>
+					<text>Abort_Check_Sources_E_to_WaitCompleted</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ORB_Lock_to_WaitCompleted" source="ORB_Lock" target="WaitCompleted" type="normal">
+				<name>
+					<text>ORB_Lock_to_WaitCompleted</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="AbourtToModifySrc_to_WaitCompleted" source="AbourtToModifySrc" target="WaitCompleted" type="normal">
+				<name>
+					<text>AbourtToModifySrc_to_WaitCompleted</text>
+				</name>
+				<hlinscription>
+					<text>1'(vars)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vars"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="WaitCompleted_to_cBlockedTasks" source="WaitCompleted" target="cBlockedTasks" type="normal">
+				<name>
+					<text>WaitCompleted_to_cBlockedTasks</text>
+				</name>
+				<hlinscription>
+					<text>10'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="10">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="WaitCompleted_to_cPollingAbort" source="WaitCompleted" target="cPollingAbort" type="normal">
+				<name>
+					<text>WaitCompleted_to_cPollingAbort</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="WaitCompleted_to_DisablePollingE" source="WaitCompleted" target="DisablePollingE" type="normal">
+				<name>
+					<text>WaitCompleted_to_DisablePollingE</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,vars))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="vars"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="cPollingAbort_to_WaitforBlockedTasks" source="cPollingAbort" target="WaitforBlockedTasks" type="normal">
+				<name>
+					<text>cPollingAbort_to_WaitforBlockedTasks</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="BlockedTasks_to_WaitforBlockedTasks" source="BlockedTasks" target="WaitforBlockedTasks" type="normal">
+				<name>
+					<text>BlockedTasks_to_WaitforBlockedTasks</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="DisablePollingB_to_WaitforBlockedTasks" source="DisablePollingB" target="WaitforBlockedTasks" type="normal">
+				<name>
+					<text>DisablePollingB_to_WaitforBlockedTasks</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,vars))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="vars"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="WaitforBlockedTasks_to_PollingAbort" source="WaitforBlockedTasks" target="PollingAbort" type="normal">
+				<name>
+					<text>WaitforBlockedTasks_to_PollingAbort</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="WaitforBlockedTasks_to_BlockedTasks" source="WaitforBlockedTasks" target="BlockedTasks" type="normal">
+				<name>
+					<text>WaitforBlockedTasks_to_BlockedTasks</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="WaitforBlockedTasks_to_Abort_Check_Sources_B" source="WaitforBlockedTasks" target="Abort_Check_Sources_B" type="normal">
+				<name>
+					<text>WaitforBlockedTasks_to_Abort_Check_Sources_B</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="WaitforBlockedTasks_to_AbourtToModifySrc" source="WaitforBlockedTasks" target="AbourtToModifySrc" type="normal">
+				<name>
+					<text>WaitforBlockedTasks_to_AbourtToModifySrc</text>
+				</name>
+				<hlinscription>
+					<text>1'(vars)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vars"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="TryAllocateOneTaskE_to_T_2296" source="TryAllocateOneTaskE" target="T_2296" type="normal">
+				<name>
+					<text>TryAllocateOneTaskE_to_T_2296</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_2318_to_T_2296" source="P_2318" target="T_2296" type="normal">
+				<name>
+					<text>P_2318_to_T_2296</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2296_to_NotifyEventJobQueuedE" source="T_2296" target="NotifyEventJobQueuedE" type="normal">
+				<name>
+					<text>T_2296_to_NotifyEventJobQueuedE</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="QueueJobE_to_T_2294" source="QueueJobE" target="T_2294" type="normal">
+				<name>
+					<text>QueueJobE_to_T_2294</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2294_to_TryAllocateOneTaskB" source="T_2294" target="TryAllocateOneTaskB" type="normal">
+				<name>
+					<text>T_2294_to_TryAllocateOneTaskB</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2294_to_P_2318" source="T_2294" target="P_2318" type="normal">
+				<name>
+					<text>T_2294_to_P_2318</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="IdleTasks_to_T_2285" source="IdleTasks" target="T_2285" type="normal">
+				<name>
+					<text>IdleTasks_to_T_2285</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart2)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart2"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="TryAllocateOneTaskB_to_T_2285" source="TryAllocateOneTaskB" target="T_2285" type="normal">
+				<name>
+					<text>TryAllocateOneTaskB_to_T_2285</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2285_to_AwakeTasks" source="T_2285" target="AwakeTasks" type="normal">
+				<name>
+					<text>T_2285_to_AwakeTasks</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart2)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart2"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2285_to_TryAllocateOneTaskE" source="T_2285" target="TryAllocateOneTaskE" type="normal">
+				<name>
+					<text>T_2285_to_TryAllocateOneTaskE</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2285_to_cIdleTasks" source="T_2285" target="cIdleTasks" type="normal">
+				<name>
+					<text>T_2285_to_cIdleTasks</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="TryAllocateOneTaskB_to_T_2283" source="TryAllocateOneTaskB" target="T_2283" type="normal">
+				<name>
+					<text>TryAllocateOneTaskB_to_T_2283</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="cIdleTasks_to_T_2283" source="cIdleTasks" target="T_2283" type="normal">
+				<name>
+					<text>cIdleTasks_to_T_2283</text>
+				</name>
+				<hlinscription>
+					<text>2'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="2">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2283_to_TryAllocateOneTaskE" source="T_2283" target="TryAllocateOneTaskE" type="normal">
+				<name>
+					<text>T_2283_to_TryAllocateOneTaskE</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2283_to_cIdleTasks" source="T_2283" target="cIdleTasks" type="normal">
+				<name>
+					<text>T_2283_to_cIdleTasks</text>
+				</name>
+				<hlinscription>
+					<text>2'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="2">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="cJobCnt_to_T_2280" source="cJobCnt" target="T_2280" type="normal">
+				<name>
+					<text>cJobCnt_to_T_2280</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NotifyEventJobQueuedB_to_T_2280" source="NotifyEventJobQueuedB" target="T_2280" type="normal">
+				<name>
+					<text>NotifyEventJobQueuedB_to_T_2280</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,varj))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="varj"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2280_to_JobCnt" source="T_2280" target="JobCnt" type="normal">
+				<name>
+					<text>T_2280_to_JobCnt</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2280_to_QueueJobB" source="T_2280" target="QueueJobB" type="normal">
+				<name>
+					<text>T_2280_to_QueueJobB</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,varj))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="varj"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="QueueJobB_to_T_1730" source="QueueJobB" target="T_1730" type="normal">
+				<name>
+					<text>QueueJobB_to_T_1730</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,varj))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="varj"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="MarkerWrite_to_T_1730" source="MarkerWrite" target="T_1730" type="normal">
+				<name>
+					<text>MarkerWrite_to_T_1730</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1730_to_QueueJobE" source="T_1730" target="QueueJobE" type="normal">
+				<name>
+					<text>T_1730_to_QueueJobE</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1730_to_P_1727" source="T_1730" target="P_1727" type="normal">
+				<name>
+					<text>T_1730_to_P_1727</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1730_to_P_1725" source="T_1730" target="P_1725" type="normal">
+				<name>
+					<text>T_1730_to_P_1725</text>
+				</name>
+				<hlinscription>
+					<text>1'(varj)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="varj"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="QueueJobB_to_T_1729" source="QueueJobB" target="T_1729" type="normal">
+				<name>
+					<text>QueueJobB_to_T_1729</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,varj))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="varj"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_1727_to_T_1729" source="P_1727" target="T_1729" type="normal">
+				<name>
+					<text>P_1727_to_T_1729</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1729_to_QueueJobE" source="T_1729" target="QueueJobE" type="normal">
+				<name>
+					<text>T_1729_to_QueueJobE</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1729_to_P_1726" source="T_1729" target="P_1726" type="normal">
+				<name>
+					<text>T_1729_to_P_1726</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1729_to_P_1724" source="T_1729" target="P_1724" type="normal">
+				<name>
+					<text>T_1729_to_P_1724</text>
+				</name>
+				<hlinscription>
+					<text>1'(varj)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="varj"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_1725_to_T_1722" source="P_1725" target="T_1722" type="normal">
+				<name>
+					<text>P_1725_to_T_1722</text>
+				</name>
+				<hlinscription>
+					<text>1'(varj)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="varj"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="MarkerRead_to_T_1722" source="MarkerRead" target="T_1722" type="normal">
+				<name>
+					<text>MarkerRead_to_T_1722</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="FetchJobB_to_T_1722" source="FetchJobB" target="T_1722" type="normal">
+				<name>
+					<text>FetchJobB_to_T_1722</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1722_to_FetchJobE" source="T_1722" target="FetchJobE" type="normal">
+				<name>
+					<text>T_1722_to_FetchJobE</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,varj))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="varj"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1722_to_P_1717" source="T_1722" target="P_1717" type="normal">
+				<name>
+					<text>T_1722_to_P_1717</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_1724_to_T_1721" source="P_1724" target="T_1721" type="normal">
+				<name>
+					<text>P_1724_to_T_1721</text>
+				</name>
+				<hlinscription>
+					<text>1'(varj)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="varj"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_1717_to_T_1721" source="P_1717" target="T_1721" type="normal">
+				<name>
+					<text>P_1717_to_T_1721</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="FetchJobB_to_T_1721" source="FetchJobB" target="T_1721" type="normal">
+				<name>
+					<text>FetchJobB_to_T_1721</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1721_to_FetchJobE" source="T_1721" target="FetchJobE" type="normal">
+				<name>
+					<text>T_1721_to_FetchJobE</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,varj))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="varj"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1721_to_P_1716" source="T_1721" target="P_1716" type="normal">
+				<name>
+					<text>T_1721_to_P_1716</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_1716_to_T_1713" source="P_1716" target="T_1713" type="normal">
+				<name>
+					<text>P_1716_to_T_1713</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="FetchJobB_to_T_1713" source="FetchJobB" target="T_1713" type="normal">
+				<name>
+					<text>FetchJobB_to_T_1713</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_1712_to_T_1713" source="P_1712" target="T_1713" type="normal">
+				<name>
+					<text>P_1712_to_T_1713</text>
+				</name>
+				<hlinscription>
+					<text>1'(varj)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="varj"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1713_to_FetchJobE" source="T_1713" target="FetchJobE" type="normal">
+				<name>
+					<text>T_1713_to_FetchJobE</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,varj))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="varj"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1713_to_MarkerRead" source="T_1713" target="MarkerRead" type="normal">
+				<name>
+					<text>T_1713_to_MarkerRead</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="QueueJobB_to_T_1711" source="QueueJobB" target="T_1711" type="normal">
+				<name>
+					<text>QueueJobB_to_T_1711</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,varj))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="varj"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_1726_to_T_1711" source="P_1726" target="T_1711" type="normal">
+				<name>
+					<text>P_1726_to_T_1711</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1711_to_QueueJobE" source="T_1711" target="QueueJobE" type="normal">
+				<name>
+					<text>T_1711_to_QueueJobE</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1711_to_MarkerWrite" source="T_1711" target="MarkerWrite" type="normal">
+				<name>
+					<text>T_1711_to_MarkerWrite</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1711_to_P_1712" source="T_1711" target="P_1712" type="normal">
+				<name>
+					<text>T_1711_to_P_1712</text>
+				</name>
+				<hlinscription>
+					<text>1'(varj)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="varj"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="Abort_Check_Sources_B_to_SetSigAbort" source="Abort_Check_Sources_B" target="SetSigAbort" type="normal">
+				<name>
+					<text>Abort_Check_Sources_B_to_SetSigAbort</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NoSigAbort_to_SetSigAbort" source="NoSigAbort" target="SetSigAbort" type="normal">
+				<name>
+					<text>NoSigAbort_to_SetSigAbort</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="SetSigAbort_to_Abort_Check_Sources_E" source="SetSigAbort" target="Abort_Check_Sources_E" type="normal">
+				<name>
+					<text>SetSigAbort_to_Abort_Check_Sources_E</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="SetSigAbort_to_SigAbort" source="SetSigAbort" target="SigAbort" type="normal">
+				<name>
+					<text>SetSigAbort_to_SigAbort</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="SetSigAbort_to_ORB_Lock" source="SetSigAbort" target="ORB_Lock" type="normal">
+				<name>
+					<text>SetSigAbort_to_ORB_Lock</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="Abort_Check_Sources_B_to_NopAbort" source="Abort_Check_Sources_B" target="NopAbort" type="normal">
+				<name>
+					<text>Abort_Check_Sources_B_to_NopAbort</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="SigAbort_to_NopAbort" source="SigAbort" target="NopAbort" type="normal">
+				<name>
+					<text>SigAbort_to_NopAbort</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NopAbort_to_Abort_Check_Sources_E" source="NopAbort" target="Abort_Check_Sources_E" type="normal">
+				<name>
+					<text>NopAbort_to_Abort_Check_Sources_E</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NopAbort_to_SigAbort" source="NopAbort" target="SigAbort" type="normal">
+				<name>
+					<text>NopAbort_to_SigAbort</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NopAbort_to_ORB_Lock" source="NopAbort" target="ORB_Lock" type="normal">
+				<name>
+					<text>NopAbort_to_ORB_Lock</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="SigAbort_to_IsAbort" source="SigAbort" target="IsAbort" type="normal">
+				<name>
+					<text>SigAbort_to_IsAbort</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="Check_Sources_B_to_IsAbort" source="Check_Sources_B" target="IsAbort" type="normal">
+				<name>
+					<text>Check_Sources_B_to_IsAbort</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ORB_Lock_to_IsAbort" source="ORB_Lock" target="IsAbort" type="normal">
+				<name>
+					<text>ORB_Lock_to_IsAbort</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="IsAbort_to_NoSigAbort" source="IsAbort" target="NoSigAbort" type="normal">
+				<name>
+					<text>IsAbort_to_NoSigAbort</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="IsAbort_to_NotifyEventEndOfCheckSourcesB" source="IsAbort" target="NotifyEventEndOfCheckSourcesB" type="normal">
+				<name>
+					<text>IsAbort_to_NotifyEventEndOfCheckSourcesB</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="DisablePollingE_to_T_0383" source="DisablePollingE" target="T_0383" type="normal">
+				<name>
+					<text>DisablePollingE_to_T_0383</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,vars))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="vars"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_0383_to_EnablePollingB" source="T_0383" target="EnablePollingB" type="normal">
+				<name>
+					<text>T_0383_to_EnablePollingB</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_0383_to_DataOnSrc" source="T_0383" target="DataOnSrc" type="normal">
+				<name>
+					<text>T_0383_to_DataOnSrc</text>
+				</name>
+				<hlinscription>
+					<text>1'(vars)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vars"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_0383_to_PlaceSources" source="T_0383" target="PlaceSources" type="normal">
+				<name>
+					<text>T_0383_to_PlaceSources</text>
+				</name>
+				<hlinscription>
+					<text>1'(vars)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vars"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CanInjectEvent_to_T_0376" source="CanInjectEvent" target="T_0376" type="normal">
+				<name>
+					<text>CanInjectEvent_to_T_0376</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="DataOnSrc_to_T_0376" source="DataOnSrc" target="T_0376" type="normal">
+				<name>
+					<text>DataOnSrc_to_T_0376</text>
+				</name>
+				<hlinscription>
+					<text>1'(vars)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vars"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="PlaceSources_to_T_0376" source="PlaceSources" target="T_0376" type="normal">
+				<name>
+					<text>PlaceSources_to_T_0376</text>
+				</name>
+				<hlinscription>
+					<text>1'(vars2)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vars2"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="cSources_to_T_0376" source="cSources" target="T_0376" type="normal">
+				<name>
+					<text>cSources_to_T_0376</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_0376_to_CanInjectEvent" source="T_0376" target="CanInjectEvent" type="normal">
+				<name>
+					<text>T_0376_to_CanInjectEvent</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_0376_to_ModifiedSrc" source="T_0376" target="ModifiedSrc" type="normal">
+				<name>
+					<text>T_0376_to_ModifiedSrc</text>
+				</name>
+				<hlinscription>
+					<text>1'(vars)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vars"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CanInjectEvent_to_IsEvt" source="CanInjectEvent" target="IsEvt" type="normal">
+				<name>
+					<text>CanInjectEvent_to_IsEvt</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="Check_Sources_B_to_IsEvt" source="Check_Sources_B" target="IsEvt" type="normal">
+				<name>
+					<text>Check_Sources_B_to_IsEvt</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ModifiedSrc_to_IsEvt" source="ModifiedSrc" target="IsEvt" type="normal">
+				<name>
+					<text>ModifiedSrc_to_IsEvt</text>
+				</name>
+				<hlinscription>
+					<text>1'(vars)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vars"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="IsEvt_to_Check_Sources_E" source="IsEvt" target="Check_Sources_E" type="normal">
+				<name>
+					<text>IsEvt_to_Check_Sources_E</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="IsEvt_to_ModifiedSrc" source="IsEvt" target="ModifiedSrc" type="normal">
+				<name>
+					<text>IsEvt_to_ModifiedSrc</text>
+				</name>
+				<hlinscription>
+					<text>1'(vars)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vars"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NotifyEventSourceAddedB_to_NotifyEventSourceAdded" source="NotifyEventSourceAddedB" target="NotifyEventSourceAdded" type="normal">
+				<name>
+					<text>NotifyEventSourceAddedB_to_NotifyEventSourceAdded</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NotifyEventSourceAdded_to_NotifyEventSourceAddedE" source="NotifyEventSourceAdded" target="NotifyEventSourceAddedE" type="normal">
+				<name>
+					<text>NotifyEventSourceAdded_to_NotifyEventSourceAddedE</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="Insert_Source_B_to_EnterCSIS" source="Insert_Source_B" target="EnterCSIS" type="normal">
+				<name>
+					<text>Insert_Source_B_to_EnterCSIS</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,vars))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="vars"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="EnterCSIS_to_DisablePollingB" source="EnterCSIS" target="DisablePollingB" type="normal">
+				<name>
+					<text>EnterCSIS_to_DisablePollingB</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,vars))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="vars"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NotifyEventSourceAddedE_to_LeaveCSIS" source="NotifyEventSourceAddedE" target="LeaveCSIS" type="normal">
+				<name>
+					<text>NotifyEventSourceAddedE_to_LeaveCSIS</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="LeaveCSIS_to_Insert_Source_E" source="LeaveCSIS" target="Insert_Source_E" type="normal">
+				<name>
+					<text>LeaveCSIS_to_Insert_Source_E</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="EnablePollingE_to_DummyIS" source="EnablePollingE" target="DummyIS" type="normal">
+				<name>
+					<text>EnablePollingE_to_DummyIS</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="DummyIS_to_NotifyEventSourceAddedB" source="DummyIS" target="NotifyEventSourceAddedB" type="normal">
+				<name>
+					<text>DummyIS_to_NotifyEventSourceAddedB</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_1093_to_T_1094" source="P_1093" target="T_1094" type="normal">
+				<name>
+					<text>P_1093_to_T_1094</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_1113_to_T_1094" source="P_1113" target="T_1094" type="normal">
+				<name>
+					<text>P_1113_to_T_1094</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1094_to_nyo" source="T_1094" target="nyo" type="normal">
+				<name>
+					<text>T_1094_to_nyo</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_1095_to_T_1096" source="P_1095" target="T_1096" type="normal">
+				<name>
+					<text>P_1095_to_T_1096</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_1113_to_T_1096" source="P_1113" target="T_1096" type="normal">
+				<name>
+					<text>P_1113_to_T_1096</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1096_to_P_1158" source="T_1096" target="P_1158" type="normal">
+				<name>
+					<text>T_1096_to_P_1158</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_1097_to_T_1098" source="P_1097" target="T_1098" type="normal">
+				<name>
+					<text>P_1097_to_T_1098</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_1113_to_T_1098" source="P_1113" target="T_1098" type="normal">
+				<name>
+					<text>P_1113_to_T_1098</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1098_to_P_1159" source="T_1098" target="P_1159" type="normal">
+				<name>
+					<text>T_1098_to_P_1159</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_1099_to_T_1100" source="P_1099" target="T_1100" type="normal">
+				<name>
+					<text>P_1099_to_T_1100</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_1113_to_T_1100" source="P_1113" target="T_1100" type="normal">
+				<name>
+					<text>P_1113_to_T_1100</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1100_to_P_1160" source="T_1100" target="P_1160" type="normal">
+				<name>
+					<text>T_1100_to_P_1160</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NotifyEventJobQueuedE_to_T_1114" source="NotifyEventJobQueuedE" target="T_1114" type="normal">
+				<name>
+					<text>NotifyEventJobQueuedE_to_T_1114</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1114_to_P_1113" source="T_1114" target="P_1113" type="normal">
+				<name>
+					<text>T_1114_to_P_1113</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="AvailableJobId_to_T_1115" source="AvailableJobId" target="T_1115" type="normal">
+				<name>
+					<text>AvailableJobId_to_T_1115</text>
+				</name>
+				<hlinscription>
+					<text>1'(varj)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="varj"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_1119_to_T_1115" source="P_1119" target="T_1115" type="normal">
+				<name>
+					<text>P_1119_to_T_1115</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,vars))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="vars"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1115_to_NotifyEventJobQueuedB" source="T_1115" target="NotifyEventJobQueuedB" type="normal">
+				<name>
+					<text>T_1115_to_NotifyEventJobQueuedB</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,varj))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="varj"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1115_to_CreatedJobs" source="T_1115" target="CreatedJobs" type="normal">
+				<name>
+					<text>T_1115_to_CreatedJobs</text>
+				</name>
+				<hlinscription>
+					<text>1'((varj,vars))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="varj"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="vars"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="cSources_to_T_1123" source="cSources" target="T_1123" type="normal">
+				<name>
+					<text>cSources_to_T_1123</text>
+				</name>
+				<hlinscription>
+					<text>9'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="9">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ProcessingEvt_to_T_1123" source="ProcessingEvt" target="T_1123" type="normal">
+				<name>
+					<text>ProcessingEvt_to_T_1123</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ModifiedSrc_to_T_1123" source="ModifiedSrc" target="T_1123" type="normal">
+				<name>
+					<text>ModifiedSrc_to_T_1123</text>
+				</name>
+				<hlinscription>
+					<text>1'(varms1)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="varms1"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1123_to_P_1093" source="T_1123" target="P_1093" type="normal">
+				<name>
+					<text>T_1123_to_P_1093</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1123_to_P_1119" source="T_1123" target="P_1119" type="normal">
+				<name>
+					<text>T_1123_to_P_1119</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,varms1))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="varms1"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="cSources_to_T_1124" source="cSources" target="T_1124" type="normal">
+				<name>
+					<text>cSources_to_T_1124</text>
+				</name>
+				<hlinscription>
+					<text>8'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="8">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ProcessingEvt_to_T_1124" source="ProcessingEvt" target="T_1124" type="normal">
+				<name>
+					<text>ProcessingEvt_to_T_1124</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ModifiedSrc_to_T_1124" source="ModifiedSrc" target="T_1124" type="normal">
+				<name>
+					<text>ModifiedSrc_to_T_1124</text>
+				</name>
+				<hlinscription>
+					<text>(1'(varms1) + 1'(varms2))</text>
+					<structure>
+						<add>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<variable refvariable="varms1"/>
+									</subterm>
+								</numberof>
+							</subterm>
+								<subterm>
+									<numberof>
+										<subterm>
+											<numberconstant value="1">
+												<positive/>
+											</numberconstant>
+										</subterm>
+										<subterm>
+											<variable refvariable="varms2"/>
+										</subterm>
+									</numberof>
+								</subterm>
+							</add>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1124_to_P_1095" source="T_1124" target="P_1095" type="normal">
+				<name>
+					<text>T_1124_to_P_1095</text>
+				</name>
+				<hlinscription>
+					<text>2'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="2">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1124_to_P_1119" source="T_1124" target="P_1119" type="normal">
+				<name>
+					<text>T_1124_to_P_1119</text>
+				</name>
+				<hlinscription>
+					<text>(1'((vart,varms1)) + 1'((vart,varms2)))</text>
+					<structure>
+						<add>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<tuple>
+											<subterm>
+												<variable refvariable="vart"/>
+											</subterm>
+											<subterm>
+												<variable refvariable="varms1"/>
+											</subterm>
+										</tuple>
+									</subterm>
+								</numberof>
+							</subterm>
+								<subterm>
+									<numberof>
+										<subterm>
+											<numberconstant value="1">
+												<positive/>
+											</numberconstant>
+										</subterm>
+										<subterm>
+											<tuple>
+												<subterm>
+													<variable refvariable="vart"/>
+												</subterm>
+												<subterm>
+													<variable refvariable="varms2"/>
+												</subterm>
+											</tuple>
+										</subterm>
+									</numberof>
+								</subterm>
+							</add>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="cSources_to_T_1125" source="cSources" target="T_1125" type="normal">
+				<name>
+					<text>cSources_to_T_1125</text>
+				</name>
+				<hlinscription>
+					<text>7'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="7">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ProcessingEvt_to_T_1125" source="ProcessingEvt" target="T_1125" type="normal">
+				<name>
+					<text>ProcessingEvt_to_T_1125</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ModifiedSrc_to_T_1125" source="ModifiedSrc" target="T_1125" type="normal">
+				<name>
+					<text>ModifiedSrc_to_T_1125</text>
+				</name>
+				<hlinscription>
+					<text>(1'(varms1) + 1'(varms2) + 1'(varms3))</text>
+					<structure>
+						<add>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<variable refvariable="varms1"/>
+									</subterm>
+								</numberof>
+							</subterm>
+								<subterm>
+									<numberof>
+										<subterm>
+											<numberconstant value="1">
+												<positive/>
+											</numberconstant>
+										</subterm>
+										<subterm>
+											<variable refvariable="varms2"/>
+										</subterm>
+									</numberof>
+								</subterm>
+									<subterm>
+										<numberof>
+											<subterm>
+												<numberconstant value="1">
+													<positive/>
+												</numberconstant>
+											</subterm>
+											<subterm>
+												<variable refvariable="varms3"/>
+											</subterm>
+										</numberof>
+									</subterm>
+								</add>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1125_to_P_1097" source="T_1125" target="P_1097" type="normal">
+				<name>
+					<text>T_1125_to_P_1097</text>
+				</name>
+				<hlinscription>
+					<text>3'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="3">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1125_to_P_1119" source="T_1125" target="P_1119" type="normal">
+				<name>
+					<text>T_1125_to_P_1119</text>
+				</name>
+				<hlinscription>
+					<text>(1'((vart,varms1)) + 1'((vart,varms2)) + 1'((vart,varms3)))</text>
+					<structure>
+						<add>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<tuple>
+											<subterm>
+												<variable refvariable="vart"/>
+											</subterm>
+											<subterm>
+												<variable refvariable="varms1"/>
+											</subterm>
+										</tuple>
+									</subterm>
+								</numberof>
+							</subterm>
+								<subterm>
+									<numberof>
+										<subterm>
+											<numberconstant value="1">
+												<positive/>
+											</numberconstant>
+										</subterm>
+										<subterm>
+											<tuple>
+												<subterm>
+													<variable refvariable="vart"/>
+												</subterm>
+												<subterm>
+													<variable refvariable="varms2"/>
+												</subterm>
+											</tuple>
+										</subterm>
+									</numberof>
+								</subterm>
+									<subterm>
+										<numberof>
+											<subterm>
+												<numberconstant value="1">
+													<positive/>
+												</numberconstant>
+											</subterm>
+											<subterm>
+												<tuple>
+													<subterm>
+														<variable refvariable="vart"/>
+													</subterm>
+													<subterm>
+														<variable refvariable="varms3"/>
+													</subterm>
+												</tuple>
+											</subterm>
+										</numberof>
+									</subterm>
+								</add>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="cSources_to_T_1126" source="cSources" target="T_1126" type="normal">
+				<name>
+					<text>cSources_to_T_1126</text>
+				</name>
+				<hlinscription>
+					<text>6'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="6">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ProcessingEvt_to_T_1126" source="ProcessingEvt" target="T_1126" type="normal">
+				<name>
+					<text>ProcessingEvt_to_T_1126</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ModifiedSrc_to_T_1126" source="ModifiedSrc" target="T_1126" type="normal">
+				<name>
+					<text>ModifiedSrc_to_T_1126</text>
+				</name>
+				<hlinscription>
+					<text>(1'(varms1) + 1'(varms2) + 1'(varms3) + 1'(varms4))</text>
+					<structure>
+						<add>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<variable refvariable="varms1"/>
+									</subterm>
+								</numberof>
+							</subterm>
+								<subterm>
+									<numberof>
+										<subterm>
+											<numberconstant value="1">
+												<positive/>
+											</numberconstant>
+										</subterm>
+										<subterm>
+											<variable refvariable="varms2"/>
+										</subterm>
+									</numberof>
+								</subterm>
+									<subterm>
+										<numberof>
+											<subterm>
+												<numberconstant value="1">
+													<positive/>
+												</numberconstant>
+											</subterm>
+											<subterm>
+												<variable refvariable="varms3"/>
+											</subterm>
+										</numberof>
+									</subterm>
+										<subterm>
+											<numberof>
+												<subterm>
+													<numberconstant value="1">
+														<positive/>
+													</numberconstant>
+												</subterm>
+												<subterm>
+													<variable refvariable="varms4"/>
+												</subterm>
+											</numberof>
+										</subterm>
+									</add>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1126_to_P_1099" source="T_1126" target="P_1099" type="normal">
+				<name>
+					<text>T_1126_to_P_1099</text>
+				</name>
+				<hlinscription>
+					<text>4'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="4">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1126_to_P_1119" source="T_1126" target="P_1119" type="normal">
+				<name>
+					<text>T_1126_to_P_1119</text>
+				</name>
+				<hlinscription>
+					<text>(1'((vart,varms1)) + 1'((vart,varms2)) + 1'((vart,varms3)) + 1'((vart,varms4)))</text>
+					<structure>
+						<add>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<tuple>
+											<subterm>
+												<variable refvariable="vart"/>
+											</subterm>
+											<subterm>
+												<variable refvariable="varms1"/>
+											</subterm>
+										</tuple>
+									</subterm>
+								</numberof>
+							</subterm>
+								<subterm>
+									<numberof>
+										<subterm>
+											<numberconstant value="1">
+												<positive/>
+											</numberconstant>
+										</subterm>
+										<subterm>
+											<tuple>
+												<subterm>
+													<variable refvariable="vart"/>
+												</subterm>
+												<subterm>
+													<variable refvariable="varms2"/>
+												</subterm>
+											</tuple>
+										</subterm>
+									</numberof>
+								</subterm>
+									<subterm>
+										<numberof>
+											<subterm>
+												<numberconstant value="1">
+													<positive/>
+												</numberconstant>
+											</subterm>
+											<subterm>
+												<tuple>
+													<subterm>
+														<variable refvariable="vart"/>
+													</subterm>
+													<subterm>
+														<variable refvariable="varms3"/>
+													</subterm>
+												</tuple>
+											</subterm>
+										</numberof>
+									</subterm>
+										<subterm>
+											<numberof>
+												<subterm>
+													<numberconstant value="1">
+														<positive/>
+													</numberconstant>
+												</subterm>
+												<subterm>
+													<tuple>
+														<subterm>
+															<variable refvariable="vart"/>
+														</subterm>
+														<subterm>
+															<variable refvariable="varms4"/>
+														</subterm>
+													</tuple>
+												</subterm>
+											</numberof>
+										</subterm>
+									</add>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="Try_Check_Sources_B_to_LeaveCSTCS" source="Try_Check_Sources_B" target="LeaveCSTCS" type="normal">
+				<name>
+					<text>Try_Check_Sources_B_to_LeaveCSTCS</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="LeaveCSTCS_to_Check_Sources_B" source="LeaveCSTCS" target="Check_Sources_B" type="normal">
+				<name>
+					<text>LeaveCSTCS_to_Check_Sources_B</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="LeaveCSTCS_to_ORB_Lock" source="LeaveCSTCS" target="ORB_Lock" type="normal">
+				<name>
+					<text>LeaveCSTCS_to_ORB_Lock</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="Check_Sources_E_to_EnterCSTCS" source="Check_Sources_E" target="EnterCSTCS" type="normal">
+				<name>
+					<text>Check_Sources_E_to_EnterCSTCS</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ORB_Lock_to_EnterCSTCS" source="ORB_Lock" target="EnterCSTCS" type="normal">
+				<name>
+					<text>ORB_Lock_to_EnterCSTCS</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="EnterCSTCS_to_ProcessingEvt" source="EnterCSTCS" target="ProcessingEvt" type="normal">
+				<name>
+					<text>EnterCSTCS_to_ProcessingEvt</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="nyo_to_T_1145" source="nyo" target="T_1145" type="normal">
+				<name>
+					<text>nyo_to_T_1145</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1145_to_cSources" source="T_1145" target="cSources" type="normal">
+				<name>
+					<text>T_1145_to_cSources</text>
+				</name>
+				<hlinscription>
+					<text>10'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="10">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1145_to_P_1155" source="T_1145" target="P_1155" type="normal">
+				<name>
+					<text>T_1145_to_P_1155</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_1158_to_T_1146" source="P_1158" target="T_1146" type="normal">
+				<name>
+					<text>P_1158_to_T_1146</text>
+				</name>
+				<hlinscription>
+					<text>2'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="2">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1146_to_cSources" source="T_1146" target="cSources" type="normal">
+				<name>
+					<text>T_1146_to_cSources</text>
+				</name>
+				<hlinscription>
+					<text>10'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="10">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1146_to_P_1155" source="T_1146" target="P_1155" type="normal">
+				<name>
+					<text>T_1146_to_P_1155</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_1159_to_T_1147" source="P_1159" target="T_1147" type="normal">
+				<name>
+					<text>P_1159_to_T_1147</text>
+				</name>
+				<hlinscription>
+					<text>3'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="3">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1147_to_cSources" source="T_1147" target="cSources" type="normal">
+				<name>
+					<text>T_1147_to_cSources</text>
+				</name>
+				<hlinscription>
+					<text>10'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="10">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1147_to_P_1155" source="T_1147" target="P_1155" type="normal">
+				<name>
+					<text>T_1147_to_P_1155</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_1160_to_T_1148" source="P_1160" target="T_1148" type="normal">
+				<name>
+					<text>P_1160_to_T_1148</text>
+				</name>
+				<hlinscription>
+					<text>4'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="4">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1148_to_cSources" source="T_1148" target="cSources" type="normal">
+				<name>
+					<text>T_1148_to_cSources</text>
+				</name>
+				<hlinscription>
+					<text>10'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="10">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1148_to_P_1155" source="T_1148" target="P_1155" type="normal">
+				<name>
+					<text>T_1148_to_P_1155</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_1155_to_T_1170" source="P_1155" target="T_1170" type="normal">
+				<name>
+					<text>P_1155_to_T_1170</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1170_to_CanInjectEvent" source="T_1170" target="CanInjectEvent" type="normal">
+				<name>
+					<text>T_1170_to_CanInjectEvent</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1170_to_NotifyEventEndOfCheckSourcesB" source="T_1170" target="NotifyEventEndOfCheckSourcesB" type="normal">
+				<name>
+					<text>T_1170_to_NotifyEventEndOfCheckSourcesB</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NotifyEventEndOfCheckSourcesE_to_T_1171" source="NotifyEventEndOfCheckSourcesE" target="T_1171" type="normal">
+				<name>
+					<text>NotifyEventEndOfCheckSourcesE_to_T_1171</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1171_to_Try_Check_Sources_E" source="T_1171" target="Try_Check_Sources_E" type="normal">
+				<name>
+					<text>T_1171_to_Try_Check_Sources_E</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="Perform_Work_E_to_DummyOR2" source="Perform_Work_E" target="DummyOR2" type="normal">
+				<name>
+					<text>Perform_Work_E_to_DummyOR2</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="DummyOR2_to_ScheduleTaskB" source="DummyOR2" target="ScheduleTaskB" type="normal">
+				<name>
+					<text>DummyOR2_to_ScheduleTaskB</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="Try_Check_Sources_E_to_DummyOR1" source="Try_Check_Sources_E" target="DummyOR1" type="normal">
+				<name>
+					<text>Try_Check_Sources_E_to_DummyOR1</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="DummyOR1_to_ScheduleTaskB" source="DummyOR1" target="ScheduleTaskB" type="normal">
+				<name>
+					<text>DummyOR1_to_ScheduleTaskB</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ScheduleTaskE_Idle_to_GoIdle" source="ScheduleTaskE_Idle" target="GoIdle" type="normal">
+				<name>
+					<text>ScheduleTaskE_Idle_to_GoIdle</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="GoIdle_to_IdleTasks" source="GoIdle" target="IdleTasks" type="normal">
+				<name>
+					<text>GoIdle_to_IdleTasks</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="GoIdle_to_Idle" source="GoIdle" target="Idle" type="normal">
+				<name>
+					<text>GoIdle_to_Idle</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="GoIdle_to_ORB_Lock" source="GoIdle" target="ORB_Lock" type="normal">
+				<name>
+					<text>GoIdle_to_ORB_Lock</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="cBlockedTasks_to_GoCheckSource" source="cBlockedTasks" target="GoCheckSource" type="normal">
+				<name>
+					<text>cBlockedTasks_to_GoCheckSource</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ScheduleTaskE_Check_to_GoCheckSource" source="ScheduleTaskE_Check" target="GoCheckSource" type="normal">
+				<name>
+					<text>ScheduleTaskE_Check_to_GoCheckSource</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="GoCheckSource_to_BlockedTasks" source="GoCheckSource" target="BlockedTasks" type="normal">
+				<name>
+					<text>GoCheckSource_to_BlockedTasks</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="GoCheckSource_to_Try_Check_Sources_B" source="GoCheckSource" target="Try_Check_Sources_B" type="normal">
+				<name>
+					<text>GoCheckSource_to_Try_Check_Sources_B</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CreatedJobs_to_GoPerformWork" source="CreatedJobs" target="GoPerformWork" type="normal">
+				<name>
+					<text>CreatedJobs_to_GoPerformWork</text>
+				</name>
+				<hlinscription>
+					<text>1'((varj,vars))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="varj"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="vars"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ScheduleTaskE_Work_to_GoPerformWork" source="ScheduleTaskE_Work" target="GoPerformWork" type="normal">
+				<name>
+					<text>ScheduleTaskE_Work_to_GoPerformWork</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,varj))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="varj"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="GoPerformWork_to_Insert_Source_B" source="GoPerformWork" target="Insert_Source_B" type="normal">
+				<name>
+					<text>GoPerformWork_to_Insert_Source_B</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,vars))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="vars"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="GoPerformWork_to_AvailableJobId" source="GoPerformWork" target="AvailableJobId" type="normal">
+				<name>
+					<text>GoPerformWork_to_AvailableJobId</text>
+				</name>
+				<hlinscription>
+					<text>1'(varj)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="varj"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="AwakeTasks_to_LeaveIdle" source="AwakeTasks" target="LeaveIdle" type="normal">
+				<name>
+					<text>AwakeTasks_to_LeaveIdle</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart2)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart2"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="Idle_to_LeaveIdle" source="Idle" target="LeaveIdle" type="normal">
+				<name>
+					<text>Idle_to_LeaveIdle</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ORB_Lock_to_LeaveIdle" source="ORB_Lock" target="LeaveIdle" type="normal">
+				<name>
+					<text>ORB_Lock_to_LeaveIdle</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="LeaveIdle_to_ScheduleTaskB" source="LeaveIdle" target="ScheduleTaskB" type="normal">
+				<name>
+					<text>LeaveIdle_to_ScheduleTaskB</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="RunE_to_EnterCSPW" source="RunE" target="EnterCSPW" type="normal">
+				<name>
+					<text>RunE_to_EnterCSPW</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ORB_Lock_to_EnterCSPW" source="ORB_Lock" target="EnterCSPW" type="normal">
+				<name>
+					<text>ORB_Lock_to_EnterCSPW</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="EnterCSPW_to_NotifyEventJobCompletedB" source="EnterCSPW" target="NotifyEventJobCompletedB" type="normal">
+				<name>
+					<text>EnterCSPW_to_NotifyEventJobCompletedB</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NotifyEventJobCompletedB_to_NotifyEventJobCompleted" source="NotifyEventJobCompletedB" target="NotifyEventJobCompleted" type="normal">
+				<name>
+					<text>NotifyEventJobCompletedB_to_NotifyEventJobCompleted</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NotifyEventJobCompleted_to_NotifyEventJobCompletedE" source="NotifyEventJobCompleted" target="NotifyEventJobCompletedE" type="normal">
+				<name>
+					<text>NotifyEventJobCompleted_to_NotifyEventJobCompletedE</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="RunB_to_Run" source="RunB" target="Run" type="normal">
+				<name>
+					<text>RunB_to_Run</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="Run_to_RunE" source="Run" target="RunE" type="normal">
+				<name>
+					<text>Run_to_RunE</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NotifyEventJobCompletedE_to_T_1444" source="NotifyEventJobCompletedE" target="T_1444" type="normal">
+				<name>
+					<text>NotifyEventJobCompletedE_to_T_1444</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1444_to_Perform_Work_E" source="T_1444" target="Perform_Work_E" type="normal">
+				<name>
+					<text>T_1444_to_Perform_Work_E</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="Insert_Source_E_to_LeaveCSPW" source="Insert_Source_E" target="LeaveCSPW" type="normal">
+				<name>
+					<text>Insert_Source_E_to_LeaveCSPW</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="LeaveCSPW_to_RunB" source="LeaveCSPW" target="RunB" type="normal">
+				<name>
+					<text>LeaveCSPW_to_RunB</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="LeaveCSPW_to_ORB_Lock" source="LeaveCSPW" target="ORB_Lock" type="normal">
+				<name>
+					<text>LeaveCSPW_to_ORB_Lock</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="cPollingAbort_to_NeedMonitoring" source="cPollingAbort" target="NeedMonitoring" type="normal">
+				<name>
+					<text>cPollingAbort_to_NeedMonitoring</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ScheduleTaskB_to_NeedMonitoring" source="ScheduleTaskB" target="NeedMonitoring" type="normal">
+				<name>
+					<text>ScheduleTaskB_to_NeedMonitoring</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="cIsMonitoring_to_NeedMonitoring" source="cIsMonitoring" target="NeedMonitoring" type="normal">
+				<name>
+					<text>cIsMonitoring_to_NeedMonitoring</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NeedMonitoring_to_cPollingAbort" source="NeedMonitoring" target="cPollingAbort" type="normal">
+				<name>
+					<text>NeedMonitoring_to_cPollingAbort</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NeedMonitoring_to_ScheduleTaskE_Check" source="NeedMonitoring" target="ScheduleTaskE_Check" type="normal">
+				<name>
+					<text>NeedMonitoring_to_ScheduleTaskE_Check</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NeedMonitoring_to_IsMonitoring" source="NeedMonitoring" target="IsMonitoring" type="normal">
+				<name>
+					<text>NeedMonitoring_to_IsMonitoring</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ScheduleTaskB_to_NoMonitoring" source="ScheduleTaskB" target="NoMonitoring" type="normal">
+				<name>
+					<text>ScheduleTaskB_to_NoMonitoring</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="IsMonitoring_to_NoMonitoring" source="IsMonitoring" target="NoMonitoring" type="normal">
+				<name>
+					<text>IsMonitoring_to_NoMonitoring</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NoMonitoring_to_IsMonitoring" source="NoMonitoring" target="IsMonitoring" type="normal">
+				<name>
+					<text>NoMonitoring_to_IsMonitoring</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NoMonitoring_to_P_1617" source="NoMonitoring" target="P_1617" type="normal">
+				<name>
+					<text>NoMonitoring_to_P_1617</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="JobCnt_to_T_1618" source="JobCnt" target="T_1618" type="normal">
+				<name>
+					<text>JobCnt_to_T_1618</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_1617_to_T_1618" source="P_1617" target="T_1618" type="normal">
+				<name>
+					<text>P_1617_to_T_1618</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1618_to_cJobCnt" source="T_1618" target="cJobCnt" type="normal">
+				<name>
+					<text>T_1618_to_cJobCnt</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_1618_to_FetchJobB" source="T_1618" target="FetchJobB" type="normal">
+				<name>
+					<text>T_1618_to_FetchJobB</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="cJobCnt_to_NoCheck" source="cJobCnt" target="NoCheck" type="normal">
+				<name>
+					<text>cJobCnt_to_NoCheck</text>
+				</name>
+				<hlinscription>
+					<text>10'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="10">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_1617_to_NoCheck" source="P_1617" target="NoCheck" type="normal">
+				<name>
+					<text>P_1617_to_NoCheck</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="cIdleTasks_to_NoCheck" source="cIdleTasks" target="NoCheck" type="normal">
+				<name>
+					<text>cIdleTasks_to_NoCheck</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NoCheck_to_cJobCnt" source="NoCheck" target="cJobCnt" type="normal">
+				<name>
+					<text>NoCheck_to_cJobCnt</text>
+				</name>
+				<hlinscription>
+					<text>10'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="10">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NoCheck_to_ScheduleTaskE_Idle" source="NoCheck" target="ScheduleTaskE_Idle" type="normal">
+				<name>
+					<text>NoCheck_to_ScheduleTaskE_Idle</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="FetchJobE_to_WillPerformWork" source="FetchJobE" target="WillPerformWork" type="normal">
+				<name>
+					<text>FetchJobE_to_WillPerformWork</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,varj))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="varj"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="WillPerformWork_to_ScheduleTaskE_Work" source="WillPerformWork" target="ScheduleTaskE_Work" type="normal">
+				<name>
+					<text>WillPerformWork_to_ScheduleTaskE_Work</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,varj))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="varj"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="EnablePollingB_to_NOPEP" source="EnablePollingB" target="NOPEP" type="normal">
+				<name>
+					<text>EnablePollingB_to_NOPEP</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="PollingAbort_to_NOPEP" source="PollingAbort" target="NOPEP" type="normal">
+				<name>
+					<text>PollingAbort_to_NOPEP</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NOPEP_to_EnablePollingE" source="NOPEP" target="EnablePollingE" type="normal">
+				<name>
+					<text>NOPEP_to_EnablePollingE</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="NOPEP_to_PollingAbort" source="NOPEP" target="PollingAbort" type="normal">
+				<name>
+					<text>NOPEP_to_PollingAbort</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="PollingAbort_to_T_2541" source="PollingAbort" target="T_2541" type="normal">
+				<name>
+					<text>PollingAbort_to_T_2541</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ScheduleTaskB_to_T_2541" source="ScheduleTaskB" target="T_2541" type="normal">
+				<name>
+					<text>ScheduleTaskB_to_T_2541</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2541_to_PollingAbort" source="T_2541" target="PollingAbort" type="normal">
+				<name>
+					<text>T_2541_to_PollingAbort</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2541_to_P_1617" source="T_2541" target="P_1617" type="normal">
+				<name>
+					<text>T_2541_to_P_1617</text>
+				</name>
+				<hlinscription>
+					<text>1'(vart)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vart"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="PollingAbort_to_T_2577" source="PollingAbort" target="T_2577" type="normal">
+				<name>
+					<text>PollingAbort_to_T_2577</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="BlockedTasks_to_T_2577" source="BlockedTasks" target="T_2577" type="normal">
+				<name>
+					<text>BlockedTasks_to_T_2577</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="DisablePollingB_to_T_2577" source="DisablePollingB" target="T_2577" type="normal">
+				<name>
+					<text>DisablePollingB_to_T_2577</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,vars))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="vars"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2577_to_PollingAbort" source="T_2577" target="PollingAbort" type="normal">
+				<name>
+					<text>T_2577_to_PollingAbort</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2577_to_BlockedTasks" source="T_2577" target="BlockedTasks" type="normal">
+				<name>
+					<text>T_2577_to_BlockedTasks</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2577_to_ORB_Lock" source="T_2577" target="ORB_Lock" type="normal">
+				<name>
+					<text>T_2577_to_ORB_Lock</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2577_to_P_2579" source="T_2577" target="P_2579" type="normal">
+				<name>
+					<text>T_2577_to_P_2579</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,vars))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="vars"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="cBlockedTasks_to_T_2578" source="cBlockedTasks" target="T_2578" type="normal">
+				<name>
+					<text>cBlockedTasks_to_T_2578</text>
+				</name>
+				<hlinscription>
+					<text>10'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="10">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ORB_Lock_to_T_2578" source="ORB_Lock" target="T_2578" type="normal">
+				<name>
+					<text>ORB_Lock_to_T_2578</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P_2579_to_T_2578" source="P_2579" target="T_2578" type="normal">
+				<name>
+					<text>P_2579_to_T_2578</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,vars))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="vars"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2578_to_cBlockedTasks" source="T_2578" target="cBlockedTasks" type="normal">
+				<name>
+					<text>T_2578_to_cBlockedTasks</text>
+				</name>
+				<hlinscription>
+					<text>10'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="10">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<dotconstant/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T_2578_to_DisablePollingE" source="T_2578" target="DisablePollingE" type="normal">
+				<name>
+					<text>T_2578_to_DisablePollingE</text>
+				</name>
+				<hlinscription>
+					<text>1'((vart,vars))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vart"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="vars"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<!-- List of inhibitor arcs -->
+		</page>
+		<!-- List of declarations -->
+		<declaration>
+			<structure>
+				<declarations>
+					<!-- Declaration of user-defined color classes (sorts) -->
+					<namedsort id="dot" name="dot">
+						<dot/>
+					</namedsort>
+					<namedsort id="Threads" name="Threads">
+						<cyclicenumeration>
+							<feconstant id="Threads1" name="1"/>
+							<feconstant id="Threads2" name="2"/>
+							<feconstant id="Threads3" name="3"/>
+							<feconstant id="Threads4" name="4"/>
+							<feconstant id="Threads5" name="5"/>
+							<feconstant id="Threads6" name="6"/>
+						</cyclicenumeration>
+					</namedsort>
+					<namedsort id="Sources" name="Sources">
+						<cyclicenumeration>
+							<feconstant id="Sources1" name="1"/>
+							<feconstant id="Sources2" name="2"/>
+						</cyclicenumeration>
+					</namedsort>
+					<namedsort id="Jobs" name="Jobs">
+						<cyclicenumeration>
+							<feconstant id="Jobs0" name="0"/>
+							<feconstant id="Jobs1" name="1"/>
+							<feconstant id="Jobs2" name="2"/>
+							<feconstant id="Jobs3" name="3"/>
+							<feconstant id="Jobs4" name="4"/>
+						</cyclicenumeration>
+					</namedsort>
+					<namedsort id="d1" name="d1">
+						<productsort>
+							<usersort declaration="Threads"/>
+							<usersort declaration="Jobs"/>
+						</productsort>
+					</namedsort>
+					<namedsort id="d6" name="d6">
+						<productsort>
+							<usersort declaration="Jobs"/>
+							<usersort declaration="Sources"/>
+						</productsort>
+					</namedsort>
+					<namedsort id="d4" name="d4">
+						<productsort>
+							<usersort declaration="Threads"/>
+							<usersort declaration="Sources"/>
+						</productsort>
+					</namedsort>
+					<!-- Declaration of user-defined color variables -->
+					<variabledecl id="varj" name="varj">
+						<usersort declaration="Jobs"/>
+					</variabledecl>
+					<variabledecl id="varj10" name="varj10">
+						<usersort declaration="Jobs"/>
+					</variabledecl>
+					<variabledecl id="varj9" name="varj9">
+						<usersort declaration="Jobs"/>
+					</variabledecl>
+					<variabledecl id="varj8" name="varj8">
+						<usersort declaration="Jobs"/>
+					</variabledecl>
+					<variabledecl id="varj7" name="varj7">
+						<usersort declaration="Jobs"/>
+					</variabledecl>
+					<variabledecl id="varj6" name="varj6">
+						<usersort declaration="Jobs"/>
+					</variabledecl>
+					<variabledecl id="varj5" name="varj5">
+						<usersort declaration="Jobs"/>
+					</variabledecl>
+					<variabledecl id="varj4" name="varj4">
+						<usersort declaration="Jobs"/>
+					</variabledecl>
+					<variabledecl id="varj3" name="varj3">
+						<usersort declaration="Jobs"/>
+					</variabledecl>
+					<variabledecl id="varj2" name="varj2">
+						<usersort declaration="Jobs"/>
+					</variabledecl>
+					<variabledecl id="varj1" name="varj1">
+						<usersort declaration="Jobs"/>
+					</variabledecl>
+					<variabledecl id="vars" name="vars">
+						<usersort declaration="Sources"/>
+					</variabledecl>
+					<variabledecl id="vars2" name="vars2">
+						<usersort declaration="Sources"/>
+					</variabledecl>
+					<variabledecl id="varms10" name="varms10">
+						<usersort declaration="Sources"/>
+					</variabledecl>
+					<variabledecl id="varms9" name="varms9">
+						<usersort declaration="Sources"/>
+					</variabledecl>
+					<variabledecl id="varms8" name="varms8">
+						<usersort declaration="Sources"/>
+					</variabledecl>
+					<variabledecl id="varms7" name="varms7">
+						<usersort declaration="Sources"/>
+					</variabledecl>
+					<variabledecl id="varms6" name="varms6">
+						<usersort declaration="Sources"/>
+					</variabledecl>
+					<variabledecl id="varms5" name="varms5">
+						<usersort declaration="Sources"/>
+					</variabledecl>
+					<variabledecl id="varms4" name="varms4">
+						<usersort declaration="Sources"/>
+					</variabledecl>
+					<variabledecl id="varms3" name="varms3">
+						<usersort declaration="Sources"/>
+					</variabledecl>
+					<variabledecl id="varms2" name="varms2">
+						<usersort declaration="Sources"/>
+					</variabledecl>
+					<variabledecl id="varms1" name="varms1">
+						<usersort declaration="Sources"/>
+					</variabledecl>
+					<variabledecl id="vart" name="vart">
+						<usersort declaration="Threads"/>
+					</variabledecl>
+					<variabledecl id="vart2" name="vart2">
+						<usersort declaration="Threads"/>
+					</variabledecl>
+				</declarations>
+			</structure>
+		</declaration>
+	</net>
+</pnml>

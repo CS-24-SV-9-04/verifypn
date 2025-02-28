@@ -1,0 +1,43 @@
+
+Parameters: -x 3 /usr/local/share/mcc/AirplaneLD-COL-0010/model.pnml /usr/local/share/mcc/AirplaneLD-COL-0010/ReachabilityCardinality.xml 
+
+Search=OverApprox,Trace=DISABLED,PrintBindings=DISABLED,State_Space_Exploration=DISABLED,Colored_Structural_Reduction=ALL,Colored_Struct_Red_Timout=30,Structural_Reduction=AGGRESSIVE,Struct_Red_Timout=60,Stubborn_Reduction=ENABLED,Query_Simplication=ENABLED,QSTimeout=30,Init_Potency=ENABLED,InitPotencyTimeout=10,Siphon_Trap=DISABLED,LPSolve_Timeout=10
+Finished parsing model
+RWSTATS LEGEND:EG p-> !EF !p,AG p-> !AF !p,!EX p -> AX p,EX false -> false,EX true -> !deadlock,!AX p -> EX p,AX false -> deadlock,AX true -> true,EF !deadlock -> !deadlock,EF EF p -> EF p,EF AF p -> AF p,EF E p U q -> EF q,EF A p U q -> EF q,EF .. or .. -> EF .. or EF ..,AF !deadlock -> !deadlock,AF AF p -> AF p,AF EF p -> EF p,AF .. or EF p -> EF p or AF ..,AF A p U q -> AF q,A p U !deadlock -> !deadlock,A deadlock U q -> q,A !deadlock U q -> AF q,A p U AF q -> AF q,A p U EF q -> EF q,A p U .. or EF q -> EF q or A p U ..,E p U !deadlock -> !deadlock,E deadlock U q -> q,E !deadlock U q -> EF q,E p U EF q -> EF q,E p U .. or EF q -> EF q or E p U ..,!! p -> p,F F p -> F p,F p U q -> F q,F p or q -> F p or F q,p U F q -> F q,
+
+Query before expansion and reduction: EF ((4 <= Weight_Right_Wheel) or (((AltitudePossibleVal < Plane_On_Ground_Signal_no) or (((stp5 < 85) or (P4 < Speed_Left_Wheel)) and ((P2 < 37) or (P5 < 10)) and (P1 <= 29) and (P4 < 21) and (P3 < stp2) and ((Speed_Right_Wheel <= 8) or ((SpeedPossibleVal < SpeedPossibleVal) and (39 < stp1)) or (P4 <= P3)))) and (Weight_Right_Wheel < 56) and (((Plane_On_Ground_Signal_no < 19) and (SpeedPossibleVal < 90)) or (P2 < Weight_Left_Wheel)) and ((78 < Speed_Right_Wheel) or ((P2 <= 29) and (stp4 <= 52) and (14 <= P5))) and (P5 <= P1)))
+RWSTATS COLORED PRE:0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,
+
+Colored structural reductions computed in 0.000438 seconds
+Reduced from 20 to 18 places (2, 10%)
+Reduced from 15 to 15 transitions (0, 0%)
+Applications of rule AtomicPreAgglomeration: 0
+Applications of rule DeadTransitions: 0
+Applications of rule ParallelPlaces: 0
+Applications of rule ParallelTransitions: 0
+Applications of rule PreemptiveFiring: 0
+Applications of rule RedundantPlaces: 1
+Applications of rule Relevance: 1
+
+Color fixpoint computed in 0.000265 seconds
+Max intervals used: 1
+Size of colored net: 18 places, 15 transitions, and 46 arcs
+Size of unfolded net: 57 places, 89 transitions, and 223 arcs
+Partitioned in 0 seconds
+Unfolded in 0.000633 seconds
+
+
+Query before reduction: EF ((4 <= (0 + Weight_Right_Wheel_0 + Weight_Right_Wheel_1)) or (((AltitudePossibleVal_orphan < Plane_On_Ground_Signal_no_0) or (((stp5_0 < 85) or (P4_0 < (0 + Speed_Left_Wheel_0 + Speed_Left_Wheel_1 + Speed_Left_Wheel_2 + Speed_Left_Wheel_3 + Speed_Left_Wheel_4 + Speed_Left_Wheel_5 + Speed_Left_Wheel_6 + Speed_Left_Wheel_7 + Speed_Left_Wheel_8 + Speed_Left_Wheel_9))) and ((P2_0 < 37) or (P5_0 < 10)) and (P1_0 <= 29) and (P4_0 < 21) and (P3_0 < stp2_0) and (((0 + Speed_Right_Wheel_0 + Speed_Right_Wheel_1 + Speed_Right_Wheel_2 + Speed_Right_Wheel_3 + Speed_Right_Wheel_4 + Speed_Right_Wheel_5 + Speed_Right_Wheel_6 + Speed_Right_Wheel_7 + Speed_Right_Wheel_8 + Speed_Right_Wheel_9) <= 8) or ((SpeedPossibleVal_orphan < SpeedPossibleVal_orphan) and (39 < stp1_0)) or (P4_0 <= P3_0)))) and ((0 + Weight_Right_Wheel_0 + Weight_Right_Wheel_1) < 56) and (((Plane_On_Ground_Signal_no_0 < 19) and (SpeedPossibleVal_orphan < 90)) or (P2_0 < (0 + Weight_Left_Wheel_0 + Weight_Left_Wheel_1))) and ((78 < (0 + Speed_Right_Wheel_0 + Speed_Right_Wheel_1 + Speed_Right_Wheel_2 + Speed_Right_Wheel_3 + Speed_Right_Wheel_4 + Speed_Right_Wheel_5 + Speed_Right_Wheel_6 + Speed_Right_Wheel_7 + Speed_Right_Wheel_8 + Speed_Right_Wheel_9)) or ((P2_0 <= 29) and (stp4_0 <= 52) and (14 <= P5_0))) and (P5_0 <= P1_0)))
+RWSTATS PRE:0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+RWSTATS POST:0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+
+Query after reduction: false
+Query reduction finished after 0.001077 seconds.
+Query size reduced from 115 to 0 nodes ( 100 percent reduction).
+FORMULA AirplaneLD-COL-0010-ReachabilityCardinality-2024-02 FALSE TECHNIQUES COLLATERAL_PROCESSING STRUCTURAL_REDUCTION QUERY_REDUCTION SAT_SMT LP_APPROX UNFOLDING_TO_PT 
+Query index 0 was solved
+
+Query is NOT satisfied.
+
+Query solved by Query Simplification.
+

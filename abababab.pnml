@@ -1,0 +1,2698 @@
+<?xml version="1.0"?>
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+	<net id="MODELID" type="http://www.pnml.org/version-2009/grammar/symmetricnet">
+		<name><text>MODELNAME</text></name>
+		<!-- List of declarations -->
+		<declaration>
+			<structure>
+				<declarations>
+					<!-- Declaration of user-defined color classes (sorts) -->
+					<namedsort id="response" name="response">
+						<cyclicenumeration>
+							<feconstant id="Response0" name="Y"/>
+							<feconstant id="Response1" name="N"/>
+						</cyclicenumeration>
+					</namedsort>
+					<namedsort id="GovernmentCommission" name="GovernmentCommission">
+						<cyclicenumeration>
+							<feconstant id="GovernmentCommission0" name="0"/>
+							<feconstant id="GovernmentCommission1" name="1"/>
+						</cyclicenumeration>
+					</namedsort>
+					<namedsort id="PublicAdminOffice" name="PublicAdminOffice">
+						<cyclicenumeration>
+							<feconstant id="PublicAdminOffice0" name="0"/>
+							<feconstant id="PublicAdminOffice1" name="1"/>
+						</cyclicenumeration>
+					</namedsort>
+					<namedsort id="CINFORMI" name="CINFORMI">
+						<cyclicenumeration>
+							<feconstant id="CINFORMI0" name="0"/>
+							<feconstant id="CINFORMI1" name="1"/>
+						</cyclicenumeration>
+					</namedsort>
+					<namedsort id="MICSystem" name="MICSystem">
+						<cyclicenumeration>
+							<feconstant id="MICSystem0" name="0"/>
+							<feconstant id="MICSystem1" name="1"/>
+						</cyclicenumeration>
+					</namedsort>
+					<namedsort id="LegalResident" name="LegalResident">
+						<cyclicenumeration>
+							<feconstant id="LegalResident0" name="0"/>
+							<feconstant id="LegalResident1" name="1"/>
+							<feconstant id="LegalResident2" name="2"/>
+							<feconstant id="LegalResident3" name="3"/>
+							<feconstant id="LegalResident4" name="4"/>
+							<feconstant id="LegalResident5" name="5"/>
+							<feconstant id="LegalResident6" name="6"/>
+							<feconstant id="LegalResident7" name="7"/>
+							<feconstant id="LegalResident8" name="8"/>
+							<feconstant id="LegalResident9" name="9"/>
+							<feconstant id="LegalResident10" name="10"/>
+						</cyclicenumeration>
+					</namedsort>
+					<namedsort id="lxg" name="lxg">
+						<productsort>
+							<usersort declaration="LegalResident"/>
+							<usersort declaration="GovernmentCommission"/>
+						</productsort>
+					</namedsort>
+					<namedsort id="lxc" name="lxc">
+						<productsort>
+							<usersort declaration="LegalResident"/>
+							<usersort declaration="CINFORMI"/>
+						</productsort>
+					</namedsort>
+					<namedsort id="lxm" name="lxm">
+						<productsort>
+							<usersort declaration="LegalResident"/>
+							<usersort declaration="MICSystem"/>
+						</productsort>
+					</namedsort>
+					<namedsort id="lxp" name="lxp">
+						<productsort>
+							<usersort declaration="LegalResident"/>
+							<usersort declaration="PublicAdminOffice"/>
+						</productsort>
+					</namedsort>
+					<namedsort id="lxr" name="lxr">
+						<productsort>
+							<usersort declaration="LegalResident"/>
+							<usersort declaration="response"/>
+						</productsort>
+					</namedsort>
+					<!-- Declaration of user-defined color variables -->
+					<variabledecl id="varl" name="varl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="varm" name="varm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="varc" name="varc">
+						<usersort declaration="CINFORMI"/>
+					</variabledecl>
+					<variabledecl id="varp" name="varp">
+						<usersort declaration="PublicAdminOffice"/>
+					</variabledecl>
+					<variabledecl id="varg" name="varg">
+						<usersort declaration="GovernmentCommission"/>
+					</variabledecl>
+					<variabledecl id="varr" name="varr">
+						<usersort declaration="response"/>
+					</variabledecl>
+					<variabledecl id="Gate1XORSplitvarl" name="Gate1XORSplitvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="GoToAppointGate1XORSplitvarl" name="GoToAppointGate1XORSplitvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="ReserveAppCINFORMIvarl" name="ReserveAppCINFORMIvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="Gate2ANDJoinReserveAppCINFORMIvarl" name="Gate2ANDJoinReserveAppCINFORMIvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="SendLangChoicevarl" name="SendLangChoicevarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="SendLangChoicevarm" name="SendLangChoicevarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="ReceiveLangReqSendLangChoicevarlSendLangChoicevarl" name="ReceiveLangReqSendLangChoicevarlSendLangChoicevarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="ReceiveLangReqSendLangChoicevarmSendLangChoicevarm" name="ReceiveLangReqSendLangChoicevarmSendLangChoicevarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="AppointReceivedvarl" name="AppointReceivedvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="AppointReceivedvarc" name="AppointReceivedvarc">
+						<usersort declaration="CINFORMI"/>
+					</variabledecl>
+					<variabledecl id="SetUpAppointAppointReceivedvarlAppointReceivedvarl" name="SetUpAppointAppointReceivedvarlAppointReceivedvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="SetUpAppointAppointReceivedvarcAppointReceivedvarc" name="SetUpAppointAppointReceivedvarcAppointReceivedvarc">
+						<usersort declaration="CINFORMI"/>
+					</variabledecl>
+					<variabledecl id="BringReqtoCINFORMIvarl" name="BringReqtoCINFORMIvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT4BringReqtoCINFORMISetUpAppointAppointReceivedvarlAppointReceivedvarl" name="CCT4BringReqtoCINFORMISetUpAppointAppointReceivedvarlAppointReceivedvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT4BringReqtoCINFORMISetUpAppointAppointReceivedvarcAppointReceivedvarc" name="CCT4BringReqtoCINFORMISetUpAppointAppointReceivedvarcAppointReceivedvarc">
+						<usersort declaration="CINFORMI"/>
+					</variabledecl>
+					<variabledecl id="DisplayNeedChoicevarl" name="DisplayNeedChoicevarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="DisplayNeedChoicevarm" name="DisplayNeedChoicevarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="ReceiveLangChoiceDisplayNeedChoicevarlDisplayNeedChoicevarl" name="ReceiveLangChoiceDisplayNeedChoicevarlDisplayNeedChoicevarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="ReceiveLangChoiceDisplayNeedChoicevarmDisplayNeedChoicevarm" name="ReceiveLangChoiceDisplayNeedChoicevarmDisplayNeedChoicevarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="ChoseFamilyReunionvarl" name="ChoseFamilyReunionvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="ChoseFamilyReunionvarm" name="ChoseFamilyReunionvarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="ReceiveNeedReqChoseFamilyReunionvarlChoseFamilyReunionvarl" name="ReceiveNeedReqChoseFamilyReunionvarlChoseFamilyReunionvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="ReceiveNeedReqChoseFamilyReunionvarmChoseFamilyReunionvarm" name="ReceiveNeedReqChoseFamilyReunionvarmChoseFamilyReunionvarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="DisplayReqDocsvarl" name="DisplayReqDocsvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="DisplayReqDocsvarm" name="DisplayReqDocsvarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="ReceiveNeedChoiceDisplayReqDocsvarlDisplayReqDocsvarl" name="ReceiveNeedChoiceDisplayReqDocsvarlDisplayReqDocsvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="ReceiveNeedChoiceDisplayReqDocsvarmDisplayReqDocsvarm" name="ReceiveNeedChoiceDisplayReqDocsvarmDisplayReqDocsvarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="TickDocsObtainedvarl" name="TickDocsObtainedvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="TickDocsObtainedvarm" name="TickDocsObtainedvarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="ReceiveReqDocsReqTickDocsObtainedvarlTickDocsObtainedvarl" name="ReceiveReqDocsReqTickDocsObtainedvarlTickDocsObtainedvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="ReceiveReqDocsReqTickDocsObtainedvarmTickDocsObtainedvarm" name="ReceiveReqDocsReqTickDocsObtainedvarmTickDocsObtainedvarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="ExplainHowToObtainMissingDocsvarl" name="ExplainHowToObtainMissingDocsvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="ExplainHowToObtainMissingDocsvarm" name="ExplainHowToObtainMissingDocsvarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="ReceiveDocsObtainedExplainHowToObtainMissingDocsvarlExplainHowToObtainMissingDocsvarl" name="ReceiveDocsObtainedExplainHowToObtainMissingDocsvarlExplainHowToObtainMissingDocsvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="ReceiveDocsObtainedExplainHowToObtainMissingDocsvarmExplainHowToObtainMissingDocsvarm" name="ReceiveDocsObtainedExplainHowToObtainMissingDocsvarmExplainHowToObtainMissingDocsvarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="ObtainMissingDocsvarl" name="ObtainMissingDocsvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="ReceiveInstructionsObtainMissingDocsvarl" name="ReceiveInstructionsObtainMissingDocsvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="ReceiveInstructionsObtainMissingDocsvarm" name="ReceiveInstructionsObtainMissingDocsvarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="ReqAppointCINFORMIvarl" name="ReqAppointCINFORMIvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT11ReqAppointCINFORMIReceiveInstructionsObtainMissingDocsvarl" name="CCT11ReqAppointCINFORMIReceiveInstructionsObtainMissingDocsvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT11ReqAppointCINFORMIReceiveInstructionsObtainMissingDocsvarm" name="CCT11ReqAppointCINFORMIReceiveInstructionsObtainMissingDocsvarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="ReserveAppointvarl" name="ReserveAppointvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="ReserveAppointvarm" name="ReserveAppointvarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="ReceiveAppointReqReserveAppointvarlReserveAppointvarl" name="ReceiveAppointReqReserveAppointvarlReserveAppointvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="ReceiveAppointReqReserveAppointvarmReserveAppointvarm" name="ReceiveAppointReqReserveAppointvarmReserveAppointvarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="GiveAppointvarl" name="GiveAppointvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="GiveAppointvarm" name="GiveAppointvarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="CCT13GiveAppointReceiveAppointReqReserveAppointvarlReserveAppointvarlGiveAppointvarl" name="CCT13GiveAppointReceiveAppointReqReserveAppointvarlReserveAppointvarlGiveAppointvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT13GiveAppointReceiveAppointReqReserveAppointvarmReserveAppointvarmGiveAppointvarm" name="CCT13GiveAppointReceiveAppointReqReserveAppointvarmReserveAppointvarmGiveAppointvarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="ReceiveAppointvarl" name="ReceiveAppointvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="ReceiveAppointvarm" name="ReceiveAppointvarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="CCT14ReceiveAppointCCT13GiveAppointReceiveAppointReqReserveAppointvarlReserveAppointvarlGiveAppointvarlReceiveAppointvarl" name="CCT14ReceiveAppointCCT13GiveAppointReceiveAppointReqReserveAppointvarlReserveAppointvarlGiveAppointvarlReceiveAppointvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT14ReceiveAppointCCT13GiveAppointReceiveAppointReqReserveAppointvarmReserveAppointvarmGiveAppointvarmReceiveAppointvarm" name="CCT14ReceiveAppointCCT13GiveAppointReceiveAppointReqReserveAppointvarmReserveAppointvarmGiveAppointvarmReceiveAppointvarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="CCT1GoToAppointGate1XORSplitvarl" name="CCT1GoToAppointGate1XORSplitvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT15CCT1CCT14ReceiveAppointCCT13GiveAppointReceiveAppointReqReserveAppointvarlReserveAppointvarlGiveAppointvarlReceiveAppointvarl" name="CCT15CCT1CCT14ReceiveAppointCCT13GiveAppointReceiveAppointReqReserveAppointvarlReserveAppointvarlGiveAppointvarlReceiveAppointvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT15CCT1CCT14ReceiveAppointCCT13GiveAppointReceiveAppointReqReserveAppointvarmReserveAppointvarmGiveAppointvarmReceiveAppointvarm" name="CCT15CCT1CCT14ReceiveAppointCCT13GiveAppointReceiveAppointReqReserveAppointvarmReserveAppointvarmGiveAppointvarmReceiveAppointvarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="GotItvarl" name="GotItvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="GotItvarc" name="GotItvarc">
+						<usersort declaration="CINFORMI"/>
+					</variabledecl>
+					<variabledecl id="ExplainProcedureGotItvarlGotItvarl" name="ExplainProcedureGotItvarlGotItvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="ExplainProcedureGotItvarcGotItvarc" name="ExplainProcedureGotItvarcGotItvarc">
+						<usersort declaration="CINFORMI"/>
+					</variabledecl>
+					<variabledecl id="Gate1XORJoinvarl" name="Gate1XORJoinvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT17Gate1XORJoinExplainProcedureGotItvarlGotItvarl" name="CCT17Gate1XORJoinExplainProcedureGotItvarlGotItvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT17Gate1XORJoinExplainProcedureGotItvarcGotItvarc" name="CCT17Gate1XORJoinExplainProcedureGotItvarcGotItvarc">
+						<usersort declaration="CINFORMI"/>
+					</variabledecl>
+					<variabledecl id="ReqHousingSuitCertifvarl" name="ReqHousingSuitCertifvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT18ReqHousingSuitCertifCCT17Gate1XORJoinExplainProcedureGotItvarlGotItvarl" name="CCT18ReqHousingSuitCertifCCT17Gate1XORJoinExplainProcedureGotItvarlGotItvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT18ReqHousingSuitCertifCCT17Gate1XORJoinExplainProcedureGotItvarcGotItvarc" name="CCT18ReqHousingSuitCertifCCT17Gate1XORJoinExplainProcedureGotItvarcGotItvarc">
+						<usersort declaration="CINFORMI"/>
+					</variabledecl>
+					<variabledecl id="Gate1ANDJoinvarl" name="Gate1ANDJoinvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="Gate1ANDJoinvarp" name="Gate1ANDJoinvarp">
+						<usersort declaration="PublicAdminOffice"/>
+					</variabledecl>
+					<variabledecl id="CheckHousingSuitReqGate1ANDJoinvarlGate1ANDJoinvarl" name="CheckHousingSuitReqGate1ANDJoinvarlGate1ANDJoinvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CheckHousingSuitReqGate1ANDJoinvarpGate1ANDJoinvarp" name="CheckHousingSuitReqGate1ANDJoinvarpGate1ANDJoinvarp">
+						<usersort declaration="PublicAdminOffice"/>
+					</variabledecl>
+					<variabledecl id="Gate2XORSplitvarl" name="Gate2XORSplitvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="Gate2XORSplitvarp" name="Gate2XORSplitvarp">
+						<usersort declaration="PublicAdminOffice"/>
+					</variabledecl>
+					<variabledecl id="CCT20Gate2XORSplitCheckHousingSuitReqGate1ANDJoinvarlGate1ANDJoinvarlGate2XORSplitvarl" name="CCT20Gate2XORSplitCheckHousingSuitReqGate1ANDJoinvarlGate1ANDJoinvarlGate2XORSplitvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT20Gate2XORSplitCheckHousingSuitReqGate1ANDJoinvarpGate1ANDJoinvarpGate2XORSplitvarp" name="CCT20Gate2XORSplitCheckHousingSuitReqGate1ANDJoinvarpGate1ANDJoinvarpGate2XORSplitvarp">
+						<usersort declaration="PublicAdminOffice"/>
+					</variabledecl>
+					<variabledecl id="SendSuitabilityCertifvarl" name="SendSuitabilityCertifvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="SendSuitabilityCertifvarp" name="SendSuitabilityCertifvarp">
+						<usersort declaration="PublicAdminOffice"/>
+					</variabledecl>
+					<variabledecl id="CCT21SendSuitabilityCertifCCT20Gate2XORSplitCheckHousingSuitReqGate1ANDJoinvarlGate1ANDJoinvarlGate2XORSplitvarlSendSuitabilityCertifvarl" name="CCT21SendSuitabilityCertifCCT20Gate2XORSplitCheckHousingSuitReqGate1ANDJoinvarlGate1ANDJoinvarlGate2XORSplitvarlSendSuitabilityCertifvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT21SendSuitabilityCertifCCT20Gate2XORSplitCheckHousingSuitReqGate1ANDJoinvarpGate1ANDJoinvarpGate2XORSplitvarpSendSuitabilityCertifvarp" name="CCT21SendSuitabilityCertifCCT20Gate2XORSplitCheckHousingSuitReqGate1ANDJoinvarpGate1ANDJoinvarpGate2XORSplitvarpSendSuitabilityCertifvarp">
+						<usersort declaration="PublicAdminOffice"/>
+					</variabledecl>
+					<variabledecl id="RegisterRelativePubHealthvarl" name="RegisterRelativePubHealthvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="HousingSuitCertifObtainedRegisterRelativePubHealthvarl" name="HousingSuitCertifObtainedRegisterRelativePubHealthvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="HousingSuitCertifObtainedRegisterRelativePubHealthvarp" name="HousingSuitCertifObtainedRegisterRelativePubHealthvarp">
+						<usersort declaration="PublicAdminOffice"/>
+					</variabledecl>
+					<variabledecl id="ReceiveRegsitrationvarl" name="ReceiveRegsitrationvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="ReceiveRegsitrationvarp" name="ReceiveRegsitrationvarp">
+						<usersort declaration="PublicAdminOffice"/>
+					</variabledecl>
+					<variabledecl id="RegisterRelativeReceiveRegsitrationvarlReceiveRegsitrationvarl" name="RegisterRelativeReceiveRegsitrationvarlReceiveRegsitrationvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="RegisterRelativeReceiveRegsitrationvarpReceiveRegsitrationvarp" name="RegisterRelativeReceiveRegsitrationvarpReceiveRegsitrationvarp">
+						<usersort declaration="PublicAdminOffice"/>
+					</variabledecl>
+					<variabledecl id="Gate2ANDSplitvarl" name="Gate2ANDSplitvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT24Gate2ANDSplitRegisterRelativeReceiveRegsitrationvarlReceiveRegsitrationvarl" name="CCT24Gate2ANDSplitRegisterRelativeReceiveRegsitrationvarlReceiveRegsitrationvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT24Gate2ANDSplitRegisterRelativeReceiveRegsitrationvarpReceiveRegsitrationvarp" name="CCT24Gate2ANDSplitRegisterRelativeReceiveRegsitrationvarpReceiveRegsitrationvarp">
+						<usersort declaration="PublicAdminOffice"/>
+					</variabledecl>
+					<variabledecl id="CCT2Gate2ANDJoinReserveAppCINFORMIvarl" name="CCT2Gate2ANDJoinReserveAppCINFORMIvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="PrepIncomeCertifCCT2varl" name="PrepIncomeCertifCCT2varl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT26PrepIncomeCertifCCT2varl" name="CCT26PrepIncomeCertifCCT2varl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="ObtainRelativeFinStatementCCT26varl" name="ObtainRelativeFinStatementCCT26varl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT27ObtainRelativeFinStatementCCT26varl" name="CCT27ObtainRelativeFinStatementCCT26varl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="ObtainFamRelCertifCCT27varl" name="ObtainFamRelCertifCCT27varl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT28ObtainFamRelCertifCCT27varl" name="CCT28ObtainFamRelCertifCCT27varl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="ObtainRelHealtCondStatementCCT28varl" name="ObtainRelHealtCondStatementCCT28varl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="DisplayLangChoicevarl" name="DisplayLangChoicevarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="DisplayLangChoicevarm" name="DisplayLangChoicevarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="ReceiveAccessReqDisplayLangChoicevarlDisplayLangChoicevarl" name="ReceiveAccessReqDisplayLangChoicevarlDisplayLangChoicevarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="ReceiveAccessReqDisplayLangChoicevarmDisplayLangChoicevarm" name="ReceiveAccessReqDisplayLangChoicevarmDisplayLangChoicevarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="CCT5CCT4BringReqtoCINFORMISetUpAppointAppointReceivedvarlAppointReceivedvarl" name="CCT5CCT4BringReqtoCINFORMISetUpAppointAppointReceivedvarlAppointReceivedvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT5CCT4BringReqtoCINFORMISetUpAppointAppointReceivedvarcAppointReceivedvarc" name="CCT5CCT4BringReqtoCINFORMISetUpAppointAppointReceivedvarcAppointReceivedvarc">
+						<usersort declaration="CINFORMI"/>
+					</variabledecl>
+					<variabledecl id="AppReqReceivedCCT5varlCCT5CCT4BringReqtoCINFORMISetUpAppointAppointReceivedvarlAppointReceivedvarl" name="AppReqReceivedCCT5varlCCT5CCT4BringReqtoCINFORMISetUpAppointAppointReceivedvarlAppointReceivedvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="AppReqReceivedCCT5varcCCT5CCT4BringReqtoCINFORMISetUpAppointAppointReceivedvarcAppointReceivedvarc" name="AppReqReceivedCCT5varcCCT5CCT4BringReqtoCINFORMISetUpAppointAppointReceivedvarcAppointReceivedvarc">
+						<usersort declaration="CINFORMI"/>
+					</variabledecl>
+					<variabledecl id="CCT16CCT15CCT1CCT14ReceiveAppointCCT13GiveAppointReceiveAppointReqReserveAppointvarlReserveAppointvarlGiveAppointvarlReceiveAppointvarl" name="CCT16CCT15CCT1CCT14ReceiveAppointCCT13GiveAppointReceiveAppointReqReserveAppointvarlReserveAppointvarlGiveAppointvarlReceiveAppointvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT16CCT15CCT1CCT14ReceiveAppointCCT13GiveAppointReceiveAppointReqReserveAppointvarmReserveAppointvarmGiveAppointvarmReceiveAppointvarm" name="CCT16CCT15CCT1CCT14ReceiveAppointCCT13GiveAppointReceiveAppointReqReserveAppointvarmReserveAppointvarmGiveAppointvarmReceiveAppointvarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="CCT12CCT16CCT11ReqAppointCINFORMIReceiveInstructionsObtainMissingDocsvarl" name="CCT12CCT16CCT11ReqAppointCINFORMIReceiveInstructionsObtainMissingDocsvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT12CCT16CCT16CCT15CCT1CCT14ReceiveAppointCCT13GiveAppointReceiveAppointReqReserveAppointvarmReserveAppointvarmGiveAppointvarmReceiveAppointvarm" name="CCT12CCT16CCT16CCT15CCT1CCT14ReceiveAppointCCT13GiveAppointReceiveAppointReqReserveAppointvarmReserveAppointvarmGiveAppointvarmReceiveAppointvarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="CCT12CCT16CCT11ReqAppointCINFORMIReceiveInstructionsObtainMissingDocsvarm" name="CCT12CCT16CCT11ReqAppointCINFORMIReceiveInstructionsObtainMissingDocsvarm">
+						<usersort declaration="MICSystem"/>
+					</variabledecl>
+					<variabledecl id="Gate1ANDSplitvarl" name="Gate1ANDSplitvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="Gate1ANDSplitvarp" name="Gate1ANDSplitvarp">
+						<usersort declaration="PublicAdminOffice"/>
+					</variabledecl>
+					<variabledecl id="ReceiveHousingSuitCertifReqGate1ANDSplitvarlGate1ANDSplitvarl" name="ReceiveHousingSuitCertifReqGate1ANDSplitvarlGate1ANDSplitvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="ReceiveHousingSuitCertifReqGate1ANDSplitvarpGate1ANDSplitvarp" name="ReceiveHousingSuitCertifReqGate1ANDSplitvarpGate1ANDSplitvarp">
+						<usersort declaration="PublicAdminOffice"/>
+					</variabledecl>
+					<variabledecl id="CCT25CCT24Gate2ANDSplitRegisterRelativeReceiveRegsitrationvarlReceiveRegsitrationvarl" name="CCT25CCT24Gate2ANDSplitRegisterRelativeReceiveRegsitrationvarlReceiveRegsitrationvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT25CCT24Gate2ANDSplitRegisterRelativeReceiveRegsitrationvarpReceiveRegsitrationvarp" name="CCT25CCT24Gate2ANDSplitRegisterRelativeReceiveRegsitrationvarpReceiveRegsitrationvarp">
+						<usersort declaration="PublicAdminOffice"/>
+					</variabledecl>
+					<variabledecl id="CCT23CCT25HousingSuitCertifObtainedRegisterRelativePubHealthvarl" name="CCT23CCT25HousingSuitCertifObtainedRegisterRelativePubHealthvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT23CCT25CCT25CCT24Gate2ANDSplitRegisterRelativeReceiveRegsitrationvarpReceiveRegsitrationvarp" name="CCT23CCT25CCT25CCT24Gate2ANDSplitRegisterRelativeReceiveRegsitrationvarpReceiveRegsitrationvarp">
+						<usersort declaration="PublicAdminOffice"/>
+					</variabledecl>
+					<variabledecl id="CCT23CCT25HousingSuitCertifObtainedRegisterRelativePubHealthvarp" name="CCT23CCT25HousingSuitCertifObtainedRegisterRelativePubHealthvarp">
+						<usersort declaration="PublicAdminOffice"/>
+					</variabledecl>
+					<variabledecl id="CCT29ObtainRelHealtCondStatementCCT28varl" name="CCT29ObtainRelHealtCondStatementCCT28varl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT34CCT29CCT23CCT25HousingSuitCertifObtainedRegisterRelativePubHealthvarl" name="CCT34CCT29CCT23CCT25HousingSuitCertifObtainedRegisterRelativePubHealthvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT34CCT29CCT23CCT25HousingSuitCertifObtainedRegisterRelativePubHealthvarp" name="CCT34CCT29CCT23CCT25HousingSuitCertifObtainedRegisterRelativePubHealthvarp">
+						<usersort declaration="PublicAdminOffice"/>
+					</variabledecl>
+					<variabledecl id="CCT34CCT29CCT23CCT25CCT25CCT24Gate2ANDSplitRegisterRelativeReceiveRegsitrationvarpReceiveRegsitrationvarp" name="CCT34CCT29CCT23CCT25CCT25CCT24Gate2ANDSplitRegisterRelativeReceiveRegsitrationvarpReceiveRegsitrationvarp">
+						<usersort declaration="PublicAdminOffice"/>
+					</variabledecl>
+					<variabledecl id="CCT31AppReqReceivedCCT5varlCCT5CCT4BringReqtoCINFORMISetUpAppointAppointReceivedvarlAppointReceivedvarl" name="CCT31AppReqReceivedCCT5varlCCT5CCT4BringReqtoCINFORMISetUpAppointAppointReceivedvarlAppointReceivedvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT35CCT31CCT34CCT29CCT23CCT25HousingSuitCertifObtainedRegisterRelativePubHealthvarl" name="CCT35CCT31CCT34CCT29CCT23CCT25HousingSuitCertifObtainedRegisterRelativePubHealthvarl">
+						<usersort declaration="LegalResident"/>
+					</variabledecl>
+					<variabledecl id="CCT35CCT31CCT34CCT29CCT23CCT25HousingSuitCertifObtainedRegisterRelativePubHealthvarp" name="CCT35CCT31CCT34CCT29CCT23CCT25HousingSuitCertifObtainedRegisterRelativePubHealthvarp">
+						<usersort declaration="PublicAdminOffice"/>
+					</variabledecl>
+					<variabledecl id="CCT35CCT31CCT34CCT29CCT23CCT25CCT25CCT24Gate2ANDSplitRegisterRelativeReceiveRegsitrationvarpReceiveRegsitrationvarp" name="CCT35CCT31CCT34CCT29CCT23CCT25CCT25CCT24Gate2ANDSplitRegisterRelativeReceiveRegsitrationvarpReceiveRegsitrationvarp">
+						<usersort declaration="PublicAdminOffice"/>
+					</variabledecl>
+				</declarations>
+			</structure>
+		</declaration>
+		<!-- Page meta -->
+		<page id="page0">
+			<name>
+				<text>DefaultPage</text>
+			</name>
+			<!-- List of places -->
+			<place id="lm0">
+				<name>
+					<text>lm0</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>LegalResident</text>
+					<structure>
+						<usersort declaration="LegalResident"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>1'(LegalResident0) + 1'(LegalResident1) + 1'(LegalResident2) + 1'(LegalResident3) + 1'(LegalResident4) + 1'(LegalResident5) + 1'(LegalResident6) + 1'(LegalResident7) + 1'(LegalResident8) + 1'(LegalResident9) + 1'(LegalResident10)</text>
+					<structure>
+						<add>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="LegalResident0"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="LegalResident1"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="LegalResident2"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="LegalResident3"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="LegalResident4"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="LegalResident5"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="LegalResident6"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="LegalResident7"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="LegalResident8"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="LegalResident9"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="LegalResident10"/>
+									</subterm>
+								</numberof>
+							</subterm>
+						</add>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="ml0">
+				<name>
+					<text>ml0</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>lxm</text>
+					<structure>
+						<usersort declaration="lxm"/>
+					</structure>
+				</type>
+			</place>
+			<place id="l1">
+				<name>
+					<text>l1</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>LegalResident</text>
+					<structure>
+						<usersort declaration="LegalResident"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>1'(LegalResident0) + 1'(LegalResident1) + 1'(LegalResident2) + 1'(LegalResident3) + 1'(LegalResident4) + 1'(LegalResident5) + 1'(LegalResident6) + 1'(LegalResident7) + 1'(LegalResident8) + 1'(LegalResident9) + 1'(LegalResident10)</text>
+					<structure>
+						<add>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="LegalResident0"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="LegalResident1"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="LegalResident2"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="LegalResident3"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="LegalResident4"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="LegalResident5"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="LegalResident6"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="LegalResident7"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="LegalResident8"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="LegalResident9"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="LegalResident10"/>
+									</subterm>
+								</numberof>
+							</subterm>
+						</add>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="m2">
+				<name>
+					<text>m2</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>lxm</text>
+					<structure>
+						<usersort declaration="lxm"/>
+					</structure>
+				</type>
+			</place>
+			<place id="lm1">
+				<name>
+					<text>lm1</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>lxm</text>
+					<structure>
+						<usersort declaration="lxm"/>
+					</structure>
+				</type>
+			</place>
+			<place id="l3">
+				<name>
+					<text>l3</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>lxm</text>
+					<structure>
+						<usersort declaration="lxm"/>
+					</structure>
+				</type>
+			</place>
+			<place id="ml1">
+				<name>
+					<text>ml1</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>lxm</text>
+					<structure>
+						<usersort declaration="lxm"/>
+					</structure>
+				</type>
+			</place>
+			<place id="l33">
+				<name>
+					<text>l33</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>LegalResident</text>
+					<structure>
+						<usersort declaration="LegalResident"/>
+					</structure>
+				</type>
+			</place>
+			<place id="lm2">
+				<name>
+					<text>lm2</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>lxm</text>
+					<structure>
+						<usersort declaration="lxm"/>
+					</structure>
+				</type>
+			</place>
+			<place id="m4">
+				<name>
+					<text>m4</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>lxm</text>
+					<structure>
+						<usersort declaration="lxm"/>
+					</structure>
+				</type>
+			</place>
+			<place id="l5">
+				<name>
+					<text>l5</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>lxm</text>
+					<structure>
+						<usersort declaration="lxm"/>
+					</structure>
+				</type>
+			</place>
+			<place id="ml2">
+				<name>
+					<text>ml2</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>lxm</text>
+					<structure>
+						<usersort declaration="lxm"/>
+					</structure>
+				</type>
+			</place>
+			<place id="lm3">
+				<name>
+					<text>lm3</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>lxm</text>
+					<structure>
+						<usersort declaration="lxm"/>
+					</structure>
+				</type>
+			</place>
+			<place id="m6">
+				<name>
+					<text>m6</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>lxm</text>
+					<structure>
+						<usersort declaration="lxm"/>
+					</structure>
+				</type>
+			</place>
+			<place id="ml3">
+				<name>
+					<text>ml3</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>lxm</text>
+					<structure>
+						<usersort declaration="lxm"/>
+					</structure>
+				</type>
+			</place>
+			<place id="l7">
+				<name>
+					<text>l7</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>lxm</text>
+					<structure>
+						<usersort declaration="lxm"/>
+					</structure>
+				</type>
+			</place>
+			<place id="m8">
+				<name>
+					<text>m8</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>MICSystem</text>
+					<structure>
+						<usersort declaration="MICSystem"/>
+					</structure>
+				</type>
+			</place>
+			<place id="l13">
+				<name>
+					<text>l13</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>LegalResident</text>
+					<structure>
+						<usersort declaration="LegalResident"/>
+					</structure>
+				</type>
+			</place>
+			<place id="l16">
+				<name>
+					<text>l16</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>LegalResident</text>
+					<structure>
+						<usersort declaration="LegalResident"/>
+					</structure>
+				</type>
+			</place>
+			<place id="l14">
+				<name>
+					<text>l14</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>LegalResident</text>
+					<structure>
+						<usersort declaration="LegalResident"/>
+					</structure>
+				</type>
+			</place>
+			<place id="cl0">
+				<name>
+					<text>cl0</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>lxc</text>
+					<structure>
+						<usersort declaration="lxc"/>
+					</structure>
+				</type>
+			</place>
+			<place id="lc0">
+				<name>
+					<text>lc0</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>LegalResident</text>
+					<structure>
+						<usersort declaration="LegalResident"/>
+					</structure>
+				</type>
+			</place>
+			<place id="l18">
+				<name>
+					<text>l18</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>LegalResident</text>
+					<structure>
+						<usersort declaration="LegalResident"/>
+					</structure>
+				</type>
+			</place>
+			<place id="lp0">
+				<name>
+					<text>lp0</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>LegalResident</text>
+					<structure>
+						<usersort declaration="LegalResident"/>
+					</structure>
+				</type>
+			</place>
+			<place id="p3">
+				<name>
+					<text>p3</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>lxp</text>
+					<structure>
+						<usersort declaration="lxp"/>
+					</structure>
+				</type>
+			</place>
+			<place id="p2">
+				<name>
+					<text>p2</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>lxp</text>
+					<structure>
+						<usersort declaration="lxp"/>
+					</structure>
+				</type>
+			</place>
+			<place id="p4">
+				<name>
+					<text>p4</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>lxp</text>
+					<structure>
+						<usersort declaration="lxp"/>
+					</structure>
+				</type>
+			</place>
+			<place id="pl0">
+				<name>
+					<text>pl0</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>lxp</text>
+					<structure>
+						<usersort declaration="lxp"/>
+					</structure>
+				</type>
+			</place>
+			<place id="p10">
+				<name>
+					<text>p10</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>PublicAdminOffice</text>
+					<structure>
+						<usersort declaration="PublicAdminOffice"/>
+					</structure>
+				</type>
+			</place>
+			<!-- List of transitions -->
+			<transition id="CCT3">
+				<name>
+					<text>CCT3</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="AccessMicTerminal">
+				<name>
+					<text>AccessMicTerminal</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="CCT32">
+				<name>
+					<text>CCT32</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="CCT6">
+				<name>
+					<text>CCT6</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="CCT7">
+				<name>
+					<text>CCT7</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="CCT8">
+				<name>
+					<text>CCT8</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="ProvidePersonalnfo">
+				<name>
+					<text>ProvidePersonalnfo</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="CCT9">
+				<name>
+					<text>CCT9</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="CCT10">
+				<name>
+					<text>CCT10</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="CCT19">
+				<name>
+					<text>CCT19</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="CCT33">
+				<name>
+					<text>CCT33</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="AskCINFORMI">
+				<name>
+					<text>AskCINFORMI</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="ReceiveQuestion">
+				<name>
+					<text>ReceiveQuestion</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="CCT22">
+				<name>
+					<text>CCT22</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="CCT36">
+				<name>
+					<text>CCT36</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="CheckSanityReq">
+				<name>
+					<text>CheckSanityReq</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="CCT30">
+				<name>
+					<text>CCT30</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<!-- List of arcs -->
+			<arc id="ml0_to_CCT3" source="ml0" target="CCT3" type="normal">
+				<name>
+					<text>ml0_to_CCT3</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveLangReqSendLangChoicevarlSendLangChoicevarl,ReceiveLangReqSendLangChoicevarmSendLangChoicevarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveLangReqSendLangChoicevarlSendLangChoicevarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveLangReqSendLangChoicevarmSendLangChoicevarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="l1_to_CCT3" source="l1" target="CCT3" type="normal">
+				<name>
+					<text>l1_to_CCT3</text>
+				</name>
+				<hlinscription>
+					<text>1'(ReceiveLangReqSendLangChoicevarlSendLangChoicevarl)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="ReceiveLangReqSendLangChoicevarlSendLangChoicevarl"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT3_to_lm1" source="CCT3" target="lm1" type="normal">
+				<name>
+					<text>CCT3_to_lm1</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveLangReqSendLangChoicevarlSendLangChoicevarl,ReceiveLangReqSendLangChoicevarmSendLangChoicevarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveLangReqSendLangChoicevarlSendLangChoicevarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveLangReqSendLangChoicevarmSendLangChoicevarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT3_to_l3" source="CCT3" target="l3" type="normal">
+				<name>
+					<text>CCT3_to_l3</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveLangReqSendLangChoicevarlSendLangChoicevarl,ReceiveLangReqSendLangChoicevarmSendLangChoicevarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveLangReqSendLangChoicevarlSendLangChoicevarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveLangReqSendLangChoicevarmSendLangChoicevarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="AccessMicTerminal_to_lm0" source="AccessMicTerminal" target="lm0" type="normal">
+				<name>
+					<text>AccessMicTerminal_to_lm0</text>
+				</name>
+				<hlinscription>
+					<text>1'(varl)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="varl"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="AccessMicTerminal_to_l1" source="AccessMicTerminal" target="l1" type="normal">
+				<name>
+					<text>AccessMicTerminal_to_l1</text>
+				</name>
+				<hlinscription>
+					<text>1'(varl)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="varl"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ml3_to_CCT32" source="ml3" target="CCT32" type="normal">
+				<name>
+					<text>ml3_to_CCT32</text>
+				</name>
+				<hlinscription>
+					<text>1'((CCT12CCT16CCT11ReqAppointCINFORMIReceiveInstructionsObtainMissingDocsvarl,CCT12CCT16CCT11ReqAppointCINFORMIReceiveInstructionsObtainMissingDocsvarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="CCT12CCT16CCT11ReqAppointCINFORMIReceiveInstructionsObtainMissingDocsvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="CCT12CCT16CCT11ReqAppointCINFORMIReceiveInstructionsObtainMissingDocsvarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="l7_to_CCT32" source="l7" target="CCT32" type="normal">
+				<name>
+					<text>l7_to_CCT32</text>
+				</name>
+				<hlinscription>
+					<text>1'((CCT12CCT16CCT11ReqAppointCINFORMIReceiveInstructionsObtainMissingDocsvarl,CCT12CCT16CCT11ReqAppointCINFORMIReceiveInstructionsObtainMissingDocsvarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="CCT12CCT16CCT11ReqAppointCINFORMIReceiveInstructionsObtainMissingDocsvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="CCT12CCT16CCT11ReqAppointCINFORMIReceiveInstructionsObtainMissingDocsvarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="m8_to_CCT32" source="m8" target="CCT32" type="normal">
+				<name>
+					<text>m8_to_CCT32</text>
+				</name>
+				<hlinscription>
+					<text>1'(CCT12CCT16CCT16CCT15CCT1CCT14ReceiveAppointCCT13GiveAppointReceiveAppointReqReserveAppointvarmReserveAppointvarmGiveAppointvarmReceiveAppointvarm)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="CCT12CCT16CCT16CCT15CCT1CCT14ReceiveAppointCCT13GiveAppointReceiveAppointReqReserveAppointvarmReserveAppointvarmGiveAppointvarmReceiveAppointvarm"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT32_to_l13" source="CCT32" target="l13" type="normal">
+				<name>
+					<text>CCT32_to_l13</text>
+				</name>
+				<hlinscription>
+					<text>1'(CCT12CCT16CCT11ReqAppointCINFORMIReceiveInstructionsObtainMissingDocsvarl)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="CCT12CCT16CCT11ReqAppointCINFORMIReceiveInstructionsObtainMissingDocsvarl"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT32_to_l16" source="CCT32" target="l16" type="normal">
+				<name>
+					<text>CCT32_to_l16</text>
+				</name>
+				<hlinscription>
+					<text>1'(CCT12CCT16CCT11ReqAppointCINFORMIReceiveInstructionsObtainMissingDocsvarl)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="CCT12CCT16CCT11ReqAppointCINFORMIReceiveInstructionsObtainMissingDocsvarl"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="m2_to_CCT6" source="m2" target="CCT6" type="normal">
+				<name>
+					<text>m2_to_CCT6</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveLangChoiceDisplayNeedChoicevarlDisplayNeedChoicevarl,ReceiveLangChoiceDisplayNeedChoicevarmDisplayNeedChoicevarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveLangChoiceDisplayNeedChoicevarlDisplayNeedChoicevarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveLangChoiceDisplayNeedChoicevarmDisplayNeedChoicevarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="lm1_to_CCT6" source="lm1" target="CCT6" type="normal">
+				<name>
+					<text>lm1_to_CCT6</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveLangChoiceDisplayNeedChoicevarlDisplayNeedChoicevarl,ReceiveLangChoiceDisplayNeedChoicevarmDisplayNeedChoicevarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveLangChoiceDisplayNeedChoicevarlDisplayNeedChoicevarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveLangChoiceDisplayNeedChoicevarmDisplayNeedChoicevarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT6_to_ml1" source="CCT6" target="ml1" type="normal">
+				<name>
+					<text>CCT6_to_ml1</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveLangChoiceDisplayNeedChoicevarlDisplayNeedChoicevarl,ReceiveLangChoiceDisplayNeedChoicevarmDisplayNeedChoicevarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveLangChoiceDisplayNeedChoicevarlDisplayNeedChoicevarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveLangChoiceDisplayNeedChoicevarmDisplayNeedChoicevarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT6_to_m4" source="CCT6" target="m4" type="normal">
+				<name>
+					<text>CCT6_to_m4</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveLangChoiceDisplayNeedChoicevarlDisplayNeedChoicevarl,ReceiveLangChoiceDisplayNeedChoicevarmDisplayNeedChoicevarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveLangChoiceDisplayNeedChoicevarlDisplayNeedChoicevarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveLangChoiceDisplayNeedChoicevarmDisplayNeedChoicevarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="l3_to_CCT7" source="l3" target="CCT7" type="normal">
+				<name>
+					<text>l3_to_CCT7</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveNeedReqChoseFamilyReunionvarlChoseFamilyReunionvarl,ReceiveNeedReqChoseFamilyReunionvarmChoseFamilyReunionvarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveNeedReqChoseFamilyReunionvarlChoseFamilyReunionvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveNeedReqChoseFamilyReunionvarmChoseFamilyReunionvarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ml1_to_CCT7" source="ml1" target="CCT7" type="normal">
+				<name>
+					<text>ml1_to_CCT7</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveNeedReqChoseFamilyReunionvarlChoseFamilyReunionvarl,ReceiveNeedReqChoseFamilyReunionvarmChoseFamilyReunionvarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveNeedReqChoseFamilyReunionvarlChoseFamilyReunionvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveNeedReqChoseFamilyReunionvarmChoseFamilyReunionvarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT7_to_lm2" source="CCT7" target="lm2" type="normal">
+				<name>
+					<text>CCT7_to_lm2</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveNeedReqChoseFamilyReunionvarlChoseFamilyReunionvarl,ReceiveNeedReqChoseFamilyReunionvarmChoseFamilyReunionvarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveNeedReqChoseFamilyReunionvarlChoseFamilyReunionvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveNeedReqChoseFamilyReunionvarmChoseFamilyReunionvarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT7_to_l5" source="CCT7" target="l5" type="normal">
+				<name>
+					<text>CCT7_to_l5</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveNeedReqChoseFamilyReunionvarlChoseFamilyReunionvarl,ReceiveNeedReqChoseFamilyReunionvarmChoseFamilyReunionvarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveNeedReqChoseFamilyReunionvarlChoseFamilyReunionvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveNeedReqChoseFamilyReunionvarmChoseFamilyReunionvarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="lm2_to_CCT8" source="lm2" target="CCT8" type="normal">
+				<name>
+					<text>lm2_to_CCT8</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveNeedChoiceDisplayReqDocsvarlDisplayReqDocsvarl,ReceiveNeedChoiceDisplayReqDocsvarmDisplayReqDocsvarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveNeedChoiceDisplayReqDocsvarlDisplayReqDocsvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveNeedChoiceDisplayReqDocsvarmDisplayReqDocsvarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="m4_to_CCT8" source="m4" target="CCT8" type="normal">
+				<name>
+					<text>m4_to_CCT8</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveNeedChoiceDisplayReqDocsvarlDisplayReqDocsvarl,ReceiveNeedChoiceDisplayReqDocsvarmDisplayReqDocsvarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveNeedChoiceDisplayReqDocsvarlDisplayReqDocsvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveNeedChoiceDisplayReqDocsvarmDisplayReqDocsvarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT8_to_ml2" source="CCT8" target="ml2" type="normal">
+				<name>
+					<text>CCT8_to_ml2</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveNeedChoiceDisplayReqDocsvarlDisplayReqDocsvarl,ReceiveNeedChoiceDisplayReqDocsvarmDisplayReqDocsvarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveNeedChoiceDisplayReqDocsvarlDisplayReqDocsvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveNeedChoiceDisplayReqDocsvarmDisplayReqDocsvarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT8_to_m6" source="CCT8" target="m6" type="normal">
+				<name>
+					<text>CCT8_to_m6</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveNeedChoiceDisplayReqDocsvarlDisplayReqDocsvarl,ReceiveNeedChoiceDisplayReqDocsvarmDisplayReqDocsvarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveNeedChoiceDisplayReqDocsvarlDisplayReqDocsvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveNeedChoiceDisplayReqDocsvarmDisplayReqDocsvarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="l33_to_ProvidePersonalnfo" source="l33" target="ProvidePersonalnfo" type="normal">
+				<name>
+					<text>l33_to_ProvidePersonalnfo</text>
+				</name>
+				<hlinscription>
+					<text>1'(varl)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="varl"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="l5_to_CCT9" source="l5" target="CCT9" type="normal">
+				<name>
+					<text>l5_to_CCT9</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveReqDocsReqTickDocsObtainedvarlTickDocsObtainedvarl,ReceiveReqDocsReqTickDocsObtainedvarmTickDocsObtainedvarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveReqDocsReqTickDocsObtainedvarlTickDocsObtainedvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveReqDocsReqTickDocsObtainedvarmTickDocsObtainedvarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ml2_to_CCT9" source="ml2" target="CCT9" type="normal">
+				<name>
+					<text>ml2_to_CCT9</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveReqDocsReqTickDocsObtainedvarlTickDocsObtainedvarl,ReceiveReqDocsReqTickDocsObtainedvarmTickDocsObtainedvarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveReqDocsReqTickDocsObtainedvarlTickDocsObtainedvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveReqDocsReqTickDocsObtainedvarmTickDocsObtainedvarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT9_to_lm3" source="CCT9" target="lm3" type="normal">
+				<name>
+					<text>CCT9_to_lm3</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveReqDocsReqTickDocsObtainedvarlTickDocsObtainedvarl,ReceiveReqDocsReqTickDocsObtainedvarmTickDocsObtainedvarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveReqDocsReqTickDocsObtainedvarlTickDocsObtainedvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveReqDocsReqTickDocsObtainedvarmTickDocsObtainedvarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT9_to_l7" source="CCT9" target="l7" type="normal">
+				<name>
+					<text>CCT9_to_l7</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveReqDocsReqTickDocsObtainedvarlTickDocsObtainedvarl,ReceiveReqDocsReqTickDocsObtainedvarmTickDocsObtainedvarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveReqDocsReqTickDocsObtainedvarlTickDocsObtainedvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveReqDocsReqTickDocsObtainedvarmTickDocsObtainedvarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="lm3_to_CCT10" source="lm3" target="CCT10" type="normal">
+				<name>
+					<text>lm3_to_CCT10</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveDocsObtainedExplainHowToObtainMissingDocsvarlExplainHowToObtainMissingDocsvarl,ReceiveDocsObtainedExplainHowToObtainMissingDocsvarmExplainHowToObtainMissingDocsvarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveDocsObtainedExplainHowToObtainMissingDocsvarlExplainHowToObtainMissingDocsvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveDocsObtainedExplainHowToObtainMissingDocsvarmExplainHowToObtainMissingDocsvarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="m6_to_CCT10" source="m6" target="CCT10" type="normal">
+				<name>
+					<text>m6_to_CCT10</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveDocsObtainedExplainHowToObtainMissingDocsvarlExplainHowToObtainMissingDocsvarl,ReceiveDocsObtainedExplainHowToObtainMissingDocsvarmExplainHowToObtainMissingDocsvarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveDocsObtainedExplainHowToObtainMissingDocsvarlExplainHowToObtainMissingDocsvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveDocsObtainedExplainHowToObtainMissingDocsvarmExplainHowToObtainMissingDocsvarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT10_to_ml3" source="CCT10" target="ml3" type="normal">
+				<name>
+					<text>CCT10_to_ml3</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveDocsObtainedExplainHowToObtainMissingDocsvarlExplainHowToObtainMissingDocsvarl,ReceiveDocsObtainedExplainHowToObtainMissingDocsvarmExplainHowToObtainMissingDocsvarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveDocsObtainedExplainHowToObtainMissingDocsvarlExplainHowToObtainMissingDocsvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveDocsObtainedExplainHowToObtainMissingDocsvarmExplainHowToObtainMissingDocsvarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT10_to_m8" source="CCT10" target="m8" type="normal">
+				<name>
+					<text>CCT10_to_m8</text>
+				</name>
+				<hlinscription>
+					<text>1'(ReceiveDocsObtainedExplainHowToObtainMissingDocsvarmExplainHowToObtainMissingDocsvarm)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="ReceiveDocsObtainedExplainHowToObtainMissingDocsvarmExplainHowToObtainMissingDocsvarm"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="l16_to_CCT19" source="l16" target="CCT19" type="normal">
+				<name>
+					<text>l16_to_CCT19</text>
+				</name>
+				<hlinscription>
+					<text>1'(CCT18ReqHousingSuitCertifCCT17Gate1XORJoinExplainProcedureGotItvarlGotItvarl)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="CCT18ReqHousingSuitCertifCCT17Gate1XORJoinExplainProcedureGotItvarlGotItvarl"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="cl0_to_CCT19" source="cl0" target="CCT19" type="normal">
+				<name>
+					<text>cl0_to_CCT19</text>
+				</name>
+				<hlinscription>
+					<text>1'((CCT18ReqHousingSuitCertifCCT17Gate1XORJoinExplainProcedureGotItvarlGotItvarl,CCT18ReqHousingSuitCertifCCT17Gate1XORJoinExplainProcedureGotItvarcGotItvarc))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="CCT18ReqHousingSuitCertifCCT17Gate1XORJoinExplainProcedureGotItvarlGotItvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="CCT18ReqHousingSuitCertifCCT17Gate1XORJoinExplainProcedureGotItvarcGotItvarc"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="lc0_to_CCT19" source="lc0" target="CCT19" type="normal">
+				<name>
+					<text>lc0_to_CCT19</text>
+				</name>
+				<hlinscription>
+					<text>1'(CCT18ReqHousingSuitCertifCCT17Gate1XORJoinExplainProcedureGotItvarlGotItvarl)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="CCT18ReqHousingSuitCertifCCT17Gate1XORJoinExplainProcedureGotItvarlGotItvarl"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT19_to_l18" source="CCT19" target="l18" type="normal">
+				<name>
+					<text>CCT19_to_l18</text>
+				</name>
+				<hlinscription>
+					<text>1'(CCT18ReqHousingSuitCertifCCT17Gate1XORJoinExplainProcedureGotItvarlGotItvarl)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="CCT18ReqHousingSuitCertifCCT17Gate1XORJoinExplainProcedureGotItvarlGotItvarl"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT19_to_lp0" source="CCT19" target="lp0" type="normal">
+				<name>
+					<text>CCT19_to_lp0</text>
+				</name>
+				<hlinscription>
+					<text>1'(CCT18ReqHousingSuitCertifCCT17Gate1XORJoinExplainProcedureGotItvarlGotItvarl)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="CCT18ReqHousingSuitCertifCCT17Gate1XORJoinExplainProcedureGotItvarlGotItvarl"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="lp0_to_CCT33" source="lp0" target="CCT33" type="normal">
+				<name>
+					<text>lp0_to_CCT33</text>
+				</name>
+				<hlinscription>
+					<text>1'(ReceiveHousingSuitCertifReqGate1ANDSplitvarlGate1ANDSplitvarl)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="ReceiveHousingSuitCertifReqGate1ANDSplitvarlGate1ANDSplitvarl"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT33_to_p3" source="CCT33" target="p3" type="normal">
+				<name>
+					<text>CCT33_to_p3</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveHousingSuitCertifReqGate1ANDSplitvarlGate1ANDSplitvarl,ReceiveHousingSuitCertifReqGate1ANDSplitvarpGate1ANDSplitvarp))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveHousingSuitCertifReqGate1ANDSplitvarlGate1ANDSplitvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveHousingSuitCertifReqGate1ANDSplitvarpGate1ANDSplitvarp"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT33_to_p2" source="CCT33" target="p2" type="normal">
+				<name>
+					<text>CCT33_to_p2</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveHousingSuitCertifReqGate1ANDSplitvarlGate1ANDSplitvarl,ReceiveHousingSuitCertifReqGate1ANDSplitvarpGate1ANDSplitvarp))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveHousingSuitCertifReqGate1ANDSplitvarlGate1ANDSplitvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveHousingSuitCertifReqGate1ANDSplitvarpGate1ANDSplitvarp"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="l13_to_AskCINFORMI" source="l13" target="AskCINFORMI" type="normal">
+				<name>
+					<text>l13_to_AskCINFORMI</text>
+				</name>
+				<hlinscription>
+					<text>1'(varl)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="varl"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="AskCINFORMI_to_l14" source="AskCINFORMI" target="l14" type="normal">
+				<name>
+					<text>AskCINFORMI_to_l14</text>
+				</name>
+				<hlinscription>
+					<text>1'(varl)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="varl"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="AskCINFORMI_to_lc0" source="AskCINFORMI" target="lc0" type="normal">
+				<name>
+					<text>AskCINFORMI_to_lc0</text>
+				</name>
+				<hlinscription>
+					<text>1'(varl)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="varl"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="l14_to_ReceiveQuestion" source="l14" target="ReceiveQuestion" type="normal">
+				<name>
+					<text>l14_to_ReceiveQuestion</text>
+				</name>
+				<hlinscription>
+					<text>1'(varl)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="varl"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="ReceiveQuestion_to_cl0" source="ReceiveQuestion" target="cl0" type="normal">
+				<name>
+					<text>ReceiveQuestion_to_cl0</text>
+				</name>
+				<hlinscription>
+					<text>1'((varl,varc))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="varl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="varc"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="p2_to_CCT22" source="p2" target="CCT22" type="normal">
+				<name>
+					<text>p2_to_CCT22</text>
+				</name>
+				<hlinscription>
+					<text>1'((CCT21SendSuitabilityCertifCCT20Gate2XORSplitCheckHousingSuitReqGate1ANDJoinvarlGate1ANDJoinvarlGate2XORSplitvarlSendSuitabilityCertifvarl,CCT21SendSuitabilityCertifCCT20Gate2XORSplitCheckHousingSuitReqGate1ANDJoinvarpGate1ANDJoinvarpGate2XORSplitvarpSendSuitabilityCertifvarp))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="CCT21SendSuitabilityCertifCCT20Gate2XORSplitCheckHousingSuitReqGate1ANDJoinvarlGate1ANDJoinvarlGate2XORSplitvarlSendSuitabilityCertifvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="CCT21SendSuitabilityCertifCCT20Gate2XORSplitCheckHousingSuitReqGate1ANDJoinvarpGate1ANDJoinvarpGate2XORSplitvarpSendSuitabilityCertifvarp"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="p4_to_CCT22" source="p4" target="CCT22" type="normal">
+				<name>
+					<text>p4_to_CCT22</text>
+				</name>
+				<hlinscription>
+					<text>1'((CCT21SendSuitabilityCertifCCT20Gate2XORSplitCheckHousingSuitReqGate1ANDJoinvarlGate1ANDJoinvarlGate2XORSplitvarlSendSuitabilityCertifvarl,CCT21SendSuitabilityCertifCCT20Gate2XORSplitCheckHousingSuitReqGate1ANDJoinvarpGate1ANDJoinvarpGate2XORSplitvarpSendSuitabilityCertifvarp))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="CCT21SendSuitabilityCertifCCT20Gate2XORSplitCheckHousingSuitReqGate1ANDJoinvarlGate1ANDJoinvarlGate2XORSplitvarlSendSuitabilityCertifvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="CCT21SendSuitabilityCertifCCT20Gate2XORSplitCheckHousingSuitReqGate1ANDJoinvarpGate1ANDJoinvarpGate2XORSplitvarpSendSuitabilityCertifvarp"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT22_to_pl0" source="CCT22" target="pl0" type="normal">
+				<name>
+					<text>CCT22_to_pl0</text>
+				</name>
+				<hlinscription>
+					<text>1'((CCT21SendSuitabilityCertifCCT20Gate2XORSplitCheckHousingSuitReqGate1ANDJoinvarlGate1ANDJoinvarlGate2XORSplitvarlSendSuitabilityCertifvarl,CCT21SendSuitabilityCertifCCT20Gate2XORSplitCheckHousingSuitReqGate1ANDJoinvarpGate1ANDJoinvarpGate2XORSplitvarpSendSuitabilityCertifvarp))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="CCT21SendSuitabilityCertifCCT20Gate2XORSplitCheckHousingSuitReqGate1ANDJoinvarlGate1ANDJoinvarlGate2XORSplitvarlSendSuitabilityCertifvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="CCT21SendSuitabilityCertifCCT20Gate2XORSplitCheckHousingSuitReqGate1ANDJoinvarpGate1ANDJoinvarpGate2XORSplitvarpSendSuitabilityCertifvarp"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT22_to_p10" source="CCT22" target="p10" type="normal">
+				<name>
+					<text>CCT22_to_p10</text>
+				</name>
+				<hlinscription>
+					<text>1'(CCT21SendSuitabilityCertifCCT20Gate2XORSplitCheckHousingSuitReqGate1ANDJoinvarpGate1ANDJoinvarpGate2XORSplitvarpSendSuitabilityCertifvarp)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="CCT21SendSuitabilityCertifCCT20Gate2XORSplitCheckHousingSuitReqGate1ANDJoinvarpGate1ANDJoinvarpGate2XORSplitvarpSendSuitabilityCertifvarp"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="l18_to_CCT36" source="l18" target="CCT36" type="normal">
+				<name>
+					<text>l18_to_CCT36</text>
+				</name>
+				<hlinscription>
+					<text>1'(CCT35CCT31CCT34CCT29CCT23CCT25HousingSuitCertifObtainedRegisterRelativePubHealthvarl)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="CCT35CCT31CCT34CCT29CCT23CCT25HousingSuitCertifObtainedRegisterRelativePubHealthvarl"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="pl0_to_CCT36" source="pl0" target="CCT36" type="normal">
+				<name>
+					<text>pl0_to_CCT36</text>
+				</name>
+				<hlinscription>
+					<text>1'((CCT35CCT31CCT34CCT29CCT23CCT25HousingSuitCertifObtainedRegisterRelativePubHealthvarl,CCT35CCT31CCT34CCT29CCT23CCT25HousingSuitCertifObtainedRegisterRelativePubHealthvarp))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="CCT35CCT31CCT34CCT29CCT23CCT25HousingSuitCertifObtainedRegisterRelativePubHealthvarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="CCT35CCT31CCT34CCT29CCT23CCT25HousingSuitCertifObtainedRegisterRelativePubHealthvarp"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="p10_to_CCT36" source="p10" target="CCT36" type="normal">
+				<name>
+					<text>p10_to_CCT36</text>
+				</name>
+				<hlinscription>
+					<text>1'(CCT35CCT31CCT34CCT29CCT23CCT25CCT25CCT24Gate2ANDSplitRegisterRelativeReceiveRegsitrationvarpReceiveRegsitrationvarp)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="CCT35CCT31CCT34CCT29CCT23CCT25CCT25CCT24Gate2ANDSplitRegisterRelativeReceiveRegsitrationvarpReceiveRegsitrationvarp"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT36_to_l33" source="CCT36" target="l33" type="normal">
+				<name>
+					<text>CCT36_to_l33</text>
+				</name>
+				<hlinscription>
+					<text>1'(CCT35CCT31CCT34CCT29CCT23CCT25HousingSuitCertifObtainedRegisterRelativePubHealthvarl)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="CCT35CCT31CCT34CCT29CCT23CCT25HousingSuitCertifObtainedRegisterRelativePubHealthvarl"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="p3_to_CheckSanityReq" source="p3" target="CheckSanityReq" type="normal">
+				<name>
+					<text>p3_to_CheckSanityReq</text>
+				</name>
+				<hlinscription>
+					<text>1'((varl,varp))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="varl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="varp"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CheckSanityReq_to_p4" source="CheckSanityReq" target="p4" type="normal">
+				<name>
+					<text>CheckSanityReq_to_p4</text>
+				</name>
+				<hlinscription>
+					<text>1'((varl,varp))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="varl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="varp"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="lm0_to_CCT30" source="lm0" target="CCT30" type="normal">
+				<name>
+					<text>lm0_to_CCT30</text>
+				</name>
+				<hlinscription>
+					<text>1'(ReceiveAccessReqDisplayLangChoicevarlDisplayLangChoicevarl)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="ReceiveAccessReqDisplayLangChoicevarlDisplayLangChoicevarl"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT30_to_ml0" source="CCT30" target="ml0" type="normal">
+				<name>
+					<text>CCT30_to_ml0</text>
+				</name>
+				<hlinscription>
+					<text>1'((ReceiveAccessReqDisplayLangChoicevarlDisplayLangChoicevarl,ReceiveAccessReqDisplayLangChoicevarmDisplayLangChoicevarm))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="ReceiveAccessReqDisplayLangChoicevarlDisplayLangChoicevarl"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="ReceiveAccessReqDisplayLangChoicevarmDisplayLangChoicevarm"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT30_to_m2

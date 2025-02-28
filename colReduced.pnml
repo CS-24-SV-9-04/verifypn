@@ -1,0 +1,791 @@
+<?xml version="1.0"?>
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+	<net id="MODELID" type="http://www.pnml.org/version-2009/grammar/symmetricnet">
+		<name><text>MODELNAME</text></name>
+		<!-- List of declarations -->
+		<declaration>
+			<structure>
+				<declarations>
+					<!-- Declaration of user-defined color classes (sorts) -->
+					<namedsort id="file" name="file">
+						<cyclicenumeration>
+							<feconstant id="file1" name="1"/>
+							<feconstant id="file2" name="2"/>
+							<feconstant id="file3" name="3"/>
+							<feconstant id="file4" name="4"/>
+						</cyclicenumeration>
+					</namedsort>
+					<namedsort id="site" name="site">
+						<cyclicenumeration>
+							<feconstant id="site1" name="1"/>
+							<feconstant id="site2" name="2"/>
+							<feconstant id="site3" name="3"/>
+							<feconstant id="site4" name="4"/>
+						</cyclicenumeration>
+					</namedsort>
+					<namedsort id="sf" name="sf">
+						<productsort>
+							<usersort declaration="site"/>
+							<usersort declaration="file"/>
+						</productsort>
+					</namedsort>
+					<!-- Declaration of user-defined color variables -->
+					<variabledecl id="vars" name="vars">
+						<usersort declaration="site"/>
+					</variabledecl>
+					<variabledecl id="varf" name="varf">
+						<usersort declaration="file"/>
+					</variabledecl>
+					<variabledecl id="Updatevars" name="Updatevars">
+						<usersort declaration="site"/>
+					</variabledecl>
+					<variabledecl id="Updatevarf" name="Updatevarf">
+						<usersort declaration="file"/>
+					</variabledecl>
+					<variabledecl id="SendMsgUpdatevarsUpdatevars" name="SendMsgUpdatevarsUpdatevars">
+						<usersort declaration="site"/>
+					</variabledecl>
+					<variabledecl id="SendMsgUpdatevarfUpdatevarf" name="SendMsgUpdatevarfUpdatevarf">
+						<usersort declaration="file"/>
+					</variabledecl>
+					<variabledecl id="Changevars" name="Changevars">
+						<usersort declaration="site"/>
+					</variabledecl>
+					<variabledecl id="Changevarf" name="Changevarf">
+						<usersort declaration="file"/>
+					</variabledecl>
+					<variabledecl id="AcquireChangevarsChangevars" name="AcquireChangevarsChangevars">
+						<usersort declaration="site"/>
+					</variabledecl>
+					<variabledecl id="AcquireChangevarfChangevarf" name="AcquireChangevarfChangevarf">
+						<usersort declaration="file"/>
+					</variabledecl>
+					<variabledecl id="end_updatevars" name="end_updatevars">
+						<usersort declaration="site"/>
+					</variabledecl>
+					<variabledecl id="end_updatevarf" name="end_updatevarf">
+						<usersort declaration="file"/>
+					</variabledecl>
+					<variabledecl id="CCT1end_updateSendMsgUpdatevarsUpdatevarsend_updatevars" name="CCT1end_updateSendMsgUpdatevarsUpdatevarsend_updatevars">
+						<usersort declaration="site"/>
+					</variabledecl>
+					<variabledecl id="CCT1end_updateSendMsgUpdatevarfUpdatevarfend_updatevarf" name="CCT1end_updateSendMsgUpdatevarfUpdatevarfend_updatevarf">
+						<usersort declaration="file"/>
+					</variabledecl>
+					<variabledecl id="CCT2AcquireChangevarsChangevars" name="CCT2AcquireChangevarsChangevars">
+						<usersort declaration="site"/>
+					</variabledecl>
+					<variabledecl id="CCT2AcquireChangevarfChangevarf" name="CCT2AcquireChangevarfChangevarf">
+						<usersort declaration="file"/>
+					</variabledecl>
+					<variabledecl id="StartCCT2varsCCT2AcquireChangevarsChangevars" name="StartCCT2varsCCT2AcquireChangevarsChangevars">
+						<usersort declaration="site"/>
+					</variabledecl>
+					<variabledecl id="StartCCT2varfCCT2AcquireChangevarfChangevarf" name="StartCCT2varfCCT2AcquireChangevarfChangevarf">
+						<usersort declaration="file"/>
+					</variabledecl>
+				</declarations>
+			</structure>
+		</declaration>
+		<!-- Page meta -->
+		<page id="page0">
+			<name>
+				<text>DefaultPage</text>
+			</name>
+			<!-- List of places -->
+			<place id="all_active">
+				<name>
+					<text>all_active</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>site</text>
+					<structure>
+						<usersort declaration="site"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>1'(site1) + 1'(site2) + 1'(site3) + 1'(site4)</text>
+					<structure>
+						<add>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="site1"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="site2"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="site3"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="site4"/>
+									</subterm>
+								</numberof>
+							</subterm>
+						</add>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="Active">
+				<name>
+					<text>Active</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>sf</text>
+					<structure>
+						<usersort declaration="sf"/>
+					</structure>
+				</type>
+			</place>
+			<place id="Mutex">
+				<name>
+					<text>Mutex</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>file</text>
+					<structure>
+						<usersort declaration="file"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>1'(file1) + 1'(file2) + 1'(file3) + 1'(file4)</text>
+					<structure>
+						<add>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="file1"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="file2"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="file3"/>
+									</subterm>
+								</numberof>
+							</subterm>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="1">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="file4"/>
+									</subterm>
+								</numberof>
+							</subterm>
+						</add>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="Message">
+				<name>
+					<text>Message</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>sf</text>
+					<structure>
+						<usersort declaration="sf"/>
+					</structure>
+				</type>
+			</place>
+			<place id="MesBuffReply">
+				<name>
+					<text>MesBuffReply</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>sf</text>
+					<structure>
+						<usersort declaration="sf"/>
+					</structure>
+				</type>
+			</place>
+			<place id="Acknowledge">
+				<name>
+					<text>Acknowledge</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+				<type>
+					<text>sf</text>
+					<structure>
+						<usersort declaration="sf"/>
+					</structure>
+				</type>
+			</place>
+			<!-- List of transitions -->
+			<transition id="SendReply">
+				<name>
+					<text>SendReply</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="CCT3">
+				<name>
+					<text>CCT3</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="Release">
+				<name>
+					<text>Release</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<transition id="CCT4">
+				<name>
+					<text>CCT4</text>
+				</name>
+				<graphics>
+					<position x="0" y="0"/>
+				</graphics>
+			</transition>
+			<!-- List of arcs -->
+			<arc id="MesBuffReply_to_SendReply" source="MesBuffReply" target="SendReply" type="normal">
+				<name>
+					<text>MesBuffReply_to_SendReply</text>
+				</name>
+				<hlinscription>
+					<text>1'((vars,varf))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vars"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="varf"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="SendReply_to_Acknowledge" source="SendReply" target="Acknowledge" type="normal">
+				<name>
+					<text>SendReply_to_Acknowledge</text>
+				</name>
+				<hlinscription>
+					<text>1'((vars,varf))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vars"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="varf"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="Message_to_CCT3" source="Message" target="CCT3" type="normal">
+				<name>
+					<text>Message_to_CCT3</text>
+				</name>
+				<hlinscription>
+					<text>1'((CCT1end_updateSendMsgUpdatevarsUpdatevarsend_updatevars,CCT1end_updateSendMsgUpdatevarfUpdatevarfend_updatevarf))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="CCT1end_updateSendMsgUpdatevarsUpdatevarsend_updatevars"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="CCT1end_updateSendMsgUpdatevarfUpdatevarfend_updatevarf"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT3_to_MesBuffReply" source="CCT3" target="MesBuffReply" type="normal">
+				<name>
+					<text>CCT3_to_MesBuffReply</text>
+				</name>
+				<hlinscription>
+					<text>1'((CCT1end_updateSendMsgUpdatevarsUpdatevarsend_updatevars,CCT1end_updateSendMsgUpdatevarfUpdatevarfend_updatevarf))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="CCT1end_updateSendMsgUpdatevarsUpdatevarsend_updatevars"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="CCT1end_updateSendMsgUpdatevarfUpdatevarfend_updatevarf"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="Active_to_Release" source="Active" target="Release" type="normal">
+				<name>
+					<text>Active_to_Release</text>
+				</name>
+				<hlinscription>
+					<text>1'((vars,varf))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="vars"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="varf"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="Acknowledge_to_Release" source="Acknowledge" target="Release" type="normal">
+				<name>
+					<text>Acknowledge_to_Release</text>
+				</name>
+				<hlinscription>
+					<text>((1'((site1,varf)) + 1'((site2,varf)) + 1'((site3,varf)) + 1'((site4,varf))) - 1'((vars,varf)))</text>
+					<structure>
+						<subtract>
+							<subterm>
+								<add>
+									<subterm>
+										<numberof>
+											<subterm>
+												<numberconstant value="1">
+													<positive/>
+												</numberconstant>
+											</subterm>
+											<subterm>
+												<tuple>
+													<subterm>
+														<useroperator declaration="site1"/>
+													</subterm>
+													<subterm>
+														<variable refvariable="varf"/>
+													</subterm>
+												</tuple>
+											</subterm>
+										</numberof>
+									</subterm>
+										<subterm>
+											<numberof>
+												<subterm>
+													<numberconstant value="1">
+														<positive/>
+													</numberconstant>
+												</subterm>
+												<subterm>
+													<tuple>
+														<subterm>
+															<useroperator declaration="site2"/>
+														</subterm>
+														<subterm>
+															<variable refvariable="varf"/>
+														</subterm>
+													</tuple>
+												</subterm>
+											</numberof>
+										</subterm>
+											<subterm>
+												<numberof>
+													<subterm>
+														<numberconstant value="1">
+															<positive/>
+														</numberconstant>
+													</subterm>
+													<subterm>
+														<tuple>
+															<subterm>
+																<useroperator declaration="site3"/>
+															</subterm>
+															<subterm>
+																<variable refvariable="varf"/>
+															</subterm>
+														</tuple>
+													</subterm>
+												</numberof>
+											</subterm>
+												<subterm>
+													<numberof>
+														<subterm>
+															<numberconstant value="1">
+																<positive/>
+															</numberconstant>
+														</subterm>
+														<subterm>
+															<tuple>
+																<subterm>
+																	<useroperator declaration="site4"/>
+																</subterm>
+																<subterm>
+																	<variable refvariable="varf"/>
+																</subterm>
+															</tuple>
+														</subterm>
+													</numberof>
+												</subterm>
+											</add>
+										</subterm>
+										<subterm>
+											<numberof>
+												<subterm>
+													<numberconstant value="1">
+														<positive/>
+													</numberconstant>
+												</subterm>
+												<subterm>
+													<tuple>
+														<subterm>
+															<variable refvariable="vars"/>
+														</subterm>
+														<subterm>
+															<variable refvariable="varf"/>
+														</subterm>
+													</tuple>
+												</subterm>
+											</numberof>
+										</subterm>
+									</subtract>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="Release_to_all_active" source="Release" target="all_active" type="normal">
+				<name>
+					<text>Release_to_all_active</text>
+				</name>
+				<hlinscription>
+					<text>1'(vars)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="vars"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="Release_to_Mutex" source="Release" target="Mutex" type="normal">
+				<name>
+					<text>Release_to_Mutex</text>
+				</name>
+				<hlinscription>
+					<text>1'(varf)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="varf"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="all_active_to_CCT4" source="all_active" target="CCT4" type="normal">
+				<name>
+					<text>all_active_to_CCT4</text>
+				</name>
+				<hlinscription>
+					<text>1'(StartCCT2varsCCT2AcquireChangevarsChangevars)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="StartCCT2varsCCT2AcquireChangevarsChangevars"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="Mutex_to_CCT4" source="Mutex" target="CCT4" type="normal">
+				<name>
+					<text>Mutex_to_CCT4</text>
+				</name>
+				<hlinscription>
+					<text>1'(StartCCT2varfCCT2AcquireChangevarfChangevarf)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="StartCCT2varfCCT2AcquireChangevarfChangevarf"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT4_to_Active" source="CCT4" target="Active" type="normal">
+				<name>
+					<text>CCT4_to_Active</text>
+				</name>
+				<hlinscription>
+					<text>1'((StartCCT2varsCCT2AcquireChangevarsChangevars,StartCCT2varfCCT2AcquireChangevarfChangevarf))</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<tuple>
+									<subterm>
+										<variable refvariable="StartCCT2varsCCT2AcquireChangevarsChangevars"/>
+									</subterm>
+									<subterm>
+										<variable refvariable="StartCCT2varfCCT2AcquireChangevarfChangevarf"/>
+									</subterm>
+								</tuple>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="CCT4_to_Message" source="CCT4" target="Message" type="normal">
+				<name>
+					<text>CCT4_to_Message</text>
+				</name>
+				<hlinscription>
+					<text>((1'((site1,StartCCT2varfCCT2AcquireChangevarfChangevarf)) + 1'((site2,StartCCT2varfCCT2AcquireChangevarfChangevarf)) + 1'((site3,StartCCT2varfCCT2AcquireChangevarfChangevarf)) + 1'((site4,StartCCT2varfCCT2AcquireChangevarfChangevarf))) - 1'((StartCCT2varsCCT2AcquireChangevarsChangevars,StartCCT2varfCCT2AcquireChangevarfChangevarf)))</text>
+					<structure>
+						<subtract>
+							<subterm>
+								<add>
+									<subterm>
+										<numberof>
+											<subterm>
+												<numberconstant value="1">
+													<positive/>
+												</numberconstant>
+											</subterm>
+											<subterm>
+												<tuple>
+													<subterm>
+														<useroperator declaration="site1"/>
+													</subterm>
+													<subterm>
+														<variable refvariable="StartCCT2varfCCT2AcquireChangevarfChangevarf"/>
+													</subterm>
+												</tuple>
+											</subterm>
+										</numberof>
+									</subterm>
+										<subterm>
+											<numberof>
+												<subterm>
+													<numberconstant value="1">
+														<positive/>
+													</numberconstant>
+												</subterm>
+												<subterm>
+													<tuple>
+														<subterm>
+															<useroperator declaration="site2"/>
+														</subterm>
+														<subterm>
+															<variable refvariable="StartCCT2varfCCT2AcquireChangevarfChangevarf"/>
+														</subterm>
+													</tuple>
+												</subterm>
+											</numberof>
+										</subterm>
+											<subterm>
+												<numberof>
+													<subterm>
+														<numberconstant value="1">
+															<positive/>
+														</numberconstant>
+													</subterm>
+													<subterm>
+														<tuple>
+															<subterm>
+																<useroperator declaration="site3"/>
+															</subterm>
+															<subterm>
+																<variable refvariable="StartCCT2varfCCT2AcquireChangevarfChangevarf"/>
+															</subterm>
+														</tuple>
+													</subterm>
+												</numberof>
+											</subterm>
+												<subterm>
+													<numberof>
+														<subterm>
+															<numberconstant value="1">
+																<positive/>
+															</numberconstant>
+														</subterm>
+														<subterm>
+															<tuple>
+																<subterm>
+																	<useroperator declaration="site4"/>
+																</subterm>
+																<subterm>
+																	<variable refvariable="StartCCT2varfCCT2AcquireChangevarfChangevarf"/>
+																</subterm>
+															</tuple>
+														</subterm>
+													</numberof>
+												</subterm>
+											</add>
+										</subterm>
+										<subterm>
+											<numberof>
+												<subterm>
+													<numberconstant value="1">
+														<positive/>
+													</numberconstant>
+												</subterm>
+												<subterm>
+													<tuple>
+														<subterm>
+															<variable refvariable="StartCCT2varsCCT2AcquireChangevarsChangevars"/>
+														</subterm>
+														<subterm>
+															<variable refvariable="StartCCT2varfCCT2AcquireChangevarfChangevarf"/>
+														</subterm>
+													</tuple>
+												</subterm>
+											</numberof>
+										</subterm>
+									</subtract>
+					</structure>
+				</hlinscription>
+			</arc>
+			<!-- List of inhibitor arcs -->
+		</page>
+	</net>
+</pnml>
