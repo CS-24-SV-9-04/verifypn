@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<property-set xmlns="http://tapaal.net/">
+  
+  <property>
+    <id>Top floor</id>
+    <description>Top floor</description>
+    <formula>
+      <integer-eq>
+        <tokens-count>
+          <place>P1</place>
+        </tokens-count>
+        <integer-constant>1</integer-constant>
+      </integer-eq>
+    </formula>
+  </property>
+  <property>
+    <id>Bottom floor</id>
+    <description>Bottom floor</description>
+    <formula>
+      <integer-eq>
+        <tokens-count>
+          <place>P4</place>
+        </tokens-count>
+        <integer-constant>1</integer-constant>
+      </integer-eq>
+    </formula>
+  </property>
+</property-set>

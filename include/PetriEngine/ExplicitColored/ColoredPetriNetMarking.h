@@ -10,14 +10,7 @@ namespace PetriEngine::ExplicitColored{
         ColoredPetriNetMarking() = default;
         ColoredPetriNetMarking(const ColoredPetriNetMarking& marking) = default;
         ColoredPetriNetMarking(ColoredPetriNetMarking&&) = default;
-        ColoredPetriNetMarking& operator=(const ColoredPetriNetMarking& marking) {
-            auto vec = std::vector<CPNMultiSet>{};
-            for (const auto & i : marking.markings){
-                vec.push_back(i);
-            }
-            markings = std::move(vec);
-            return *this;
-        };
+        ColoredPetriNetMarking& operator=(const ColoredPetriNetMarking& marking) = default;
         ColoredPetriNetMarking& operator=(ColoredPetriNetMarking&&) = default;
 
         std::vector<CPNMultiSet> markings;
@@ -39,10 +32,10 @@ namespace PetriEngine::ExplicitColored{
         size_t compressedEncode(std::vector<uint8_t>& bytes, bool& success) const {
             size_t cursor = 0;
             for (const auto& marking : markings) {
-                for (const auto& [color, count] : marking.counts()) {
+                for (const auto& [colorSequence, count] : marking.counts()) {
                     if (count > 0) {
                         encodeVarInt(bytes, cursor, count);
-                        encodeVarInt(bytes, cursor, color + 1);
+                        encodeVarInt(bytes, cursor, colorSequence.encodedValue + 1);
                         if (bytes.size() < cursor + 1) {
                             bytes.resize(cursor + 1);
                         }

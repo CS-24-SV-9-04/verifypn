@@ -1,0 +1,26 @@
+
+Parameters: -C -x 1,2 /usr/local/share/mcc/AirplaneLD-COL-0010/model.pnml /usr/local/share/mcc/AirplaneLD-COL-0010/ReachabilityCardinality.xml 
+
+Search=OverApprox,Trace=DISABLED,PrintBindings=DISABLED,State_Space_Exploration=DISABLED,Colored_Structural_Reduction=ALL,Colored_Struct_Red_Timout=30,Structural_Reduction=AGGRESSIVE,Struct_Red_Timout=60,Stubborn_Reduction=ENABLED,Query_Simplication=ENABLED,QSTimeout=30,Init_Potency=ENABLED,InitPotencyTimeout=10,Siphon_Trap=DISABLED,LPSolve_Timeout=10
+Using explicit colored
+
+Colored structural reductions computed in 0.000767 seconds
+Reduced from 20 to 20 places (0, 0%)
+Reduced from 15 to 15 transitions (0, 0%)
+Applications of rule AtomicPreAgglomeration: 0
+Applications of rule DeadTransitions: 0
+Applications of rule ParallelPlaces: 0
+Applications of rule ParallelTransitions: 0
+Applications of rule PreemptiveFiring: 0
+Applications of rule RedundantPlaces: 0
+Applications of rule Relevance: 0
+
+FORMULA AirplaneLD-COL-0010-ReachabilityCardinality-2024-00 FALSE 
+Query index 0 was solved
+
+Query is NOT satisfied
+passed: 43463
+explored: 183664
+checked_states: 43462
+peak_waiting_states: 11
+end_waiting_states: 3

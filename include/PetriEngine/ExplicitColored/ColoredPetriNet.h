@@ -18,6 +18,7 @@ namespace PetriEngine::ExplicitColored
         std::unique_ptr<CompiledGuardExpression> guardExpression;
         std::set<Variable_t> variables;
         std::pair<std::map<Variable_t,std::vector<Color_t>>, uint64_t> validVariables;
+        std::map<Variable_t, std::vector<VariableConstraint>> preplacesVariableConstraints;
     };
 
     struct ColoredPetriNetPlace
@@ -62,6 +63,27 @@ namespace PetriEngine::ExplicitColored
 
         [[nodiscard]] Transition_t getTransitionCount() const {
             return _transitions.size();
+        }
+
+        void getInputVariables(const Transition_t transition, std::set<Variable_t>& out) const {
+            for (auto i = _transitionArcs[transition].first; i < _transitionArcs[transition].second; i++) {
+                const auto& vars = _arcs[i].expression->getVariables();
+                out.insert(vars.begin(), vars.end());
+            }
+        }
+
+        void getGuardVariables(const Transition_t transition, std::set<Variable_t>& out) const {
+            if (_transitions[transition].guardExpression == nullptr) {
+                return;
+            }
+            _transitions[transition].guardExpression->collectVariables(out);
+        }
+
+        void getOutputVariables(const Transition_t transition, std::set<Variable_t>& out) const {
+            for (auto i = _transitionArcs[transition].second; i < _transitionArcs[transition + 1].first; i++){
+                const auto& vars = _arcs[i].expression->getVariables();
+                out.insert(vars.begin(), vars.end());
+            }
         }
     private:
         friend class ColoredPetriNetBuilder;

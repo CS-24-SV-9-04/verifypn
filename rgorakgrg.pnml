@@ -1,0 +1,247 @@
+<?xml version="1.0"?>
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+	<net id="MODELID" type="http://www.pnml.org/version-2009/grammar/symmetricnet">
+		<name><text>MODELNAME</text></name>
+		<!-- List of declarations -->
+		<declaration>
+			<structure>
+				<declarations>
+					<!-- Declaration of user-defined color classes (sorts) -->
+					<namedsort id="x" name="x">
+						<cyclicenumeration>
+							<feconstant id="a" name="x"/>
+							<feconstant id="b" name="x"/>
+							<feconstant id="c" name="x"/>
+						</cyclicenumeration>
+					</namedsort>
+					<namedsort id="dot" name="dot">
+						<dot/>
+					</namedsort>
+					<!-- Declaration of user-defined color variables -->
+					<variabledecl id="X" name="X">
+						<usersort declaration="x"/>
+					</variabledecl>
+				</declarations>
+			</structure>
+		</declaration>
+		<!-- Page meta -->
+		<page id="page0">
+			<name>
+				<text>DefaultPage</text>
+			</name>
+			<!-- List of places -->
+			<place id="P0">
+				<name>
+					<text>P0</text>
+				</name>
+				<graphics>
+					<position x="450" y="225"/>
+				</graphics>
+				<type>
+					<text>x</text>
+					<structure>
+						<usersort declaration="x"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>11'(a)</text>
+					<structure>
+						<add>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="11">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="a"/>
+									</subterm>
+								</numberof>
+							</subterm>
+						</add>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="P1">
+				<name>
+					<text>P1</text>
+				</name>
+				<graphics>
+					<position x="645" y="225"/>
+				</graphics>
+				<type>
+					<text>x</text>
+					<structure>
+						<usersort declaration="x"/>
+					</structure>
+				</type>
+				<hlinitialMarking>
+					<text>11'(a)</text>
+					<structure>
+						<add>
+							<subterm>
+								<numberof>
+									<subterm>
+										<numberconstant value="11">
+											<positive/>
+										</numberconstant>
+									</subterm>
+									<subterm>
+										<useroperator declaration="a"/>
+									</subterm>
+								</numberof>
+							</subterm>
+						</add>
+					</structure>
+				</hlinitialMarking>
+			</place>
+			<place id="P3">
+				<name>
+					<text>P3</text>
+				</name>
+				<graphics>
+					<position x="690" y="60"/>
+				</graphics>
+				<type>
+					<text>dot</text>
+					<structure>
+						<usersort declaration="dot"/>
+					</structure>
+				</type>
+			</place>
+			<!-- List of transitions -->
+			<transition id="T0">
+				<name>
+					<text>T0</text>
+				</name>
+				<graphics>
+					<position x="540" y="390"/>
+				</graphics>
+			</transition>
+			<transition id="T2">
+				<name>
+					<text>T2</text>
+				</name>
+				<graphics>
+					<position x="540" y="120"/>
+				</graphics>
+				<condition>
+					<text>X eq a</text>
+					<structure>
+						<equality>
+							<subterm>
+								<variable refvariable="X"/>
+							</subterm>
+							<subterm>
+								<useroperator declaration="a"/>
+							</subterm>
+						</equality>
+					</structure>
+				</condition>
+			</transition>
+			<!-- List of arcs -->
+			<arc id="T0_to_P0" source="T0" target="P0" type="normal">
+				<name>
+					<text>T0_to_P0</text>
+				</name>
+				<hlinscription>
+					<text>1'(a)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<useroperator declaration="a"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T0_to_P1" source="T0" target="P1" type="normal">
+				<name>
+					<text>T0_to_P1</text>
+				</name>
+				<hlinscription>
+					<text>1'(a)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<useroperator declaration="a"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P0_to_T2" source="P0" target="T2" type="normal">
+				<name>
+					<text>P0_to_T2</text>
+				</name>
+				<hlinscription>
+					<text>1'(X)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="X"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="P1_to_T2" source="P1" target="T2" type="normal">
+				<name>
+					<text>P1_to_T2</text>
+				</name>
+				<hlinscription>
+					<text>1'(X)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<variable refvariable="X"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<arc id="T2_to_P3" source="T2" target="P3" type="normal">
+				<name>
+					<text>T2_to_P3</text>
+				</name>
+				<hlinscription>
+					<text>1'(dot)</text>
+					<structure>
+						<numberof>
+							<subterm>
+								<numberconstant value="1">
+									<positive/>
+								</numberconstant>
+							</subterm>
+							<subterm>
+								<useroperator declaration="dot"/>
+							</subterm>
+						</numberof>
+					</structure>
+				</hlinscription>
+			</arc>
+			<!-- List of inhibitor arcs -->
+		</page>
+	</net>
+</pnml>

@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+    <net id="ComposedModel" type="http://www.pnml.org/version-2009/grammar/ptnet">
+        <name>
+            <text>ComposedModel</text>
+        </name>
+        <declaration>
+            <structure>
+                <declarations>
+                    <namedsort id="dot" name="dot">
+                        <dot/>
+                    </namedsort>
+                    <namedsort id="a" name="a">
+                        <finiteintrange end="500" start="1"/>
+                    </namedsort>
+                    <namedsort id="A" name="A">
+                        <productsort>
+                            <usersort declaration="a"/>
+                            <usersort declaration="a"/>
+                            <usersort declaration="a"/>
+                        </productsort>
+                    </namedsort>
+                    <variabledecl id="x" name="x">
+                        <usersort declaration="a"/>
+                    </variabledecl>
+                    <variabledecl id="y" name="y">
+                        <usersort declaration="a"/>
+                    </variabledecl>
+                    <variabledecl id="z" name="z">
+                        <usersort declaration="a"/>
+                    </variabledecl>
+                </declarations>
+            </structure>
+        </declaration>
+        <page id="page0">
+            <place id="P0">
+                <name>
+                    <text>P0</text>
+                    <graphics>
+                        <offset x="0" y="0"/>
+                    </graphics>
+                </name>
+                <graphics>
+                    <position x="495" y="330"/>
+                </graphics>
+                <type>
+                    <text>A</text>
+                    <structure>
+                        <usersort declaration="A"/>
+                    </structure>
+                </type>
+                <hlinitialMarking>
+                    <text>(1'(1, 1, 1))</text>
+                    <structure>
+                        <add>
+                            <subterm>
+                                <numberof>
+                                    <subterm>
+                                        <numberconstant value="1">
+                                            <positive/>
+                                        </numberconstant>
+                                    </subterm>
+                                    <subterm>
+                                        <tuple>
+                                            <subterm>
+                                                <finiteintrangeconstant value="1">
+                                                    <finiteintrange end="500" start="1"/>
+                                                </finiteintrangeconstant>
+                                            </subterm>
+                                            <subterm>
+                                                <finiteintrangeconstant value="1">
+                                                    <finiteintrange end="500" start="1"/>
+                                                </finiteintrangeconstant>
+                                            </subterm>
+                                            <subterm>
+                                                <finiteintrangeconstant value="1">
+                                                    <finiteintrange end="500" start="1"/>
+                                                </finiteintrangeconstant>
+                                            </subterm>
+                                        </tuple>
+                                    </subterm>
+                                </numberof>
+                            </subterm>
+                        </add>
+                    </structure>
+                </hlinitialMarking>
+            </place>
+            <place id="P3">
+                <name>
+                    <text>P3</text>
+                    <graphics>
+                        <offset x="0" y="0"/>
+                    </graphics>
+                </name>
+                <graphics>
+                    <position x="780" y="435"/>
+                </graphics>
+                <type>
+                    <text>dot</text>
+                    <structure>
+                        <usersort declaration="dot"/>
+                    </structure>
+                </type>
+            </place>
+            <transition distribution="constant" id="T0" value="1.0">
+                <name>
+                    <graphics>
+                        <offset x="0" y="0"/>
+                    </graphics>
+                    <text>T0</text>
+                </name>
+                <graphics>
+                    <position x="480" y="180"/>
+                </graphics>
+            </transition>
+            <transition distribution="constant" id="T1" value="1.0">
+                <name>
+                    <graphics>
+                        <offset x="0" y="0"/>
+                    </graphics>
+                    <text>T1</text>
+                </name>
+                <graphics>
+                    <position x="270" y="390"/>
+                </graphics>
+            </transition>
+            <transition distribution="constant" id="T2" value="1.0">
+                <name>
+                    <graphics>
+                        <offset x="0" y="0"/>
+                    </graphics>
+                    <text>T2</text>
+                </name>
+                <graphics>
+                    <position x="600" y="345"/>
+                </graphics>
+            </transition>
+            <arc id="P0_to_T0" source="P0" target="T0" type="normal">
+                <hlinscription>
+                    <text>1'(x, y, z)</text>
+                    <structure>
+                        <numberof>
+                            <subterm>
+                                <numberconstant value="1">
+                                    <positive/>
+                                </numberconstant>
+                            </subterm>
+                            <subterm>
+                                <tuple>
+                                    <subterm>
+                                        <variable refvariable="x"/>
+                                    </subterm>
+                                    <subterm>
+                                        <variable refvariable="y"/>
+                                    </subterm>
+                                    <subterm>
+                                        <variable refvariable="z"/>
+                                    </subterm>
+                                </tuple>
+                            </subterm>
+                        </numberof>
+                    </structure>
+                </hlinscription>
+                <graphics>
+                    <position x="555" y="240"/>
+                </graphics>
+            </arc>
+            <arc id="P0_to_T1" source="P0" target="T1" type="normal">
+                <hlinscription>
+                    <text>1'(y, z, x)</text>
+                    <structure>
+                        <numberof>
+                            <subterm>
+                                <numberconstant value="1">
+                                    <positive/>
+                                </numberconstant>
+                            </subterm>
+                            <subterm>
+                                <tuple>
+                                    <subterm>
+                                        <variable refvariable="y"/>
+                                    </subterm>
+                                    <subterm>
+                                        <variable refvariable="z"/>
+                                    </subterm>
+                                    <subterm>
+                                        <variable refvariable="x"/>
+                                    </subterm>
+                                </tuple>
+                            </subterm>
+                        </numberof>
+                    </structure>
+                </hlinscription>
+                <graphics>
+                    <position x="375" y="315"/>
+                </graphics>
+            </arc>
+            <arc id="P0_to_T2" source="P0" target="T2" type="normal">
+                <hlinscription>
+                    <text>1'(10, 10, 10)</text>
+                    <structure>
+                        <numberof>
+                            <subterm>
+                                <numberconstant value="1">
+                                    <positive/>
+                                </numberconstant>
+                            </subterm>
+                            <subterm>
+                                <tuple>
+                                    <subterm>
+                                        <finiteintrangeconstant value="10">
+                                            <finiteintrange end="500" start="1"/>
+                                        </finiteintrangeconstant>
+                                    </subterm>
+                                    <subterm>
+                                        <finiteintrangeconstant value="10">
+                                            <finiteintrange end="500" start="1"/>
+                                        </finiteintrangeconstant>
+                                    </subterm>
+                                    <subterm>
+                                        <finiteintrangeconstant value="10">
+                                            <finiteintrange end="500" start="1"/>
+                                        </finiteintrangeconstant>
+                                    </subterm>
+                                </tuple>
+                            </subterm>
+                        </numberof>
+                    </structure>
+                </hlinscription>
+            </arc>
+            <arc id="T0_to_P0" source="T0" target="P0" type="normal">
+                <hlinscription>
+                    <text>1'(x++, y, z)</text>
+                    <structure>
+                        <numberof>
+                            <subterm>
+                                <numberconstant value="1">
+                                    <positive/>
+                                </numberconstant>
+                            </subterm>
+                            <subterm>
+                                <tuple>
+                                    <subterm>
+                                        <successor>
+                                            <subterm>
+                                                <variable refvariable="x"/>
+                                            </subterm>
+                                        </successor>
+                                    </subterm>
+                                    <subterm>
+                                        <variable refvariable="y"/>
+                                    </subterm>
+                                    <subterm>
+                                        <variable refvariable="z"/>
+                                    </subterm>
+                                </tuple>
+                            </subterm>
+                        </numberof>
+                    </structure>
+                </hlinscription>
+                <graphics>
+                    <position x="420" y="255"/>
+                </graphics>
+            </arc>
+            <arc id="T1_to_P0" source="T1" target="P0" type="normal">
+                <hlinscription>
+                    <text>1'(x, y, z)</text>
+                    <structure>
+                        <numberof>
+                            <subterm>
+                                <numberconstant value="1">
+                                    <positive/>
+                                </numberconstant>
+                            </subterm>
+                            <subterm>
+                                <tuple>
+                                    <subterm>
+                                        <variable refvariable="x"/>
+                                    </subterm>
+                                    <subterm>
+                                        <variable refvariable="y"/>
+                                    </subterm>
+                                    <subterm>
+                                        <variable refvariable="z"/>
+                                    </subterm>
+                                </tuple>
+                            </subterm>
+                        </numberof>
+                    </structure>
+                </hlinscription>
+                <graphics>
+                    <position x="405" y="465"/>
+                </graphics>
+            </arc>
+            <arc id="T2_to_P3" source="T2" target="P3" type="normal">
+                <hlinscription>
+                    <text>1'dot</text>
+                    <structure>
+                        <numberof>
+                            <subterm>
+                                <numberconstant value="1">
+                                    <positive/>
+                                </numberconstant>
+                            </subterm>
+                            <subterm>
+                                <useroperator declaration="dot"/>
+                            </subterm>
+                        </numberof>
+                    </structure>
+                </hlinscription>
+            </arc>
+        </page>
+    </net>
+</pnml>
