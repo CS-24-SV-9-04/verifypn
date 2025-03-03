@@ -594,6 +594,12 @@ int explicitColored(options_t& options, shared_string_set& string_set, std::vect
     } else {
         builder.parse_model(options.modelfile);
     }
+
+    if (!builder.isColored()) {
+        std::cout << "Skipping non-colored petri net on explicit colored engine";
+        return to_underlying(ReturnValue::UnknownCode);
+    }
+
     auto buildStatus = builder.build();
 
     switch (buildStatus) {
