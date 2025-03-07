@@ -137,6 +137,8 @@ void options_t::print(std::ostream& optionsOut) {
             optionsOut << ",ColoredSuccessorGenerator=EVEN";
         } else if (colored_sucessor_generator == ColoredSuccessorGeneratorOption::FIXED) {
             optionsOut << ",ColoredSuccessorGenerator=FIXED";
+        } else if (colored_sucessor_generator == ColoredSuccessorGeneratorOption::RANDOM) {
+            optionsOut << ",ColoredSuccessorGenerator=RANDOM";
         }
     }
 

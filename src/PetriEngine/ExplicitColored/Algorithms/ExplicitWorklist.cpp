@@ -44,6 +44,9 @@ namespace PetriEngine::ExplicitColored {
         if (colored_successor_generator_option == ColoredSuccessorGeneratorOption::EVEN) {
             return _search<ColoredPetriNetStateEven>(searchStrategy);
         }
+        if (colored_successor_generator_option == ColoredSuccessorGeneratorOption::RANDOM) {
+            return _search<ColoredPetriNetStateRandom>(searchStrategy);
+        }
         throw explicit_error(unsupported_generator);
     }
 
@@ -66,6 +69,9 @@ namespace PetriEngine::ExplicitColored {
 
         if constexpr (std::is_same_v<T, ColoredPetriNetStateEven>) {
             auto initial = ColoredPetriNetStateEven{initialState, _net.getTransitionCount()};
+            waiting.add(std::move(initial));
+        } else if constexpr (std::is_same_v<T, ColoredPetriNetStateRandom>){
+            auto initial = ColoredPetriNetStateRandom{initialState, _net.getTransitionCount(), _seed};
             waiting.add(std::move(initial));
         } else {
             auto initial = ColoredPetriNetStateFixed{initialState};
@@ -90,7 +96,7 @@ namespace PetriEngine::ExplicitColored {
                 continue;
             }
 
-            if constexpr (std::is_same_v<T, ColoredPetriNetStateEven>) {
+            if constexpr (std::is_same_v<T, ColoredPetriNetStateEven> || std::is_same_v<T, ColoredPetriNetStateRandom>) {
                 if (next.shuffle){
                     next.shuffle = false;
                     waiting.shuffle();

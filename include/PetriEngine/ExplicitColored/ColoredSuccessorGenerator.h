@@ -24,6 +24,10 @@ namespace PetriEngine::ExplicitColored {
             return _nextEven(state);
         }
 
+        ColoredPetriNetStateRandom next(ColoredPetriNetStateRandom& state) const {
+            return _nextRandom(state);
+        }
+
         [[nodiscard]] const ColoredPetriNet& net() const {
             return _net;
         }
@@ -89,6 +93,30 @@ namespace PetriEngine::ExplicitColored {
             }
             return {{},0};
         }
+
+        ColoredPetriNetStateRandom _nextRandom(ColoredPetriNetStateRandom &state) const{
+            auto [tid, bid] = state.getNextPair();
+            auto totalBindings = _net._transitions[tid].validVariables.second;
+            Binding binding;
+            size_t seed = state.getSeed();
+            while (bid != std::numeric_limits<Binding_t>::max()) {
+                {
+                    const auto nextBid = findNextValidBinding(state.marking, tid, bid, totalBindings, binding);
+                    state.updatePair(tid, nextBid);
+                    if (nextBid != std::numeric_limits<Binding_t>::max()) {
+                        auto newState = ColoredPetriNetStateRandom{state, _net.getTransitionCount(), seed};
+                        _fire(newState.marking, tid, binding);
+                        return newState;
+                    }
+                }
+                auto [nextTid, nextBid] = state.getNextPair();
+                tid = nextTid;
+                bid = nextBid;
+                totalBindings = _net._transitions[tid].validVariables.second;
+            }
+            return {{},0, seed};
+        }
+
     };
 }
 
