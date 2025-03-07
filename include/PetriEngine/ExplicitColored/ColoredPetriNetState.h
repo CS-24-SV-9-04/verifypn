@@ -143,6 +143,7 @@ namespace PetriEngine::ExplicitColored {
             if (done()) {
                 return {tid,bid};
             }
+            _currentIndex = _rng() % _map.size();
             auto it = _map.begin() + _currentIndex;
             while (it != _map.end() && *it == std:: numeric_limits<Binding_t>::max()){
                 ++it;
