@@ -43,7 +43,7 @@ namespace PetriEngine::ExplicitColored {
         std::shared_ptr<CompiledGammaQueryExpression> _gammaQuery;
         Quantifier _quantifier;
         const ColoredPetriNet& _net;
-        const ColoredSuccessorGenerator _successorGenerator;
+        ColoredSuccessorGenerator _successorGenerator;
         const size_t _seed;
         bool _fullStatespace = true;
         SearchStatistics _searchStatistics;

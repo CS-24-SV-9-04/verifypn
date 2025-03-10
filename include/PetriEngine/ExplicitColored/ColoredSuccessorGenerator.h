@@ -13,7 +13,7 @@ namespace PetriEngine::ExplicitColored {
 
     class ColoredSuccessorGenerator {
     public:
-        explicit ColoredSuccessorGenerator(const ColoredPetriNet& net);
+        explicit ColoredSuccessorGenerator(const ColoredPetriNet& net, size_t seed);
         ~ColoredSuccessorGenerator() = default;
 
         ColoredPetriNetStateFixed next(ColoredPetriNetStateFixed& state) const {
@@ -24,7 +24,7 @@ namespace PetriEngine::ExplicitColored {
             return _nextEven(state);
         }
 
-        ColoredPetriNetStateRandom next(ColoredPetriNetStateRandom& state) const {
+        ColoredPetriNetStateRandom next(ColoredPetriNetStateRandom& state) {
             return _nextRandom(state);
         }
 
@@ -41,6 +41,7 @@ namespace PetriEngine::ExplicitColored {
         void producePostset(ColoredPetriNetMarking& state, Transition_t tid, const Binding& binding) const;
     private:
         const ColoredPetriNet& _net;
+        std::default_random_engine _rng;
         void _fire(ColoredPetriNetMarking& state, Transition_t tid, const Binding& binding) const;
         [[nodiscard]] bool _hasMinimalCardinality(const ColoredPetriNetMarking& marking, Transition_t tid) const;
         [[nodiscard]] bool _shouldEarlyTerminateTransition(const ColoredPetriNetMarking& marking, const Transition_t tid) const {
@@ -94,27 +95,26 @@ namespace PetriEngine::ExplicitColored {
             return {{},0};
         }
 
-        ColoredPetriNetStateRandom _nextRandom(ColoredPetriNetStateRandom &state) const{
-            auto [tid, bid] = state.getNextPair();
+        ColoredPetriNetStateRandom _nextRandom(ColoredPetriNetStateRandom &state) {
+            auto [tid, bid] = state.getNextPair(_rng);
             auto totalBindings = _net._transitions[tid].validVariables.second;
             Binding binding;
-            size_t seed = state.getSeed();
             while (bid != std::numeric_limits<Binding_t>::max()) {
                 {
                     const auto nextBid = findNextValidBinding(state.marking, tid, bid, totalBindings, binding);
                     state.updatePair(tid, nextBid);
                     if (nextBid != std::numeric_limits<Binding_t>::max()) {
-                        auto newState = ColoredPetriNetStateRandom{state, _net.getTransitionCount(), seed};
+                        auto newState = ColoredPetriNetStateRandom{state, _net.getTransitionCount()};
                         _fire(newState.marking, tid, binding);
                         return newState;
                     }
                 }
-                auto [nextTid, nextBid] = state.getNextPair();
+                auto [nextTid, nextBid] = state.getNextPair(_rng);
                 tid = nextTid;
                 bid = nextBid;
                 totalBindings = _net._transitions[tid].validVariables.second;
             }
-            return {{},0, seed};
+            return {{},0};
         }
 
     };

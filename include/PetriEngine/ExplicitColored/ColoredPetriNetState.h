@@ -125,24 +125,24 @@ namespace PetriEngine::ExplicitColored {
     };
 
     struct  ColoredPetriNetStateRandom{
-        ColoredPetriNetStateRandom(const ColoredPetriNetStateRandom& state, const size_t seed) : marking(state.marking), _map(state._map), _currentIndex(state._currentIndex), _rng(seed), _seed(seed)  {};
-        ColoredPetriNetStateRandom(const ColoredPetriNetStateRandom& oldState, const size_t& numberOfTransitions, const size_t seed) : marking(oldState.marking), _rng(seed), _seed(seed) {
+        ColoredPetriNetStateRandom(const ColoredPetriNetStateRandom& state) : marking(state.marking), _map(state._map), _currentIndex(state._currentIndex) {};
+        ColoredPetriNetStateRandom(const ColoredPetriNetStateRandom& oldState, const size_t& numberOfTransitions) : marking(oldState.marking) {
             _map = std::vector<Binding_t>(numberOfTransitions);
         }
-        ColoredPetriNetStateRandom(ColoredPetriNetMarking marking, const size_t& numberOfTransitions, const size_t seed) : marking(std::move(marking)), _rng(seed), _seed(seed) {
+        ColoredPetriNetStateRandom(ColoredPetriNetMarking marking, const size_t& numberOfTransitions) : marking(std::move(marking)) {
             _map = std::vector<Binding_t>(numberOfTransitions);
         }
         ColoredPetriNetStateRandom(ColoredPetriNetStateRandom&& state) = default;
         ColoredPetriNetStateRandom& operator=(const ColoredPetriNetStateRandom&) = default;
         ColoredPetriNetStateRandom& operator=(ColoredPetriNetStateRandom&&) = default;
 
-        std::pair<Transition_t, Binding_t> getNextPair() {
+        std::pair<Transition_t, Binding_t> getNextPair(std::default_random_engine& rng) {
             Transition_t tid = _currentIndex;
             Binding_t bid = std::numeric_limits<Binding_t>::max();
             if (done()) {
                 return {tid,bid};
             }
-            _currentIndex = _rng() % _map.size();
+            _currentIndex = rng() % _map.size();
             auto it = _map.begin() + _currentIndex;
             while (it != _map.end() && *it == std:: numeric_limits<Binding_t>::max()){
                 ++it;
@@ -176,10 +176,6 @@ namespace PetriEngine::ExplicitColored {
             }
         }
 
-        size_t getSeed(){
-            return _seed;
-        }
-
         void shrink(){
             marking.shrink();
         }
@@ -195,8 +191,6 @@ namespace PetriEngine::ExplicitColored {
         std::vector<Binding_t > _map;
         uint32_t _currentIndex = 0;
         uint32_t _completedTransitions = 0;
-        std::default_random_engine _rng;
-        size_t _seed;
     };
 
 }

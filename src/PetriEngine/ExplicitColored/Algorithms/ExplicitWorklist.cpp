@@ -21,7 +21,7 @@ namespace PetriEngine::ExplicitColored {
         const IColoredResultPrinter& coloredResultPrinter,
         const size_t seed
     ) : _net(std::move(net)),
-        _successorGenerator(ColoredSuccessorGenerator{_net}),
+        _successorGenerator(ColoredSuccessorGenerator{_net, seed}),
         _seed(seed),
         _coloredResultPrinter(coloredResultPrinter)
     {
@@ -71,7 +71,7 @@ namespace PetriEngine::ExplicitColored {
             auto initial = ColoredPetriNetStateEven{initialState, _net.getTransitionCount()};
             waiting.add(std::move(initial));
         } else if constexpr (std::is_same_v<T, ColoredPetriNetStateRandom>){
-            auto initial = ColoredPetriNetStateRandom{initialState, _net.getTransitionCount(), _seed};
+            auto initial = ColoredPetriNetStateRandom{initialState, _net.getTransitionCount()};
             waiting.add(std::move(initial));
         } else {
             auto initial = ColoredPetriNetStateFixed{initialState};
