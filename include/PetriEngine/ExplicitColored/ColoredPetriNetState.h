@@ -125,7 +125,7 @@ namespace PetriEngine::ExplicitColored {
     };
 
     struct  ColoredPetriNetStateRandom{
-        ColoredPetriNetStateRandom(const ColoredPetriNetStateRandom& state) : marking(state.marking), _map(state._map), _currentIndex(state._currentIndex) {};
+        ColoredPetriNetStateRandom(const ColoredPetriNetStateRandom& state) : marking(state.marking), _map(state._map), _randomIndex(state._randomIndex) {};
         ColoredPetriNetStateRandom(const ColoredPetriNetStateRandom& oldState, const size_t& numberOfTransitions) : marking(oldState.marking) {
             _map = std::vector<Binding_t>(numberOfTransitions);
         }
@@ -137,24 +137,29 @@ namespace PetriEngine::ExplicitColored {
         ColoredPetriNetStateRandom& operator=(ColoredPetriNetStateRandom&&) = default;
 
         std::pair<Transition_t, Binding_t> getNextPair(std::default_random_engine& rng) {
-            Transition_t tid = _currentIndex;
+            Transition_t tid = std::numeric_limits<Transition_t>::max();
             Binding_t bid = std::numeric_limits<Binding_t>::max();
             if (done()) {
                 return {tid,bid};
             }
-            _currentIndex = rng() % _map.size();
-            auto it = _map.begin() + _currentIndex;
+            _randomIndex = rng() % _map.size();
+            auto it = _map.begin() + _randomIndex;
             while (it != _map.end() && *it == std:: numeric_limits<Binding_t>::max()){
                 ++it;
-                ++_currentIndex;
+                ++_randomIndex;
             }
             if (it == _map.end()) {
-                _currentIndex = 0;
-                shuffle = true;
-            } else {
-                tid = _currentIndex;
+                _randomIndex = 0;
+                auto it = _map.begin();
+                while (it != _map.end() && *it == std:: numeric_limits<Binding_t>::max()){
+                    ++it;
+                    ++_randomIndex;
+                }
+                tid = _randomIndex;
                 bid = *it;
-                ++_currentIndex;
+            } else {
+                tid = _randomIndex;
+                bid = *it;
             }
             return {tid,bid};
         }
@@ -185,11 +190,10 @@ namespace PetriEngine::ExplicitColored {
         }
 
         ColoredPetriNetMarking marking;
-        bool shuffle = false;
     private:
         bool _done = false;
         std::vector<Binding_t > _map;
-        uint32_t _currentIndex = 0;
+        uint32_t _randomIndex = 0;
         uint32_t _completedTransitions = 0;
     };
 

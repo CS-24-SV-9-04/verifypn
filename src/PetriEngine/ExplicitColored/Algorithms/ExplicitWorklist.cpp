@@ -96,7 +96,7 @@ namespace PetriEngine::ExplicitColored {
                 continue;
             }
 
-            if constexpr (std::is_same_v<T, ColoredPetriNetStateEven> || std::is_same_v<T, ColoredPetriNetStateRandom>) {
+            if constexpr (std::is_same_v<T, ColoredPetriNetStateEven>) {
                 if (next.shuffle){
                     next.shuffle = false;
                     waiting.shuffle();
