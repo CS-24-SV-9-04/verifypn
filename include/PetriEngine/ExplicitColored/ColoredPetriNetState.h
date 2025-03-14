@@ -125,7 +125,7 @@ namespace PetriEngine::ExplicitColored {
     };
 
     struct  ColoredPetriNetStateRandom{
-        ColoredPetriNetStateRandom(const ColoredPetriNetStateRandom& state) : marking(state.marking), _map(state._map), _randomIndex(state._randomIndex) {};
+        ColoredPetriNetStateRandom(const ColoredPetriNetStateRandom& state) : marking(state.marking), _map(state._map) {};
         ColoredPetriNetStateRandom(const ColoredPetriNetStateRandom& oldState, const size_t& numberOfTransitions) : marking(oldState.marking) {
             _map = std::vector<Binding_t>(numberOfTransitions);
         }
@@ -142,7 +142,7 @@ namespace PetriEngine::ExplicitColored {
             if (done()) {
                 return {tid,bid};
             }
-            _randomIndex = rng() % _map.size();
+            auto _randomIndex = rng() % _map.size();
             auto it = _map.begin() + _randomIndex;
             while (it != _map.end() && *it == std:: numeric_limits<Binding_t>::max()){
                 ++it;
@@ -193,7 +193,6 @@ namespace PetriEngine::ExplicitColored {
     private:
         bool _done = false;
         std::vector<Binding_t > _map;
-        uint32_t _randomIndex = 0;
         uint32_t _completedTransitions = 0;
     };
 
