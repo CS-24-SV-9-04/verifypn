@@ -3,9 +3,14 @@
 
 #include <queue>
 #include <random>
+#include <stack>
+
 #include "PetriEngine/ExplicitColored/Visitors/HeuristicVisitor.h"
 
 namespace PetriEngine::ExplicitColored {
+
+    //Probably make commong supertype
+
     template <typename T>
     class DFSStructure {
     public:
@@ -15,9 +20,15 @@ namespace PetriEngine::ExplicitColored {
 
         void remove() {
             waiting.pop();
+            if (!waiting.empty()) {
+                waiting.top().decode(_encoder);
+            }
         }
 
         void add(T state) {
+            if (!waiting.empty()) {
+                waiting.top().encode();
+            }
             waiting.emplace(std::move(state));
         }
 
@@ -30,8 +41,12 @@ namespace PetriEngine::ExplicitColored {
         }
 
         static void shuffle() {}
+        void setEncoder(ColoredEncoder& encoder) {
+            _encoder = &encoder;
+        };
     private:
         std::stack<T> waiting;
+        ColoredEncoder* _encoder = nullptr;
     };
 
     template <typename T>
@@ -42,10 +57,12 @@ namespace PetriEngine::ExplicitColored {
         }
 
         void remove() {
+            waiting.front().decode(_encoder);
             waiting.pop();
         }
 
         void add(T state) {
+            state.encode();
             waiting.emplace(std::move(state));
         }
 
@@ -58,8 +75,12 @@ namespace PetriEngine::ExplicitColored {
         }
 
         static void shuffle() {}
+        void setEncoder(ColoredEncoder& encoder) {
+            _encoder = &encoder;
+        };
     private:
         std::queue<T> waiting;
+        ColoredEncoder* _encoder = nullptr;
     };
 
     template<typename T>
@@ -79,14 +100,21 @@ namespace PetriEngine::ExplicitColored {
         }
 
         void shuffle() {
+            if (!_stack.empty()) {
+                _stack.top().encode();
+            }
             std::shuffle(_cache.begin(), _cache.end(), _rng);
             for (auto & it : _cache) {
                 _stack.emplace(std::move(it));
             }
-            _cache.clear();
+            if (!_stack.empty()) {
+                _cache.clear();
+                _stack.top().decode(_encoder);
+            }
         }
 
         void add(T state) {
+            state.encode();
             _cache.push_back(std::move(state));
         }
 
@@ -97,10 +125,15 @@ namespace PetriEngine::ExplicitColored {
         [[nodiscard]] uint32_t size() const {
             return _stack.size() + _cache.size();
         }
+
+        void setEncoder(ColoredEncoder& encoder) {
+            _encoder = &encoder;
+        };
     private:
         std::stack<T> _stack;
         std::vector<T> _cache;
         std::default_random_engine _rng;
+        ColoredEncoder* _encoder = nullptr;
     };
 
     template<typename T>
@@ -127,6 +160,7 @@ namespace PetriEngine::ExplicitColored {
             _queue.pop();
         }
 
+        //Not implemented encoding
         void add(T state) {
             const MarkingCount_t weight = _query->distance(state.marking, _negQuery);
 
@@ -144,6 +178,7 @@ namespace PetriEngine::ExplicitColored {
             return _queue.size();
         }
 
+        static void setEncoder(ColoredEncoder& encoder) {};
         static void shuffle() {}
     private:
         std::priority_queue<WeightedState<T>> _queue;

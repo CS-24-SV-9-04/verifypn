@@ -58,6 +58,7 @@ namespace PetriEngine::ExplicitColored {
     bool ExplicitWorklist::_genericSearch(WaitingList<T> waiting) {
         ptrie::set<uint8_t> passed;
         ColoredEncoder encoder = ColoredEncoder{_net.getPlaces()};
+        waiting.setEncoder(encoder);
         const auto& initialState = _net.initial();
         const auto earlyTerminationCondition = _quantifier == Quantifier::EF;
 
@@ -66,10 +67,12 @@ namespace PetriEngine::ExplicitColored {
         if constexpr (std::is_same_v<T, ColoredPetriNetStateEven>) {
             auto initial = ColoredPetriNetStateEven{initialState, _net.getTransitionCount()};
             initial.id = 0;
+            initial.addEncoding(encoder.data(), size);
             waiting.add(std::move(initial));
         } else {
             auto initial = ColoredPetriNetStateFixed{initialState};
             initial.id = 0;
+            initial.addEncoding(encoder.data(), size);
             waiting.add(std::move(initial));
         }
 
@@ -113,6 +116,7 @@ namespace PetriEngine::ExplicitColored {
                     encoder.printBiggestEncoding();
                     return _getResult(true, encoder.isFullStatespace());
                 }
+                successor.addEncoding(encoder.data(), size);
                 waiting.add(std::move(successor));
                 passed.insert(encoder.data(), size);
                 _searchStatistics.passedCount += 1;

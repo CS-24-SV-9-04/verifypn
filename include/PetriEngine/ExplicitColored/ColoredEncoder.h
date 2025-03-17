@@ -95,7 +95,7 @@ namespace PetriEngine::ExplicitColored {
             return marking;
         }
 
-        [[nodiscard]] const uchar* data() const {
+        [[nodiscard]] const ptrie::uchar* data() const {
             return _scratchpad.const_raw();
         }
 
@@ -194,7 +194,7 @@ namespace PetriEngine::ExplicitColored {
             return THIRTYTWO;
         }
 
-        static CPNMultiSet _decodeTokenCounts(const uchar* encoding, const Color_t colorNum, size_t& offset) {
+        static CPNMultiSet _decodeTokenCounts(const ptrie::uchar* encoding, const Color_t colorNum, size_t& offset) {
             CPNMultiSet multiset{};
             const auto placeCountSize = static_cast<TYPE_SIZE>(_readFromEncoding(encoding, EIGHT, offset));
             for (size_t colorId = 0; colorId < colorNum; colorId++) {
@@ -206,7 +206,7 @@ namespace PetriEngine::ExplicitColored {
             return multiset;
         }
 
-        static CPNMultiSet _decodePlaceTokenCounts(const uchar* encoding, const TYPE_SIZE placeColorSize, size_t& offset) {
+        static CPNMultiSet _decodePlaceTokenCounts(const ptrie::uchar* encoding, const TYPE_SIZE placeColorSize, size_t& offset) {
             CPNMultiSet multiset{};
             const auto multisetCardinality = _readFromEncoding(encoding, placeColorSize, offset);
             const auto multisetCountSize = static_cast<TYPE_SIZE>(_readFromEncoding(encoding, EIGHT, offset));
@@ -258,7 +258,7 @@ namespace PetriEngine::ExplicitColored {
             offset += typeSize;
         }
 
-        [[nodiscard]] static uint32_t _readFromEncoding(const uchar* encoding, const TYPE_SIZE typeSize, size_t& offset) {
+        [[nodiscard]] static uint32_t _readFromEncoding(const ptrie::uchar* encoding, const TYPE_SIZE typeSize, size_t& offset) {
             if (offset + typeSize > UINT16_MAX) {
                 //If encoding is too big then we decode to 0
                 return 0;

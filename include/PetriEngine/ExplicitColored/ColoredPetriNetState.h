@@ -3,28 +3,69 @@
 
 #include <queue>
 #include <utility>
+#include <utils/structures/binarywrapper.h>
+
+#include "ColoredEncoder.h"
 #include "PetriEngine/ExplicitColored/IntegerPackCodec.h"
 #include "ColoredPetriNetMarking.h"
 
 namespace PetriEngine::ExplicitColored {
-    struct ColoredPetriNetStateFixed {
-        explicit ColoredPetriNetStateFixed(ColoredPetriNetMarking marking) : marking(std::move(marking)) {};
+    struct AbstractColoredPetriNetState {
+        virtual ~AbstractColoredPetriNetState() = default;
+
+
+        AbstractColoredPetriNetState(AbstractColoredPetriNetState&& state) = default;
+        AbstractColoredPetriNetState(const AbstractColoredPetriNetState& state) : id(state.id), _encoding(state._encoding) {};
+        AbstractColoredPetriNetState& operator=(const AbstractColoredPetriNetState& state) = default;
+        AbstractColoredPetriNetState& operator=(AbstractColoredPetriNetState&&) = default;
+
+        explicit AbstractColoredPetriNetState(ColoredPetriNetMarking marking) : marking(std::move(marking)) {};
+        size_t id;
+        ColoredPetriNetMarking marking;
+
+        void addEncoding(const ptrie::uchar* encoding, const size_t encodingSize) {
+            _encoding = new ptrie::uchar[encodingSize];
+            memcpy(_encoding, encoding, encodingSize);
+            _encodingSize = encodingSize;
+        }
+
+        void encode() {
+            if (_encoded) return;
+            marking = ColoredPetriNetMarking{};
+            _encoded = true;
+        }
+
+        void decode(const ColoredEncoder* encoder) {
+            if (!_encoded) return;
+            marking = encoder->decode(_encoding);
+            _encoded = false;
+        }
+
+        [[nodiscard]] virtual bool done() const {
+            return _done;
+        }
+        virtual void setDone() {
+            _done = true;
+        }
+
+        virtual void shrink() {
+            marking.shrink();
+        }
+        bool shuffle = false;
+    protected:
+        bool _done = false;
+        ptrie::uchar* _encoding;
+        size_t _encodingSize = 0;
+    private:
+        bool _encoded = false;
+    };
+
+    struct ColoredPetriNetStateFixed final : AbstractColoredPetriNetState {
+        explicit ColoredPetriNetStateFixed(ColoredPetriNetMarking marking) : AbstractColoredPetriNetState(std::move(marking)) {};
         ColoredPetriNetStateFixed(const ColoredPetriNetStateFixed& oldState) = default;
         ColoredPetriNetStateFixed(ColoredPetriNetStateFixed&&) = default;
         ColoredPetriNetStateFixed& operator=(const ColoredPetriNetStateFixed&) = default;
         ColoredPetriNetStateFixed& operator=(ColoredPetriNetStateFixed&&) = default;
-
-        void shrink() {
-            marking.shrink();
-        }
-
-        void setDone() {
-            _done = true;
-        }
-
-        [[nodiscard]] bool done() const {
-            return _done;
-        }
 
         [[nodiscard]] const Transition_t& getCurrentTransition() const {
             return _currentTransition;
@@ -46,27 +87,24 @@ namespace PetriEngine::ExplicitColored {
         void nextBinding(const Binding_t bid) {
             _currentBinding = bid + 1;
         }
-
-        ColoredPetriNetMarking marking;
-        size_t id;
     private:
-        bool _done = false;
-
         Binding_t _currentBinding = 0;
         Transition_t _currentTransition = 0;
     };
 
-    struct ColoredPetriNetStateEven {
-        ColoredPetriNetStateEven(const ColoredPetriNetStateEven& oldState, const size_t& numberOfTransitions) : marking(oldState.marking) {
+    struct ColoredPetriNetStateEven final : AbstractColoredPetriNetState {
+        ColoredPetriNetStateEven(const ColoredPetriNetStateEven& oldState, const size_t& numberOfTransitions) : AbstractColoredPetriNetState(oldState.marking) {
             _map = std::vector<Binding_t>(numberOfTransitions);
         }
-        ColoredPetriNetStateEven(ColoredPetriNetMarking marking, const size_t& numberOfTransitions) : marking(std::move(marking))  {
+        ColoredPetriNetStateEven(ColoredPetriNetMarking marking, const size_t& numberOfTransitions) : AbstractColoredPetriNetState(std::move(marking))  {
             _map = std::vector<Binding_t>(numberOfTransitions);
         }
         ColoredPetriNetStateEven(ColoredPetriNetStateEven&& state) = default;
         ColoredPetriNetStateEven(const ColoredPetriNetStateEven& state) = default;
-        ColoredPetriNetStateEven& operator=(const ColoredPetriNetStateEven&) = default;
-        ColoredPetriNetStateEven& operator=(ColoredPetriNetStateEven&&) = default;
+        ColoredPetriNetStateEven(ColoredPetriNetStateEven& state) = default;
+        ColoredPetriNetStateEven& operator=(const ColoredPetriNetStateEven& state) = default;
+        ColoredPetriNetStateEven& operator=(ColoredPetriNetStateEven&&)  noexcept = default;
+
         std::pair<Transition_t, Binding_t> getNextPair() {
             Transition_t tid = _currentIndex;
             Binding_t bid = std::numeric_limits<Binding_t>::max();
@@ -106,21 +144,7 @@ namespace PetriEngine::ExplicitColored {
                 }
             }
         }
-
-        void shrink() {
-            marking.shrink();
-        }
-
-        [[nodiscard]] bool done() const {
-            return _done;
-        }
-
-        ColoredPetriNetMarking marking;
-        bool shuffle = false;
-        size_t id;
-
     private:
-        bool _done = false;
         std::vector<Binding_t> _map;
         uint32_t _currentIndex = 0;
         uint32_t _completedTransitions = 0;
