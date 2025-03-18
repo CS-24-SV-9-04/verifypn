@@ -137,7 +137,7 @@ namespace PetriEngine::ExplicitColored {
         ColoredPetriNetStateRandom& operator=(ColoredPetriNetStateRandom&&) = default;
 
         std::pair<Transition_t, Binding_t> getNextPair(std::default_random_engine& rng) {
-            Transition_t tid = std::numeric_limits<Transition_t>::max();
+            Transition_t tid = 0;
             Binding_t bid = std::numeric_limits<Binding_t>::max();
             if (done()) {
                 return {tid,bid};
@@ -150,7 +150,7 @@ namespace PetriEngine::ExplicitColored {
             }
             if (it == _map.end()) {
                 _randomIndex = 0;
-                auto it = _map.begin();
+                it = _map.begin();
                 while (it != _map.end() && *it == std:: numeric_limits<Binding_t>::max()){
                     ++it;
                     ++_randomIndex;
