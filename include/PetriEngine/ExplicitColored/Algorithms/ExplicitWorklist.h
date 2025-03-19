@@ -8,6 +8,7 @@
 #include "PetriEngine/ExplicitColored/ColoredResultPrinter.h"
 #include "PetriEngine/ExplicitColored/SearchStatistics.h"
 #include "PetriEngine/ExplicitColored/ColoredSuccessorGenerator.h"
+#include "PetriEngine/ExplicitColored/ColoredEncoder.h"
 
 namespace PetriEngine::ExplicitColored {
     template <typename T>
@@ -17,13 +18,6 @@ namespace PetriEngine::ExplicitColored {
     enum class Quantifier {
         EF,
         AG
-    };
-
-    enum class SearchStrategy {
-        DFS,
-        BFS,
-        RDFS,
-        HEUR
     };
 
     class ExplicitWorklist {
@@ -37,7 +31,7 @@ namespace PetriEngine::ExplicitColored {
             size_t seed
         );
 
-        bool check(SearchStrategy searchStrategy, ColoredSuccessorGeneratorOption colored_successor_generator_option);
+        bool check(Strategy searchStrategy, ColoredSuccessorGeneratorOption coloredSuccessorGeneratorOption);
         [[nodiscard]] const SearchStatistics& GetSearchStatistics() const;
     private:
         std::shared_ptr<CompiledGammaQueryExpression> _gammaQuery;
@@ -49,8 +43,8 @@ namespace PetriEngine::ExplicitColored {
         SearchStatistics _searchStatistics;
         const IColoredResultPrinter& _coloredResultPrinter;
         template<typename SuccessorGeneratorState>
-        [[nodiscard]] bool _search(SearchStrategy searchStrategy);
-        [[nodiscard]] bool _check(const ColoredPetriNetMarking& state) const;
+        [[nodiscard]] bool _search(Strategy searchStrategy);
+        [[nodiscard]] bool _check(const ColoredPetriNetMarking& state, size_t id) const;
 
         template <typename T>
         [[nodiscard]] bool _dfs();
@@ -63,7 +57,7 @@ namespace PetriEngine::ExplicitColored {
 
         template <template <typename> typename WaitingList, typename T>
         [[nodiscard]] bool _genericSearch(WaitingList<T> waiting);
-        [[nodiscard]] bool _getResult(bool found) const;
+        [[nodiscard]] bool _getResult(bool found, bool fullStatespace) const;
 
 
     };
