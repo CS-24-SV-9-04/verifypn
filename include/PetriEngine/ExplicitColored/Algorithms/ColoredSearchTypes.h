@@ -9,11 +9,28 @@
 
 namespace PetriEngine::ExplicitColored {
 
-    //Probably make commong supertype
+    //Remove supertype
+    // template <typename T>
+    // class ExplicitSearchStructure {
+    // public:
+    //     virtual ~ExplicitSearchStructure() = default;
+    //     explicit ExplicitSearchStructure(ColoredEncoder& encoder) : _encoder(&encoder) {};
+    //
+    //     virtual T& next() = 0;
+    //     virtual void remove() = 0;
+    //     virtual void add(T) = 0;
+    //     [[nodiscard]] virtual bool empty() const = 0;
+    //     [[nodiscard]] virtual uint32_t size() const = 0;
+    //     virtual void shuffle() = 0;
+    // protected:
+    //     ColoredEncoder* _encoder{};
+    // };
 
     template <typename T>
     class DFSStructure {
     public:
+        explicit DFSStructure(ColoredEncoder& encoder) : _encoder(&encoder) {};
+
         T& next() {
             return waiting.top();
         }
@@ -21,7 +38,7 @@ namespace PetriEngine::ExplicitColored {
         void remove() {
             waiting.pop();
             if (!waiting.empty()) {
-                waiting.top().decode(_encoder);
+                waiting.top().decode(this->_encoder);
             }
         }
 
@@ -40,24 +57,23 @@ namespace PetriEngine::ExplicitColored {
             return waiting.size();
         }
 
-        static void shuffle() {}
-        void setEncoder(ColoredEncoder& encoder) {
-            _encoder = &encoder;
-        };
+        static void shuffle() {};
     private:
         std::stack<T> waiting;
-        ColoredEncoder* _encoder = nullptr;
+        ColoredEncoder* _encoder;
     };
 
     template <typename T>
-    class BFSStructure {
+    class BFSStructure  {
     public:
+        explicit BFSStructure(ColoredEncoder& encoder) : _encoder(&encoder) {};
+
         T& next() {
             return waiting.front();
         }
 
         void remove() {
-            waiting.front().decode(_encoder);
+            waiting.front().decode(this->_encoder);
             waiting.pop();
         }
 
@@ -73,20 +89,16 @@ namespace PetriEngine::ExplicitColored {
         [[nodiscard]] uint32_t size() const {
             return waiting.size();
         }
-
-        static void shuffle() {}
-        void setEncoder(ColoredEncoder& encoder) {
-            _encoder = &encoder;
-        };
+        static void shuffle() {};
     private:
         std::queue<T> waiting;
-        ColoredEncoder* _encoder = nullptr;
+        ColoredEncoder* _encoder;
     };
 
     template<typename T>
-    class RDFSStructure {
+    class RDFSStructure  {
     public:
-        explicit RDFSStructure(const size_t seed) : _rng(seed) {}
+        explicit RDFSStructure(ColoredEncoder& encoder, const size_t seed) :  _rng(seed), _encoder(&encoder) {}
         T& next() {
             if (_stack.empty()) {
                 shuffle();
@@ -109,7 +121,7 @@ namespace PetriEngine::ExplicitColored {
             }
             if (!_stack.empty()) {
                 _cache.clear();
-                _stack.top().decode(_encoder);
+                _stack.top().decode(this->_encoder);
             }
         }
 
@@ -125,15 +137,11 @@ namespace PetriEngine::ExplicitColored {
         [[nodiscard]] uint32_t size() const {
             return _stack.size() + _cache.size();
         }
-
-        void setEncoder(ColoredEncoder& encoder) {
-            _encoder = &encoder;
-        };
     private:
         std::stack<T> _stack;
         std::vector<T> _cache;
         std::default_random_engine _rng;
-        ColoredEncoder* _encoder = nullptr;
+        ColoredEncoder* _encoder;
     };
 
     template<typename T>
@@ -149,10 +157,10 @@ namespace PetriEngine::ExplicitColored {
     class BestFSStructure {
     public:
         explicit BestFSStructure(
-            const size_t seed, std::shared_ptr<CompiledGammaQueryExpression> query, const bool negQuery)
-            : _rng(seed), _query(std::move(query)), _negQuery(negQuery) {}
+            ColoredEncoder& encoder, const size_t seed, std::shared_ptr<CompiledGammaQueryExpression> query, const bool negQuery)
+            : _rng(seed), _query(std::move(query)), _negQuery(negQuery), _encoder(&encoder) {}
 
-        T& next() const {
+        T& next() {
             return _queue.top().cpn;
         }
 
@@ -177,14 +185,13 @@ namespace PetriEngine::ExplicitColored {
         [[nodiscard]] uint32_t size() const {
             return _queue.size();
         }
-
-        static void setEncoder(ColoredEncoder& encoder) {};
-        static void shuffle() {}
+        static void shuffle() {};
     private:
         std::priority_queue<WeightedState<T>> _queue;
         std::default_random_engine _rng;
-        std::shared_ptr<CompiledGammaQueryExpression> _query;
+        std::shared_ptr<CompiledGammaQueryExpression> _query{};
         bool _negQuery;
+        ColoredEncoder* _encoder;
     };
 }
 

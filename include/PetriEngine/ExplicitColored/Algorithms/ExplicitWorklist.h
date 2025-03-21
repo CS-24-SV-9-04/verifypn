@@ -49,6 +49,7 @@ namespace PetriEngine::ExplicitColored {
         bool _fullStatespace = true;
         SearchStatistics _searchStatistics;
         const IColoredResultPrinter& _coloredResultPrinter;
+        ColoredEncoder _encoder;
         template<typename SuccessorGeneratorState>
         [[nodiscard]] bool _search(SearchStrategy searchStrategy);
         [[nodiscard]] bool _check(const ColoredPetriNetMarking& state, size_t id) const;

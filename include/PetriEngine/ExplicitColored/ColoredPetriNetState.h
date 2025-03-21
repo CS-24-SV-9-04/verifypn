@@ -13,7 +13,6 @@ namespace PetriEngine::ExplicitColored {
     struct AbstractColoredPetriNetState {
         virtual ~AbstractColoredPetriNetState() = default;
 
-
         AbstractColoredPetriNetState(AbstractColoredPetriNetState&& state) = default;
         AbstractColoredPetriNetState(const AbstractColoredPetriNetState& state) : id(state.id), _encoding(state._encoding) {};
         AbstractColoredPetriNetState& operator=(const AbstractColoredPetriNetState& state) = default;
@@ -24,13 +23,17 @@ namespace PetriEngine::ExplicitColored {
         ColoredPetriNetMarking marking;
 
         void addEncoding(const ptrie::uchar* encoding, const size_t encodingSize) {
+            _encodingSize = encodingSize;
+            //En/decoding is not implemented for encodings bigger than uint16_max
+            if (UINT16_MAX == encodingSize) {
+                return;
+            }
             _encoding = new ptrie::uchar[encodingSize];
             memcpy(_encoding, encoding, encodingSize);
-            _encodingSize = encodingSize;
         }
 
         void encode() {
-            if (_encoded) return;
+            if (_encoded || _encodingSize == UINT16_MAX) return;
             marking = ColoredPetriNetMarking{};
             _encoded = true;
         }
