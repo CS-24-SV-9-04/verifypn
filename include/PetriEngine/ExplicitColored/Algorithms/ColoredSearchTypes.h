@@ -8,77 +8,68 @@
 #include "PetriEngine/ExplicitColored/Visitors/HeuristicVisitor.h"
 
 namespace PetriEngine::ExplicitColored {
-
-    //Remove supertype
-    // template <typename T>
-    // class ExplicitSearchStructure {
-    // public:
-    //     virtual ~ExplicitSearchStructure() = default;
-    //     explicit ExplicitSearchStructure(ColoredEncoder& encoder) : _encoder(&encoder) {};
-    //
-    //     virtual T& next() = 0;
-    //     virtual void remove() = 0;
-    //     virtual void add(T) = 0;
-    //     [[nodiscard]] virtual bool empty() const = 0;
-    //     [[nodiscard]] virtual uint32_t size() const = 0;
-    //     virtual void shuffle() = 0;
-    // protected:
-    //     ColoredEncoder* _encoder{};
-    // };
-
-    template <typename T>
+    template <typename T, bool encodeWaitingList>
     class DFSStructure {
     public:
-        explicit DFSStructure(ColoredEncoder& encoder) : _encoder(&encoder) {};
+        explicit DFSStructure(ColoredEncoder& encoder):
+            _encoder(encodeWaitingList ? &encoder : nullptr) {};
 
         T& next() {
-            return waiting.top();
+            return _waiting.top();
         }
 
         void remove() {
-            waiting.pop();
-            if (!waiting.empty()) {
-                waiting.top().decode(this->_encoder);
+            _waiting.pop();
+            if constexpr (encodeWaitingList) {
+                if (!_waiting.empty()) {
+                    _waiting.top().decode(this->_encoder);
+                }
             }
         }
 
         void add(T state) {
-            if (!waiting.empty()) {
-                waiting.top().encode();
+            if constexpr(encodeWaitingList) {
+                if (!_waiting.empty()) {
+                    _waiting.top().encode();
+                }
             }
-            waiting.emplace(std::move(state));
+            _waiting.emplace(std::move(state));
         }
 
         [[nodiscard]] bool empty() const {
-            return waiting.empty();
+            return _waiting.empty();
         }
 
         [[nodiscard]] uint32_t size() const {
-            return waiting.size();
+            return _waiting.size();
         }
 
         static void shuffle() {};
     private:
-        std::stack<T> waiting;
+        std::stack<T> _waiting;
         ColoredEncoder* _encoder;
     };
 
-    template <typename T>
+    template <typename T, bool encodeWaitingList>
     class BFSStructure  {
     public:
-        explicit BFSStructure(ColoredEncoder& encoder) : _encoder(&encoder) {};
+        explicit BFSStructure(ColoredEncoder& encoder) : _encoder(encodeWaitingList ? &encoder : nullptr) {};
 
         T& next() {
             return waiting.front();
         }
 
         void remove() {
-            waiting.front().decode(this->_encoder);
+            if constexpr (encodeWaitingList) {
+                waiting.front().decode(this->_encoder);
+            }
             waiting.pop();
         }
 
         void add(T state) {
-            state.encode();
+            if constexpr (encodeWaitingList) {
+                state.encode();
+            }
             waiting.emplace(std::move(state));
         }
 
@@ -95,10 +86,12 @@ namespace PetriEngine::ExplicitColored {
         ColoredEncoder* _encoder;
     };
 
-    template<typename T>
+    template <typename T, bool encodeWaitingList>
     class RDFSStructure  {
     public:
-        explicit RDFSStructure(ColoredEncoder& encoder, const size_t seed) :  _rng(seed), _encoder(&encoder) {}
+        explicit RDFSStructure(ColoredEncoder& encoder, const size_t seed) :
+            _rng(seed), _encoder(encodeWaitingList ? &encoder : nullptr) {}
+
         T& next() {
             if (_stack.empty()) {
                 shuffle();
@@ -112,8 +105,10 @@ namespace PetriEngine::ExplicitColored {
         }
 
         void shuffle() {
-            if (!_stack.empty()) {
-                _stack.top().encode();
+            if constexpr (encodeWaitingList) {
+                if (!_stack.empty()) {
+                    _stack.top().encode();
+                }
             }
             std::shuffle(_cache.begin(), _cache.end(), _rng);
             for (auto & it : _cache) {
@@ -121,12 +116,16 @@ namespace PetriEngine::ExplicitColored {
             }
             if (!_stack.empty()) {
                 _cache.clear();
-                _stack.top().decode(this->_encoder);
+                if constexpr (encodeWaitingList) {
+                    _stack.top().decode(this->_encoder);
+                }
             }
         }
 
         void add(T state) {
-            state.encode();
+            if constexpr (encodeWaitingList) {
+                state.encode();
+            }
             _cache.push_back(std::move(state));
         }
 
@@ -153,7 +152,7 @@ namespace PetriEngine::ExplicitColored {
         }
     };
 
-    template <typename T>
+    template <typename T, bool>
     class BestFSStructure {
     public:
         explicit BestFSStructure(

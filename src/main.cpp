@@ -87,7 +87,7 @@ int main(int argc, const char** argv) {
         try {
             cpnBuilder.parse_model(options.modelfile);
             options.isCPN = cpnBuilder.isColored(); // TODO: this is really nasty, should be moved in a refactor
-            if (options.explicit_colored) {
+            if (options.explicitColored) {
                 if (options.isCPN && !queries.empty() && isReachability(queries[0])) {
                     try {
                         return explicitColored(options, string_set, queries, querynames);
@@ -616,7 +616,8 @@ int explicitColored(options_t& options, shared_string_set& string_set, std::vect
         const auto seed = options.seed();
         ExplicitColored::ColoredResultPrinter resultPrinter(i, fullStatisticOut, queryNames, seed);
         ExplicitColored::ExplicitWorklist worklist(net, queries[i], placeIndices, transitionIndices, resultPrinter, seed);
-        result = worklist.check(options.strategy, options.colored_sucessor_generator);
+        result = worklist.
+        check(options.strategy, options.coloredSuccessorGenerator, options.encodeWaitingList);
     }
     if (result) {
         return to_underlying(ReturnValue::SuccessCode);

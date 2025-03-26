@@ -37,12 +37,12 @@ namespace PetriEngine::ExplicitColored {
         }
     }
 
-    bool ExplicitWorklist::check(const Strategy searchStrategy, const ColoredSuccessorGeneratorOption coloredSuccessorGeneratorOption) {
+    bool ExplicitWorklist::check(const Strategy searchStrategy, const ColoredSuccessorGeneratorOption coloredSuccessorGeneratorOption, const bool encodeWaitingList) {
         if (coloredSuccessorGeneratorOption == ColoredSuccessorGeneratorOption::FIXED) {
-            return _search<ColoredPetriNetStateFixed>(searchStrategy);
+            return _search<ColoredPetriNetStateFixed>(searchStrategy, encodeWaitingList);
         }
         if (coloredSuccessorGeneratorOption == ColoredSuccessorGeneratorOption::EVEN) {
-            return _search<ColoredPetriNetStateEven>(searchStrategy);
+            return _search<ColoredPetriNetStateEven>(searchStrategy, encodeWaitingList);
         }
         throw explicit_error(unsupported_generator);
     }
@@ -55,8 +55,8 @@ namespace PetriEngine::ExplicitColored {
         return _gammaQuery->eval(_successorGenerator, state, id);
     }
 
-    template <template <typename> typename WaitingList, typename T>
-    bool ExplicitWorklist::_genericSearch(WaitingList<T> waiting) {
+    template <template <typename, bool> typename WaitingList, typename T, bool encodeWaitingList>
+    bool ExplicitWorklist::_genericSearch(WaitingList<T, encodeWaitingList> waiting) {
         ptrie::set<uint8_t> passed;
         const auto& initialState = _net.initial();
         const auto earlyTerminationCondition = _quantifier == Quantifier::EF;
@@ -126,41 +126,61 @@ namespace PetriEngine::ExplicitColored {
     }
 
     template<typename SuccessorGeneratorState>
-    bool ExplicitWorklist::_search(const Strategy searchStrategy) {
+    bool ExplicitWorklist::_search(const Strategy searchStrategy, const bool encodeWaitingList) {
         switch (searchStrategy) {
             case Strategy::DEFAULT:
             case Strategy::DFS:
-                return _dfs<SuccessorGeneratorState>();
+                return _dfs<SuccessorGeneratorState>(encodeWaitingList);
             case Strategy::BFS:
-                return _bfs<SuccessorGeneratorState>();
+                return _bfs<SuccessorGeneratorState>(encodeWaitingList);
             case Strategy::RDFS:
-                return _rdfs<SuccessorGeneratorState>();
+                return _rdfs<SuccessorGeneratorState>(encodeWaitingList);
             case Strategy::HEUR:
-                return _bestfs<SuccessorGeneratorState>();
+                return _bestfs<SuccessorGeneratorState>(encodeWaitingList);
             default:
                 throw explicit_error(unsupported_strategy);
         }
     }
 
     template <typename T>
-    bool ExplicitWorklist::_dfs() {
-        return _genericSearch<DFSStructure>(DFSStructure<T>{_encoder});
+    bool ExplicitWorklist::_dfs(const bool encodeWaitingList) {
+        if (encodeWaitingList) {
+            return _genericSearch<DFSStructure>(DFSStructure<T, true>{_encoder});
+        }
+        return _genericSearch<DFSStructure>(DFSStructure<T, false>{_encoder});
     }
 
     template <typename T>
-    bool ExplicitWorklist::_bfs() {
-        return _genericSearch<BFSStructure>(BFSStructure<T>{_encoder});
+    bool ExplicitWorklist::_bfs(const bool encodeWaitingList) {
+        if (encodeWaitingList) {
+            return _genericSearch<BFSStructure>(BFSStructure<T, true>{_encoder});
+        }
+        return _genericSearch<BFSStructure>(BFSStructure<T, false>{_encoder});
     }
 
     template <typename T>
-    bool ExplicitWorklist::_rdfs() {
-        return _genericSearch<RDFSStructure>(RDFSStructure<T>(_encoder, _seed));
+    bool ExplicitWorklist::_rdfs(const bool encodeWaitingList) {
+        if (encodeWaitingList) {
+            return _genericSearch<RDFSStructure>(RDFSStructure<T, true>(_encoder, _seed));
+        }
+        return _genericSearch<RDFSStructure>(RDFSStructure<T, false>(_encoder, _seed));
     }
 
     template <typename T>
-    bool ExplicitWorklist::_bestfs() {
+    bool ExplicitWorklist::_bestfs(const bool encodeWaitingList) {
+        if (encodeWaitingList) {
+            std::cout << "Heuristic search does not support encoding the waiting list" << std::endl;
+            return _genericSearch<BestFSStructure>(
+            BestFSStructure<T, true>(
+                _encoder,
+                _seed,
+                _gammaQuery,
+                _quantifier == Quantifier::AG
+                )
+            );
+        }
         return _genericSearch<BestFSStructure>(
-            BestFSStructure<T>(
+            BestFSStructure<T, false>(
                 _encoder,
                 _seed,
                 _gammaQuery,

@@ -1,7 +1,6 @@
 #ifndef NAIVEWORKLIST_H
 #define NAIVEWORKLIST_H
 
-
 #include <PetriEngine/ExplicitColored/GammaQueryCompiler.h>
 #include <PetriEngine/options.h>
 #include "PetriEngine/ExplicitColored/ColoredPetriNet.h"
@@ -11,10 +10,7 @@
 #include "PetriEngine/ExplicitColored/ColoredEncoder.h"
 
 namespace PetriEngine::ExplicitColored {
-    template <typename T>
-    class RDFSStructure;
     class ColoredResultPrinter;
-
     enum class Quantifier {
         EF,
         AG
@@ -31,7 +27,7 @@ namespace PetriEngine::ExplicitColored {
             size_t seed
         );
 
-        bool check(Strategy searchStrategy, ColoredSuccessorGeneratorOption coloredSuccessorGeneratorOption);
+        bool check(Strategy searchStrategy, ColoredSuccessorGeneratorOption coloredSuccessorGeneratorOption, bool encodeWaitingList);
         [[nodiscard]] const SearchStatistics& GetSearchStatistics() const;
     private:
         std::shared_ptr<CompiledGammaQueryExpression> _gammaQuery;
@@ -44,20 +40,20 @@ namespace PetriEngine::ExplicitColored {
         const IColoredResultPrinter& _coloredResultPrinter;
         ColoredEncoder _encoder;
         template<typename SuccessorGeneratorState>
-        [[nodiscard]] bool _search(Strategy searchStrategy);
+        [[nodiscard]] bool _search(Strategy searchStrategy, bool encodeWaitingList);
         [[nodiscard]] bool _check(const ColoredPetriNetMarking& state, size_t id) const;
 
         template <typename T>
-        [[nodiscard]] bool _dfs();
+        [[nodiscard]] bool _dfs(bool encodeWaitingList);
         template <typename T>
-        [[nodiscard]] bool _bfs();
+        [[nodiscard]] bool _bfs(bool encodeWaitingList);
         template <typename T>
-        [[nodiscard]] bool _rdfs();
+        [[nodiscard]] bool _rdfs(bool encodeWaitingList);
         template <typename T>
-        [[nodiscard]] bool _bestfs();
+        [[nodiscard]] bool _bestfs(bool encodeWaitingList);
 
-        template <template <typename> typename WaitingList, typename T>
-        [[nodiscard]] bool _genericSearch(WaitingList<T> waiting);
+        template <template <typename, bool> typename WaitingList, typename T, bool encodeWaitingList>
+        [[nodiscard]] bool _genericSearch(WaitingList<T, encodeWaitingList> waiting);
         [[nodiscard]] bool _getResult(bool found, bool fullStatespace) const;
 
 
