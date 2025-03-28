@@ -51,7 +51,6 @@ namespace PetriEngine::ExplicitColored {
         size_t id;
     private:
         bool _done = false;
-
         Binding_t _currentBinding = 0;
         Transition_t _currentTransition = 0;
     };
@@ -130,24 +129,24 @@ namespace PetriEngine::ExplicitColored {
         ColoredPetriNetStateRandom(const ColoredPetriNetStateRandom& oldState, const size_t& numberOfTransitions) : marking(oldState.marking) {
             _map = std::vector<std::pair<Transition_t, Binding_t>>{};
             for (auto i = 0; i < numberOfTransitions; ++i) {
-                _map.emplace_back(std::pair{i,0});
+                _map.emplace_back(i,0);
             }
         }
         ColoredPetriNetStateRandom(ColoredPetriNetMarking marking, const size_t& numberOfTransitions) : marking(std::move(marking)) {
             _map = std::vector<std::pair<Transition_t, Binding_t>>{};
             for (auto i = 0; i < numberOfTransitions; ++i) {
-                _map.emplace_back(std::pair{i,0});
+                _map.emplace_back(i,0);
             }
         }
         ColoredPetriNetStateRandom(ColoredPetriNetStateRandom&& state) = default;
         ColoredPetriNetStateRandom& operator=(const ColoredPetriNetStateRandom&) = default;
         ColoredPetriNetStateRandom& operator=(ColoredPetriNetStateRandom&&) = default;
 
-        std::pair<Transition_t, Binding_t> getNextPair(std::default_random_engine& rng) {
+        std::pair<Transition_t, Binding_t> getNextPair(const Transition_t&& randomNumber) {
             if (done()) {
                 return {0,std::numeric_limits<Binding_t>::max()};
             }
-            const auto randomIndex = rng() % _map.size();
+            const auto randomIndex = randomNumber % _map.size();
             _workingIndex = randomIndex;
             return _map[randomIndex];
         }
@@ -175,12 +174,12 @@ namespace PetriEngine::ExplicitColored {
         }
 
         ColoredPetriNetMarking marking;
+        size_t id;
     private:
         bool _done = false;
         std::vector<std::pair<Transition_t, Binding_t>> _map;
         uint32_t _completedTransitions = 0;
         Transition_t _workingIndex = 0;
-
     };
 
     struct PossibleValues {

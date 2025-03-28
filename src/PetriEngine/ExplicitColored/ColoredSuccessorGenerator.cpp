@@ -6,8 +6,8 @@
 
 
 namespace PetriEngine::ExplicitColored{
-    ColoredSuccessorGenerator::ColoredSuccessorGenerator(const ColoredPetriNet& net, size_t seed)
-    : _net(net), _rng(seed){}
+    ColoredSuccessorGenerator::ColoredSuccessorGenerator(const ColoredPetriNet& net, const size_t seed)
+    : _net(net), _rng(std::ranlux24_base{seed}) {};
 
     void updateVariableMap(std::map<Variable_t, std::vector<uint32_t>>& map, const std::map<Variable_t, std::vector<uint32_t>>& newMap){
         for (auto&& pair : newMap){

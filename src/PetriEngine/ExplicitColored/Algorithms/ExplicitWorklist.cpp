@@ -43,7 +43,7 @@ namespace PetriEngine::ExplicitColored {
         if (coloredSuccessorGeneratorOption == ColoredSuccessorGeneratorOption::EVEN) {
             return _search<ColoredPetriNetStateEven>(searchStrategy);
         }
-        if (colored_successor_generator_option == ColoredSuccessorGeneratorOption::RANDOM) {
+        if (coloredSuccessorGeneratorOption == ColoredSuccessorGeneratorOption::RANDOM) {
             return _search<ColoredPetriNetStateRandom>(searchStrategy);
         }
         throw explicit_error(unsupported_generator);

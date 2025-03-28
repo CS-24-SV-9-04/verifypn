@@ -53,7 +53,7 @@ namespace PetriEngine::ExplicitColored {
         mutable std::map<size_t, ConstraintData> _constraintData;
         mutable size_t _nextId = 1;
         const ColoredPetriNet& _net;
-        std::default_random_engine _rng;
+        std::ranlux24_base _rng;
         void _fire(ColoredPetriNetMarking& state, Transition_t tid, const Binding& binding) const;
         std::map<size_t, ConstraintData>::iterator _calculateConstraintData(const ColoredPetriNetMarking& marking, size_t id, Transition_t transition, bool& noPossibleBinding) const;
         [[nodiscard]] bool _hasMinimalCardinality(const ColoredPetriNetMarking& marking, Transition_t tid) const;
@@ -110,17 +110,13 @@ namespace PetriEngine::ExplicitColored {
             return {{},0};
         }
 
-        [[nodiscard]] uint64_t getKey(size_t stateId, Transition_t transition) const {
-            return ((stateId & 0xFFFF'FFFF'FFFF) << 16) | ((static_cast<uint64_t>(transition) & 0xFFFF));
-        }
-
         ColoredPetriNetStateRandom _nextRandom(ColoredPetriNetStateRandom &state) {
-            auto [tid, bid] = state.getNextPair(_rng);
+            auto [tid, bid] = state.getNextPair(_rng());
             auto totalBindings = _net._transitions[tid].totalBindings;
             Binding binding;
             while (bid != std::numeric_limits<Binding_t>::max()) {
                 {
-                    const auto nextBid = findNextValidBinding(state.marking, tid, bid, totalBindings, binding);
+                    const auto nextBid = findNextValidBinding(state.marking, tid, bid, totalBindings, binding, state.id);
                     state.updatePair(tid, nextBid);
                     if (nextBid != std::numeric_limits<Binding_t>::max()) {
                         auto newState = ColoredPetriNetStateRandom{state, _net.getTransitionCount()};
@@ -128,7 +124,7 @@ namespace PetriEngine::ExplicitColored {
                         return newState;
                     }
                 }
-                auto [nextTid, nextBid] = state.getNextPair(_rng);
+                auto [nextTid, nextBid] = state.getNextPair(_rng());
                 tid = nextTid;
                 bid = nextBid;
                 totalBindings = _net._transitions[tid].totalBindings;
@@ -136,6 +132,9 @@ namespace PetriEngine::ExplicitColored {
             return {{},0};
         }
 
+        [[nodiscard]] uint64_t getKey(size_t stateId, Transition_t transition) const {
+            return ((stateId & 0xFFFF'FFFF'FFFF) << 16) | ((static_cast<uint64_t>(transition) & 0xFFFF));
+        }
     };
 }
 
