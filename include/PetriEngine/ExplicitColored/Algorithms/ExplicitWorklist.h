@@ -1,13 +1,12 @@
 #ifndef NAIVEWORKLIST_H
 #define NAIVEWORKLIST_H
 
-
-#include <PetriEngine/ExplicitColored/GammaQueryCompiler.h>
+#include <PetriEngine/ExplicitColored/ExpressionCompilers/GammaQueryCompiler.h>
 #include <PetriEngine/options.h>
 #include "PetriEngine/ExplicitColored/ColoredPetriNet.h"
 #include "PetriEngine/ExplicitColored/ColoredResultPrinter.h"
-#include "PetriEngine/ExplicitColored/SearchStatistics.h"
-#include "PetriEngine/ExplicitColored/ColoredSuccessorGenerator.h"
+#include "PetriEngine/ExplicitColored/Algorithms/SearchStatistics.h"
+#include "PetriEngine/ExplicitColored/SuccessorGenerator/ColoredSuccessorGenerator.h"
 #include "PetriEngine/ExplicitColored/ColoredEncoder.h"
 
 namespace PetriEngine::ExplicitColored {
@@ -24,7 +23,7 @@ namespace PetriEngine::ExplicitColored {
     public:
         ExplicitWorklist(
             const ColoredPetriNet& net,
-            const PQL::Condition_ptr &query,
+            const PQL::Condition_ptr& query,
             const std::unordered_map<std::string, uint32_t>& placeNameIndices,
             const std::unordered_map<std::string, Transition_t>& transitionNameIndices,
             const IColoredResultPrinter& coloredResultPrinter,
@@ -33,6 +32,7 @@ namespace PetriEngine::ExplicitColored {
 
         bool check(Strategy searchStrategy, ColoredSuccessorGeneratorOption coloredSuccessorGeneratorOption);
         [[nodiscard]] const SearchStatistics& GetSearchStatistics() const;
+
     private:
         std::shared_ptr<CompiledGammaQueryExpression> _gammaQuery;
         Quantifier _quantifier;
@@ -42,7 +42,7 @@ namespace PetriEngine::ExplicitColored {
         bool _fullStatespace = true;
         SearchStatistics _searchStatistics;
         const IColoredResultPrinter& _coloredResultPrinter;
-        template<typename SuccessorGeneratorState>
+        template <typename SuccessorGeneratorState>
         [[nodiscard]] bool _search(Strategy searchStrategy);
         [[nodiscard]] bool _check(const ColoredPetriNetMarking& state, size_t id) const;
 
@@ -58,8 +58,6 @@ namespace PetriEngine::ExplicitColored {
         template <template <typename> typename WaitingList, typename T>
         [[nodiscard]] bool _genericSearch(WaitingList<T> waiting);
         [[nodiscard]] bool _getResult(bool found, bool fullStatespace) const;
-
-
     };
 }
 
