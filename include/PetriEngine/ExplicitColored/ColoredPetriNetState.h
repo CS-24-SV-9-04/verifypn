@@ -118,7 +118,6 @@ namespace PetriEngine::ExplicitColored {
         ColoredPetriNetMarking marking;
         bool shuffle = false;
         size_t id;
-
     private:
         bool _done = false;
         std::vector<Binding_t> _map;
@@ -189,6 +188,80 @@ namespace PetriEngine::ExplicitColored {
             std::vector<Color_t> colors;
             bool allColors;
         };
+
+    struct  ColoredPetriNetStateRandom{
+        ColoredPetriNetStateRandom(const ColoredPetriNetStateRandom& state) : marking(state.marking), _map(state._map) {};
+        ColoredPetriNetStateRandom(const ColoredPetriNetStateRandom& oldState, const size_t& numberOfTransitions) : marking(oldState.marking) {
+            _map = std::vector<Binding_t>(numberOfTransitions);
+        }
+        ColoredPetriNetStateRandom(ColoredPetriNetMarking marking, const size_t& numberOfTransitions) : marking(std::move(marking)) {
+            _map = std::vector<Binding_t>(numberOfTransitions);
+        }
+        ColoredPetriNetStateRandom(ColoredPetriNetStateRandom&& state) = default;
+        ColoredPetriNetStateRandom& operator=(const ColoredPetriNetStateRandom&) = default;
+        ColoredPetriNetStateRandom& operator=(ColoredPetriNetStateRandom&&) = default;
+
+        std::pair<Transition_t, Binding_t> getNextPair(std::default_random_engine& rng) {
+            Transition_t tid = 0;
+            Binding_t bid = std::numeric_limits<Binding_t>::max();
+            if (done()) {
+                return {tid,bid};
+            }
+            auto _randomIndex = rng() % _map.size();
+            auto it = _map.begin() + _randomIndex;
+            while (it != _map.end() && *it == std:: numeric_limits<Binding_t>::max()){
+                ++it;
+                ++_randomIndex;
+            }
+            if (it == _map.end()) {
+                _randomIndex = 0;
+                it = _map.begin();
+                while (it != _map.end() && *it == std:: numeric_limits<Binding_t>::max()){
+                    ++it;
+                    ++_randomIndex;
+                }
+                tid = _randomIndex;
+                bid = *it;
+            } else {
+                tid = _randomIndex;
+                bid = *it;
+            }
+            return {tid,bid};
+        }
+
+        void updatePair(const Transition_t tid, const Binding_t  bid) {
+            if (tid < _map.size()){
+                auto& oldBid = _map[tid];
+                if (bid == std::numeric_limits<Binding_t>::max()){
+                    if (bid != _map[tid]) {
+                        oldBid = bid;
+                        _completedTransitions += 1;
+                        if (_completedTransitions == _map.size()){
+                            _done = true;
+                        }
+                    }
+                } else {
+                    oldBid = bid + 1;
+                }
+            }
+        }
+
+        void shrink(){
+            marking.shrink();
+        }
+
+        [[nodiscard]] bool done() const {
+            return  _done;
+        }
+
+        ColoredPetriNetMarking marking;
+        size_t id;
+    private:
+        bool _done = false;
+        std::vector<Binding_t > _map;
+        uint32_t _completedTransitions = 0;
+    };
+
 }
 
 #endif //COLOREDPETRINETSTATE_H

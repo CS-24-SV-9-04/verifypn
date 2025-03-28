@@ -137,6 +137,8 @@ void options_t::print(std::ostream& optionsOut) {
             optionsOut << ",ColoredSuccessorGenerator=EVEN";
         } else if (colored_sucessor_generator == ColoredSuccessorGeneratorOption::FIXED) {
             optionsOut << ",ColoredSuccessorGenerator=FIXED";
+        } else if (colored_sucessor_generator == ColoredSuccessorGeneratorOption::RANDOM) {
+            optionsOut << ",ColoredSuccessorGenerator=RANDOM";
         }
     }
 
@@ -568,6 +570,8 @@ bool options_t::parse(int argc, const char** argv) {
                 colored_sucessor_generator = ColoredSuccessorGeneratorOption::FIXED;
             } else if (std::strcmp(argv[i + 1], "even") == 0) {
                 colored_sucessor_generator = ColoredSuccessorGeneratorOption::EVEN;
+            } else if (std::strcmp(argv[i + 1], "random") == 0) {
+                colored_sucessor_generator = ColoredSuccessorGeneratorOption::RANDOM;
             } else {
                 throw base_error("Invalid argument ", std::quoted(argv[i + 1]), " to --colored-successor-generator");
             }

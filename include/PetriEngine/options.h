@@ -27,7 +27,8 @@ enum class Strategy {
 
 enum class ColoredSuccessorGeneratorOption {
     FIXED,
-    EVEN
+    EVEN,
+    RANDOM
 };
 
 enum class TraceLevel {
@@ -116,7 +117,7 @@ struct options_t {
     bool print_bindings = false;
 
     bool explicit_colored = false;
-    ColoredSuccessorGeneratorOption colored_sucessor_generator = ColoredSuccessorGeneratorOption::EVEN;
+    ColoredSuccessorGeneratorOption colored_sucessor_generator = ColoredSuccessorGeneratorOption::RANDOM;
 
     std::string strategy_output;
 
