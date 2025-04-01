@@ -22,12 +22,6 @@ namespace PetriEngine::ExplicitColored {
         pnmlModelStream << modelFile.rdbuf();
         std::string pnmlModel = std::move(pnmlModelStream).str();
 
-        if (options.enablecolreduction) {
-            std::stringstream reducedPnml;
-            _reduce(pnmlModel, reducedPnml, query, options);
-            pnmlModel = std::move(reducedPnml).str();
-        }
-
         if (options.use_query_reductions) {
             result = checkColorIgnorantLP(pnmlModel, query, options);
             if (result != Result::UNKNOWN) {
@@ -42,6 +36,12 @@ namespace PetriEngine::ExplicitColored {
                 }
                 return result;
             }
+        }
+
+        if (options.enablecolreduction) {
+            std::stringstream reducedPnml;
+            _reduce(pnmlModel, reducedPnml, query, options);
+            pnmlModel = std::move(reducedPnml).str();
         }
 
         SearchStatistics searchStatistics;
