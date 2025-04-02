@@ -7,8 +7,8 @@
 
 namespace PetriEngine::ExplicitColored {
     struct ColoredPetriNetStateFixed {
-        explicit ColoredPetriNetStateFixed(ColoredPetriNetMarking marking) : marking(std::move(marking)) {
-        };
+        explicit ColoredPetriNetStateFixed(ColoredPetriNetMarking marking)
+            : marking(std::move(marking)) {};
         ColoredPetriNetStateFixed(const ColoredPetriNetStateFixed& oldState) = default;
         ColoredPetriNetStateFixed(ColoredPetriNetStateFixed&&) = default;
         ColoredPetriNetStateFixed& operator=(const ColoredPetriNetStateFixed&) = default;
@@ -48,13 +48,25 @@ namespace PetriEngine::ExplicitColored {
         }
 
         ColoredPetriNetMarking marking;
-        size_t id;
+        size_t id = 0;
 
     private:
         bool _done = false;
 
         Binding_t _currentBinding = 0;
         Transition_t _currentTransition = 0;
+    };
+
+    struct ColeredPetriNetProductState : ColoredPetriNetStateFixed {
+        explicit ColeredPetriNetProductState(ColoredPetriNetMarking marking, size_t buchiState)
+            : ColoredPetriNetStateFixed(std::move(marking)), _buchiState(buchiState) {}
+
+        size_t getBuchiState() const {
+            return _buchiState;
+        }
+
+    private:
+        size_t _buchiState;
     };
 
     struct ColoredPetriNetStateEven {

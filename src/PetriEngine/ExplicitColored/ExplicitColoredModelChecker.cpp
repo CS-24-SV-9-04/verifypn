@@ -8,6 +8,7 @@
 #include <PetriEngine/PQL/Evaluation.h>
 #include <utils/NullStream.h>
 #include <sstream>
+#include <PetriEngine/ExplicitColored/Algorithms/LTLNdfs.h>
 
 namespace PetriEngine::ExplicitColored {
     ExplicitColoredModelChecker::Result ExplicitColoredModelChecker::checkQuery(
