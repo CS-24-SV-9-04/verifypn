@@ -178,5 +178,4 @@ namespace PetriEngine::ExplicitColored {
         _fullStatisticOut << std::endl;
         out << cpnResult.rdbuf();
     }
-
 }

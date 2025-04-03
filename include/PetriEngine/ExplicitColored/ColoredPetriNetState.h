@@ -3,6 +3,8 @@
 
 #include <queue>
 #include <utility>
+#include <spot/twa/twagraph.hh>
+
 #include "ColoredPetriNetMarking.h"
 
 namespace PetriEngine::ExplicitColored {
@@ -57,16 +59,29 @@ namespace PetriEngine::ExplicitColored {
         Transition_t _currentTransition = 0;
     };
 
-    struct ColeredPetriNetProductState : ColoredPetriNetStateFixed {
-        explicit ColeredPetriNetProductState(ColoredPetriNetMarking marking, size_t buchiState)
-            : ColoredPetriNetStateFixed(std::move(marking)), _buchiState(buchiState) {}
+    struct BuchiStateIterDeleter {
+        const spot::twa_graph *_automaton;
 
+        void operator()(spot::twa_succ_iterator *iter) const
+        {
+            _automaton->release_iter(iter);
+        }
+    };
+
+
+    struct ColeredPetriNetProductState : ColoredPetriNetStateFixed {
+        ColeredPetriNetProductState(ColoredPetriNetMarking marking, size_t buchiState)
+            : ColoredPetriNetStateFixed(std::move(marking)), _buchiState(buchiState), currentSuccessor({}) {}
+        ColeredPetriNetProductState(ColoredPetriNetStateFixed markingState, size_t buchiState)
+            : ColoredPetriNetStateFixed(std::move(markingState)), _buchiState(buchiState), currentSuccessor({}) {}
         size_t getBuchiState() const {
             return _buchiState;
         }
-
+        std::unique_ptr<spot::twa_succ_iterator, BuchiStateIterDeleter> iterState;
+        ColoredPetriNetStateFixed currentSuccessor;
     private:
         size_t _buchiState;
+
     };
 
     struct ColoredPetriNetStateEven {
