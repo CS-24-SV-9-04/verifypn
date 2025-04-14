@@ -69,10 +69,10 @@ namespace PetriEngine::ExplicitColored {
     };
 
 
-    struct ColeredPetriNetProductState : ColoredPetriNetStateFixed {
-        ColeredPetriNetProductState(ColoredPetriNetMarking marking, size_t buchiState)
+    struct ColoredPetriNetProductState : ColoredPetriNetStateFixed {
+        ColoredPetriNetProductState(ColoredPetriNetMarking marking, size_t buchiState)
             : ColoredPetriNetStateFixed(std::move(marking)), _buchiState(buchiState), currentSuccessor({}) {}
-        ColeredPetriNetProductState(ColoredPetriNetStateFixed markingState, size_t buchiState)
+        ColoredPetriNetProductState(ColoredPetriNetStateFixed markingState, size_t buchiState)
             : ColoredPetriNetStateFixed(std::move(markingState)), _buchiState(buchiState), currentSuccessor({}) {}
         size_t getBuchiState() const {
             return _buchiState;

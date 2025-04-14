@@ -13,8 +13,8 @@ namespace PetriEngine::ExplicitColored {
         }
     }
 
-    ColeredPetriNetProductState ProductStateGenerator::next(
-        ColeredPetriNetProductState &currentState
+    ColoredPetriNetProductState ProductStateGenerator::next(
+        ColoredPetriNetProductState &currentState
     ) {
         if (currentState.iterState == nullptr) {
             const auto state = _buchiAutomaton.buchi().state_from_number(currentState.getBuchiState());
@@ -27,7 +27,7 @@ namespace PetriEngine::ExplicitColored {
             for (; !currentState.iterState->done(); currentState.iterState->next()) {
                 if (_check_condition(currentState.iterState->cond(), currentState.currentSuccessor.marking, currentState.currentSuccessor.id)) {
                     auto dstState = currentState.iterState->dst();
-                    ColeredPetriNetProductState newState(currentState.currentSuccessor, _buchiAutomaton.buchi().state_number(dstState));
+                    ColoredPetriNetProductState newState(currentState.currentSuccessor, _buchiAutomaton.buchi().state_number(dstState));
                     dstState->destroy();
                     currentState.iterState->next();
                     return newState;
