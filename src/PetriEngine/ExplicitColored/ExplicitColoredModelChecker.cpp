@@ -8,6 +8,7 @@
 #include <PetriEngine/PQL/Evaluation.h>
 #include <utils/NullStream.h>
 #include <sstream>
+#include <LTL/LTLSearch.h>
 #include <PetriEngine/ExplicitColored/Algorithms/LTLNdfs.h>
 
 namespace PetriEngine::ExplicitColored {
@@ -140,7 +141,36 @@ namespace PetriEngine::ExplicitColored {
             default:
                 throw base_error("Unknown builder error ", static_cast<uint32_t>(buildStatus));
         }
+        if (!isReachability(query)) {
+            return _explicitColorLTL(std::move(cpnBuilder), query, options, searchStatistics);
+        }
+        return _explicitColorReachability(std::move(cpnBuilder), query, options, searchStatistics);
+    }
 
+    ExplicitColoredModelChecker::Result ExplicitColoredModelChecker::_explicitColorLTL(
+        ColoredPetriNetBuilder cpnBuilder,
+        const PQL::Condition_ptr &query,
+        options_t &options,
+        SearchStatistics *searchStatistics
+    ) const {
+        auto net = cpnBuilder.takeNet();
+        auto placeIndices = cpnBuilder.takePlaceIndices();
+        auto transitionIndices = cpnBuilder.takeTransitionIndices();
+        std::vector<std::string> traces;
+        auto [negated_formula, negated_answer] = LTL::to_ltl(query, traces);
+        
+        auto buchiAutomaton = make_buchi_automaton(negated_formula, LTL::BuchiOptimization::Low, LTL::APCompression::None);
+        ProductStateGenerator productStateGenerator(net, buchiAutomaton, placeIndices, transitionIndices);
+
+        return Result::UNKNOWN;
+    }
+
+    ExplicitColoredModelChecker::Result ExplicitColoredModelChecker::_explicitColorReachability(
+        ColoredPetriNetBuilder cpnBuilder,
+        const PQL::Condition_ptr &query,
+        options_t &options,
+        SearchStatistics *searchStatistics\
+    ) const {
         auto net = cpnBuilder.takeNet();
         auto placeIndices = cpnBuilder.takePlaceIndices();
         auto transitionIndices = cpnBuilder.takeTransitionIndices();
@@ -178,5 +208,4 @@ namespace PetriEngine::ExplicitColored {
         _fullStatisticOut << std::endl;
         out << cpnResult.rdbuf();
     }
-
 }

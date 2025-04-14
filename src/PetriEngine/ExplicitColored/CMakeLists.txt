@@ -4,6 +4,7 @@ add_library(ExplicitColored
     ArcCompiler.cpp
     ColoredPetriNetBuilder.cpp
     SuccessorGenerator/ColoredSuccessorGenerator.cpp
+    SuccessorGenerator/ProductStateGenerator.cpp
     Algorithms/ExplicitWorklist.cpp
     Algorithms/LTLNdfs.cpp
     ColoredResultPrinter.cpp
