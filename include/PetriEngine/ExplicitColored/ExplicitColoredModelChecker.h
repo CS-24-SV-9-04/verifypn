@@ -4,6 +4,8 @@
 #include "PetriEngine/PQL/PQL.h"
 #include "utils/structures/shared_string.h"
 #include <sstream>
+
+#include "ColoredPetriNetBuilder.h"
 #include "Visitors/ConditionCopyVisitor.h"
 
 #include "ColoredResultPrinter.h"
@@ -40,7 +42,20 @@ namespace PetriEngine::ExplicitColored {
             options_t& options,
             SearchStatistics* searchStatistics
         ) const;
+        
+        Result _explicitColorLTL(
+            ColoredPetriNetBuilder cpnBuilder,
+            const PQL::Condition_ptr& query,
+            options_t& options,
+            SearchStatistics* searchStatistics
+        ) const;
 
+        Result _explicitColorReachability(
+            ColoredPetriNetBuilder cpnBuilder,
+            const PQL::Condition_ptr& query,
+            options_t& options,
+            SearchStatistics* searchStatistics
+        ) const;
         void _reduce(
             const std::string& pnmlModel,
             std::stringstream& out,

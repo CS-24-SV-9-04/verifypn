@@ -16,42 +16,40 @@ namespace PetriEngine::ExplicitColored {
     ColeredPetriNetProductState ProductStateGenerator::next(
         ColeredPetriNetProductState &currentState
     ) {
+        if (currentState.iterState == nullptr) {
+            const auto state = _buchiAutomaton.buchi().state_from_number(currentState.getBuchiState());
+            currentState.iterState = std::unique_ptr<spot::twa_succ_iterator, BuchiStateIterDeleter>(_buchiAutomaton.buchi().succ_iter(state), BuchiStateIterDeleter{ &_buchiAutomaton.buchi() });
+            state->destroy();
+            currentState.currentSuccessor = _successorGenerator.next(currentState);
+            currentState.iterState->first();
+        }
         while (!currentState.done()) {
-            if (currentState.iterState != nullptr) {
-                currentState.iterState->next();
-
-                for (currentState.iterState->first(); !currentState.iterState->done(); currentState.iterState->next())
-                {
-                    auto cond = currentState.iterState->cond();
-                    while (cond.id() > 1) {
-                        auto varIndex = bdd_var(cond);
-                        const auto& ap = _compiledAtomicPropositions.at(varIndex);
-                        auto res = ap->eval(_successorGenerator, currentState.marking, currentState.id);
-                        if (res) {
-                            cond = bdd_high(cond);
-                        } else {
-                            cond = bdd_low(cond);
-                        }
-                    }
-                    //check condition and yield
-                    if (cond == bddtrue) {
-                        auto dstState = currentState.iterState->dst();
-                        ColeredPetriNetProductState newState(currentState.currentSuccessor, _buchiAutomaton.buchi().state_number(dstState));
-                        dstState->destroy();
-                        return newState;
-                    }
+            for (; !currentState.iterState->done(); currentState.iterState->next()) {
+                if (_check_condition(currentState.iterState->cond(), currentState.currentSuccessor.marking, currentState.currentSuccessor.id)) {
+                    auto dstState = currentState.iterState->dst();
+                    ColeredPetriNetProductState newState(currentState.currentSuccessor, _buchiAutomaton.buchi().state_number(dstState));
+                    dstState->destroy();
+                    currentState.iterState->next();
+                    return newState;
                 }
-            } else {
-                auto state = _buchiAutomaton.buchi().state_from_number(currentState.getBuchiState());
-                currentState.iterState = std::unique_ptr<spot::twa_succ_iterator, BuchiStateIterDeleter>(_buchiAutomaton.buchi().succ_iter(state), BuchiStateIterDeleter{ &_buchiAutomaton.buchi() });
-                state->destroy();
             }
+            currentState.currentSuccessor = _successorGenerator.next(currentState);
+            currentState.iterState->first();
+        }
+        currentState.setDone();
+        return {{}, 0};
+    }
 
-            auto nextState = _successorGenerator.next(currentState);
-            currentState.currentSuccessor = nextState;
-            if (!currentState.done()) {
-                currentState.iterState->first();
+    bool ProductStateGenerator::_check_condition(bdd cond, const ColoredPetriNetMarking &marking, size_t markingId) {
+        while (cond.id() > 1) {
+            auto varIndex = bdd_var(cond);
+            const auto& ap = _compiledAtomicPropositions.at(varIndex);
+            if (ap->eval(_successorGenerator, marking, markingId)) {
+                cond = bdd_high(cond);
+            } else {
+                cond = bdd_low(cond);
             }
         }
+        return cond == bddtrue;
     }
 }

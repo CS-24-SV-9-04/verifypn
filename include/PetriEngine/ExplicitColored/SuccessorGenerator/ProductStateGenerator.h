@@ -17,6 +17,7 @@ namespace PetriEngine {
             );
             ColeredPetriNetProductState next(ColeredPetriNetProductState& currentState);
         private:
+            bool _check_condition(bdd cond, const ColoredPetriNetMarking& marking, size_t markingId);
             const ColoredPetriNet& _net;
             LTL::Structures::BuchiAutomaton _buchiAutomaton;
             ColoredSuccessorGenerator _successorGenerator;
