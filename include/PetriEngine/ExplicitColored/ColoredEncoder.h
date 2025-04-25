@@ -35,6 +35,26 @@ namespace PetriEngine::ExplicitColored {
             _scratchpad = scratchpad_t(_size * 8);
         }
 
+        size_t productEncode(const ColoredPetriNetMarking& marking, size_t buchiState){
+            size_t offset = 0;
+            _writeToPad(buchiState, _convertToTypeSize(buchiState), offset);
+            //Problem at offset starter forfra i encode??
+            offset += encode(marking);
+
+            if (offset > UINT16_MAX){
+                //If too big for representation partial statespace will be explored
+                if (_fullStatespace) {
+                    _biggestRepresentation = UINT16_MAX;
+                    std::cout << "State with size: " << offset <<
+                              " cannot be represented correctly, so full statespace is not explored " << std::endl;
+                }
+                _fullStatespace = false;
+                return UINT16_MAX;
+            }
+            _biggestRepresentation = std::max(offset, _biggestRepresentation);
+            return offset;
+        }
+
         //Encodes each place with its own encoding type, written as a prefix for each place
         size_t encode(const ColoredPetriNetMarking& marking) {
             size_t offset = 0;
