@@ -8,9 +8,11 @@ namespace PetriEngine::ExplicitColored {
         const ColoredPetriNet& net,
         const PQL::Condition_ptr& condition,
         const std::unordered_map<std::string, uint32_t>& placeNameIndices,
-        const std::unordered_map<std::string, Transition_t>& transitionNameIndices
+        const std::unordered_map<std::string, Transition_t>& transitionNameIndices,
+        const ProductColorEncoder& encoder
         )
-    : _net(net), _placeNameIndices(placeNameIndices), _transitionNameIndices(transitionNameIndices) {
+    : _net(net), _placeNameIndices(placeNameIndices), _transitionNameIndices(transitionNameIndices), _globalPassed(encoder),
+      _localPassed(encoder) {
         _buchiAutomaton = make_buchi_automaton(condition, LTL::BuchiOptimization::Low, LTL::APCompression::None);
     }
 
@@ -27,10 +29,10 @@ namespace PetriEngine::ExplicitColored {
                         return true;
                     }
                 }
-                if(std::find(_globalPassed.begin(), _globalPassed.end(), nextState) == _globalPassed.end()){
-                    _globalPassed.emplace_back(nextState);
-                    _waiting.emplace_back(nextState);
+                if(_globalPassed.existsOrAdd({nextState.marking, nextState.getBuchiState()})){
+                    _waiting.emplace_back(std::move(nextState));
                 }
+
                 _waiting.erase(std::remove(_waiting.begin(), _waiting.end(), initialState), _waiting.end());
             }
         }
@@ -38,9 +40,10 @@ namespace PetriEngine::ExplicitColored {
         return false;
     }
 
-    bool LTLNdfs::ndfs(ProductStateGenerator productStateGenerator, ColoredPetriNetProductState state) {
+    bool LTLNdfs::ndfs(ProductStateGenerator productStateGenerator, ColoredPetriNetProductState& state) {
+        _localPassed.add({state.marking, state.getBuchiState()});
         _waiting.emplace_back(std::move(state));
-        _localPassed.emplace_back(state);
+
 
         while (!_waiting.empty()){
             for (auto& s : _waiting){
@@ -52,10 +55,9 @@ namespace PetriEngine::ExplicitColored {
                     if(ns.marking == s.marking && ns.getBuchiState() == s.getBuchiState()){
                         return true;
                     }
-                    if (!isPassed(ns)){
-                        _localPassed.emplace_back(ns);
-
-                        _waiting.emplace_back(ns);
+                    if (!_localPassed.exists({ns.marking, ns.getBuchiState()}) && !_globalPassed.exists({ns.marking, ns.getBuchiState()})){
+                        _localPassed.add({ns.marking, ns.getBuchiState()});
+                        _waiting.emplace_back(std::move(ns));
                     }
                 }
             }

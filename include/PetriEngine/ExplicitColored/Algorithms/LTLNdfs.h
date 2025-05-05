@@ -5,6 +5,8 @@
 #include <PetriEngine/PQL/PQL.h>
 #include <PetriEngine/ExplicitColored/ColoredPetriNet.h>
 #include "PetriEngine/ExplicitColored/SuccessorGenerator/ProductStateGenerator.h"
+#include "PetriEngine/ExplicitColored/PassedList.h"
+#include "PetriEngine/ExplicitColored/ProductColorEncoder.h"
 
 namespace PetriEngine::ExplicitColored {
     class LTLNdfs {
@@ -13,17 +15,10 @@ namespace PetriEngine::ExplicitColored {
             const ColoredPetriNet& net,
             const PQL::Condition_ptr& condition,
             const std::unordered_map<std::string, uint32_t>& placeNameIndices,
-            const std::unordered_map<std::string, Transition_t>& transitionNameIndices
+            const std::unordered_map<std::string, Transition_t>& transitionNameIndices,
+            const ProductColorEncoder& encoder
         );
         bool check();
-        bool isPassed(const ColoredPetriNetProductState& state){
-            for (const auto& s:_localPassed) {
-                if (state.getBuchiState() == s.getBuchiState() && state.marking == s.marking){
-                    return true;
-                }
-            }
-            return false;
-        }
     private:
         LTL::Structures::BuchiAutomaton _buchiAutomaton;
         const ColoredPetriNet& _net;
@@ -31,10 +26,10 @@ namespace PetriEngine::ExplicitColored {
         const std::unordered_map<std::string, Transition_t>& _transitionNameIndices;
 
         std::vector<ColoredPetriNetProductState> _waiting;
-        std::list<ColoredPetriNetProductState> _globalPassed;
-        std::list<ColoredPetriNetProductState> _localPassed;
+        PassedList<ProductColorEncoder, std::pair<ColoredPetriNetMarking, size_t>> _globalPassed;
+        PassedList<ProductColorEncoder, std::pair<ColoredPetriNetMarking, size_t>>  _localPassed;
         bool dfs(ProductStateGenerator,  ColoredPetriNetProductState);
-        bool ndfs(ProductStateGenerator, ColoredPetriNetProductState);
+        bool ndfs(ProductStateGenerator, ColoredPetriNetProductState&);
     };
 }
 

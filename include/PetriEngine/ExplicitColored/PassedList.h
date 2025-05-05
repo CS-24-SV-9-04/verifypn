@@ -17,13 +17,12 @@ namespace PetriEngine::ExplicitColored {
         //Returns true if the element exists or false if it does not exist and inserts the element
         bool existsOrAdd(const S& state) {
             size_t size = _encoder.encode(state);
-            _passed.insert(_encoder.data(), size);
-            return false;
+            return _passed.insert(_encoder.data(), size).first;
         }
 
         bool exists(const S& state) {
             size_t size = _encoder.encode(state);
-            return _passed.exists(_encoder.data(), size);
+            return _passed.exists(_encoder.data(), size).first;
         }
 
         bool isFullStateSpace() {

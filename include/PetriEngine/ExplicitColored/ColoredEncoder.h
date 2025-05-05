@@ -10,6 +10,7 @@ namespace PetriEngine::ExplicitColored {
     enum ENCODING_TYPE : unsigned char {
         TOKEN_COUNTS,
         PLACE_TOKEN_COUNT,
+        PRODUCT_COLOR,
         EMPTY,
     };
 
@@ -22,6 +23,7 @@ namespace PetriEngine::ExplicitColored {
     class ColoredEncoder {
     public:
         typedef std::vector<uint8_t> scratchpad_t;
+        friend class ProductColorEncoder;
 
         explicit ColoredEncoder(const std::vector<ColoredPetriNetPlace>& places) : _places(places),
             _placeSize(_convertToTypeSize(places.size())) {
@@ -35,29 +37,9 @@ namespace PetriEngine::ExplicitColored {
             _scratchpad = scratchpad_t(_size * 8);
         }
 
-        size_t productEncode(const ColoredPetriNetMarking& marking, size_t buchiState){
-            size_t offset = 0;
-            _writeToPad(buchiState, _convertToTypeSize(buchiState), offset);
-            //Problem at offset starter forfra i encode??
-            offset += encode(marking);
-
-            if (offset > UINT16_MAX){
-                //If too big for representation partial statespace will be explored
-                if (_fullStatespace) {
-                    _biggestRepresentation = UINT16_MAX;
-                    std::cout << "State with size: " << offset <<
-                              " cannot be represented correctly, so full statespace is not explored " << std::endl;
-                }
-                _fullStatespace = false;
-                return UINT16_MAX;
-            }
-            _biggestRepresentation = std::max(offset, _biggestRepresentation);
-            return offset;
-        }
-
         //Encodes each place with its own encoding type, written as a prefix for each place
         size_t encode(const ColoredPetriNetMarking& marking) {
-            size_t offset = 0;
+            size_t offset = _isProductColor ? _productColorOffset : 0;
             auto pid = 0;
             for (const auto& place : marking.markings) {
                 const auto type = _getType(place, _places[pid].colorType->colorSize);
@@ -89,7 +71,7 @@ namespace PetriEngine::ExplicitColored {
         }
 
         ColoredPetriNetMarking decode(const unsigned char* encoding) const {
-            size_t offset = 0;
+            size_t offset = _isProductColor ? _productColorOffset : 0;
             ColoredPetriNetMarking marking{};
             for (auto pid = 0; pid < _places.size(); ++pid) {
                 const auto type = static_cast<ENCODING_TYPE>(_readFromEncoding(encoding, EIGHT, offset));
@@ -141,6 +123,8 @@ namespace PetriEngine::ExplicitColored {
         TYPE_SIZE _placeSize;
         std::vector<TYPE_SIZE> _placeColorSize = {};
         bool _fullStatespace = true;
+        bool _isProductColor = false;
+        size_t _productColorOffset = 0;
 
         //Writes the cardinality of each color in the place in order, including 0
         //Could possibly use bits to show whether a token is non-zero
