@@ -10,7 +10,6 @@ namespace PetriEngine::ExplicitColored {
     enum ENCODING_TYPE : unsigned char {
         TOKEN_COUNTS,
         PLACE_TOKEN_COUNT,
-        PRODUCT_COLOR,
         EMPTY,
     };
 

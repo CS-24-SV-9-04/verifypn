@@ -25,7 +25,7 @@ namespace PetriEngine::ExplicitColored {
         const std::unordered_map<std::string, uint32_t>& _placeNameIndices;
         const std::unordered_map<std::string, Transition_t>& _transitionNameIndices;
 
-        std::vector<ColoredPetriNetProductState> _waiting;
+        std::stack<ColoredPetriNetProductState> _waiting;
         PassedList<ProductColorEncoder, std::pair<ColoredPetriNetMarking, size_t>> _globalPassed;
         PassedList<ProductColorEncoder, std::pair<ColoredPetriNetMarking, size_t>>  _localPassed;
         bool dfs(ProductStateGenerator,  ColoredPetriNetProductState);

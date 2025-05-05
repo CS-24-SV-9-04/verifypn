@@ -74,9 +74,9 @@ namespace PetriEngine::ExplicitColored {
             : ColoredPetriNetStateFixed(std::move(marking)), _buchiState(buchiState), currentSuccessor({}) {}
         ColoredPetriNetProductState(ColoredPetriNetStateFixed markingState, size_t buchiState)
             : ColoredPetriNetStateFixed(std::move(markingState)), _buchiState(buchiState), currentSuccessor({}) {}
-        ColoredPetriNetProductState(const ColoredPetriNetProductState&) = delete;
         ColoredPetriNetProductState(ColoredPetriNetProductState&& state) noexcept = default;
         ColoredPetriNetProductState& operator=(ColoredPetriNetProductState&&) noexcept = default;
+        ColoredPetriNetProductState(const ColoredPetriNetProductState&) = delete;
         ColoredPetriNetProductState& operator=(const ColoredPetriNetProductState&) = delete;
 
         ColoredPetriNetProductState copy(const LTL::Structures::BuchiAutomaton& sourceAutomaton) const {
