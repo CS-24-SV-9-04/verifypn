@@ -79,12 +79,6 @@ namespace PetriEngine::ExplicitColored {
         ColoredPetriNetProductState& operator=(ColoredPetriNetProductState&&) noexcept = default;
         ColoredPetriNetProductState(const ColoredPetriNetProductState& state) = delete;
         ColoredPetriNetProductState& operator=(const ColoredPetriNetProductState&) = delete;
-        bool operator==(const ColoredPetriNetProductState& other){
-            if (_buchiState == other._buchiState && marking == other.marking){
-                return true;
-            }
-                return false;
-        }
 
         size_t getBuchiState() const {
             return _buchiState;

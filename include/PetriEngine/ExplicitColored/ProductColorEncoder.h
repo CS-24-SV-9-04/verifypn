@@ -18,7 +18,6 @@ namespace PetriEngine::ExplicitColored {
             size_t buchiState = state.second;
             _coloredEncoder._productColorOffset = 0;
             _coloredEncoder._isProductColor = true;
-            _coloredEncoder._writeTypeSignature(PRODUCT_COLOR, _coloredEncoder._productColorOffset);
             auto buchiTypeSize = _coloredEncoder._convertToTypeSize(buchiState);
             _coloredEncoder._writeToPad(buchiTypeSize, EIGHT, _coloredEncoder._productColorOffset);
             _coloredEncoder._writeToPad(buchiState, buchiTypeSize, _coloredEncoder._productColorOffset);
@@ -46,11 +45,9 @@ namespace PetriEngine::ExplicitColored {
             _coloredEncoder._isProductColor = true;
             size_t buchiState;
             ColoredPetriNetMarking marking {};
-            if (static_cast<ENCODING_TYPE>(_coloredEncoder._readFromEncoding(encoding, EIGHT, _coloredEncoder._productColorOffset)) == PRODUCT_COLOR){
-                const auto buchiStateSize = static_cast<TYPE_SIZE>(_coloredEncoder._readFromEncoding(encoding, EIGHT, _coloredEncoder._productColorOffset));
-                buchiState = _coloredEncoder._readFromEncoding(encoding, buchiStateSize, _coloredEncoder._productColorOffset);
-                marking = _coloredEncoder.decode(encoding);
-            }
+            const auto buchiStateSize = static_cast<TYPE_SIZE>(_coloredEncoder._readFromEncoding(encoding, EIGHT, _coloredEncoder._productColorOffset));
+            buchiState = _coloredEncoder._readFromEncoding(encoding, buchiStateSize, _coloredEncoder._productColorOffset);
+            marking = _coloredEncoder.decode(encoding);
             _coloredEncoder._isProductColor = false;
             return {marking, buchiState};
         }

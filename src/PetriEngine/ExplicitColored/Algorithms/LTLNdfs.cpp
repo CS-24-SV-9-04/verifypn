@@ -20,47 +20,43 @@ namespace PetriEngine::ExplicitColored {
     }
 
     bool LTLNdfs::dfs(ProductStateGenerator productStateGenerator, ColoredPetriNetProductState initialState) {
-        _waiting.emplace_back(std::move(initialState));
+        _waiting.push(std::move(initialState));
         while (!_waiting.empty()){
-            for (auto& s : _waiting) {
-                auto nextState = productStateGenerator.next(s);
-                if(_buchiAutomaton.buchi().state_is_accepting(nextState.getBuchiState())){
-                    if (ndfs(productStateGenerator, nextState)){
-                        return true;
-                    }
+            auto& state = _waiting.top();
+            auto nextState = productStateGenerator.next(state);
+            if(_buchiAutomaton.buchi().state_is_accepting(nextState.getBuchiState())){
+                if (ndfs(productStateGenerator, nextState)){
+                    return true;
                 }
-                if(_globalPassed.existsOrAdd({nextState.marking, nextState.getBuchiState()})){
-                    _waiting.emplace_back(std::move(nextState));
-                }
-
-                _waiting.erase(std::remove(_waiting.begin(), _waiting.end(), initialState), _waiting.end());
             }
+            if(_globalPassed.existsOrAdd({nextState.marking, nextState.getBuchiState()})){
+                _waiting.push(std::move(nextState));
+            }
+            _waiting.pop();
         }
-
         return false;
     }
 
-    bool LTLNdfs::ndfs(ProductStateGenerator productStateGenerator, ColoredPetriNetProductState& state) {
-        _localPassed.add({state.marking, state.getBuchiState()});
-        _waiting.emplace_back(std::move(state));
-
+    bool LTLNdfs::ndfs(ProductStateGenerator productStateGenerator, ColoredPetriNetProductState& initialState) {
+        _localPassed.add({initialState.marking, initialState.getBuchiState()});
+        _waiting.push(std::move(initialState));
 
         while (!_waiting.empty()){
-            for (auto& s : _waiting){
-                if(productStateGenerator.next(s).marking.markings.empty()){
+            auto& state = _waiting.top();
+            if(productStateGenerator.next(state).marking.markings.empty()){
+                return true;
+            }
+            auto nextState = productStateGenerator.next(state);
+            if (_buchiAutomaton.buchi().state_is_accepting(nextState.getBuchiState())) {
+                if (nextState.marking == state.marking && nextState.getBuchiState() == state.getBuchiState()) {
                     return true;
                 }
-                auto ns = productStateGenerator.next(s);
-                if (_buchiAutomaton.buchi().state_is_accepting(ns.getBuchiState())){
-                    if(ns.marking == s.marking && ns.getBuchiState() == s.getBuchiState()){
-                        return true;
-                    }
-                    if (!_localPassed.exists({ns.marking, ns.getBuchiState()}) && !_globalPassed.exists({ns.marking, ns.getBuchiState()})){
-                        _localPassed.add({ns.marking, ns.getBuchiState()});
-                        _waiting.emplace_back(std::move(ns));
-                    }
+                if (!_localPassed.existsOrAdd({nextState.marking, nextState.getBuchiState()}) &&
+                    !_globalPassed.exists({nextState.marking, nextState.getBuchiState()})) {
+                    _waiting.push(std::move(nextState));
                 }
             }
+            _waiting.pop();
         }
         return false;
     }
