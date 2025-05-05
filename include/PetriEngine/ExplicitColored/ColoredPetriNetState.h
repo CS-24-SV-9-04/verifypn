@@ -74,16 +74,29 @@ namespace PetriEngine::ExplicitColored {
             : ColoredPetriNetStateFixed(std::move(marking)), _buchiState(buchiState), currentSuccessor({}) {}
         ColoredPetriNetProductState(ColoredPetriNetStateFixed markingState, size_t buchiState)
             : ColoredPetriNetStateFixed(std::move(markingState)), _buchiState(buchiState), currentSuccessor({}) {}
-
+        ColoredPetriNetProductState(const ColoredPetriNetProductState&) = delete;
         ColoredPetriNetProductState(ColoredPetriNetProductState&& state) noexcept = default;
         ColoredPetriNetProductState& operator=(ColoredPetriNetProductState&&) noexcept = default;
-        ColoredPetriNetProductState(const ColoredPetriNetProductState& state) = delete;
         ColoredPetriNetProductState& operator=(const ColoredPetriNetProductState&) = delete;
-        bool operator==(const ColoredPetriNetProductState& other){
-            if (_buchiState == other._buchiState && marking == other.marking){
-                return true;
+
+        ColoredPetriNetProductState copy(const LTL::Structures::BuchiAutomaton& sourceAutomaton) const {
+            ColoredPetriNetProductState copy(marking, _buchiState);
+            copy.currentSuccessor = currentSuccessor;
+            auto state = sourceAutomaton.buchi().state_from_number(_buchiState);
+            copy.iterState =
+                std::unique_ptr<spot::twa_succ_iterator, BuchiStateIterDeleter>(sourceAutomaton.buchi().succ_iter(state));
+            state->destroy();
+            if (copy.iterState->first()) {
+                do {
+                    const auto dstState = iterState->dst();
+                    const auto copyDstStateNumber = sourceAutomaton.buchi().state_number(dstState);
+                    dstState->destroy();
+                    if (copyDstStateNumber == _buchiState) {
+                        break;
+                    }
+                } while (copy.iterState->next());
             }
-                return false;
+            return copy;
         }
 
         size_t getBuchiState() const {
@@ -93,7 +106,6 @@ namespace PetriEngine::ExplicitColored {
         ColoredPetriNetStateFixed currentSuccessor;
     private:
         size_t _buchiState;
-
     };
 
     struct ColoredPetriNetStateEven {
