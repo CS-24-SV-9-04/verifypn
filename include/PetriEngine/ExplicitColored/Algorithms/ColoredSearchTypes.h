@@ -4,7 +4,6 @@
 #include <queue>
 #include <random>
 #include <stack>
-
 #include "PetriEngine/ExplicitColored/Visitors/HeuristicVisitor.h"
 
 namespace PetriEngine::ExplicitColored {
@@ -156,7 +155,7 @@ namespace PetriEngine::ExplicitColored {
     class BestFSStructure {
     public:
         explicit BestFSStructure(
-            ColoredEncoder& encoder, const size_t seed, std::shared_ptr<CompiledGammaQueryExpression> query, const bool negQuery)
+            ColoredEncoder& encoder, const size_t seed, std::shared_ptr<ExplicitQueryProposition> query, const bool negQuery)
             : _rng(seed), _query(std::move(query)), _negQuery(negQuery), _encoder(&encoder) {}
 
         T& next() {
@@ -188,7 +187,7 @@ namespace PetriEngine::ExplicitColored {
     private:
         std::priority_queue<WeightedState<T>> _queue;
         std::default_random_engine _rng;
-        std::shared_ptr<CompiledGammaQueryExpression> _query{};
+        std::shared_ptr<ExplicitQueryProposition> _query;
         bool _negQuery;
         ColoredEncoder* _encoder;
     };

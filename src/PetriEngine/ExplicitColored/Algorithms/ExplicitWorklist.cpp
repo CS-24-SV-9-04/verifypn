@@ -3,12 +3,11 @@
 
 #include "PetriEngine/ExplicitColored/Algorithms/ExplicitWorklist.h"
 #include <PetriEngine/options.h>
-#include "PetriEngine/ExplicitColored/ColoredSuccessorGenerator.h"
+#include "PetriEngine/ExplicitColored/SuccessorGenerator/ColoredSuccessorGenerator.h"
 #include "PetriEngine/PQL/PQL.h"
 #include "PetriEngine/ExplicitColored/ColoredPetriNetMarking.h"
 #include "PetriEngine/PQL/Visitor.h"
 #include "PetriEngine/ExplicitColored/Algorithms/ColoredSearchTypes.h"
-#include "PetriEngine/ExplicitColored/FireabilityChecker.h"
 #include "PetriEngine/ExplicitColored/ExplicitErrors.h"
 
 namespace PetriEngine::ExplicitColored {
@@ -17,15 +16,15 @@ namespace PetriEngine::ExplicitColored {
         const PQL::Condition_ptr &query,
         const std::unordered_map<std::string, uint32_t>& placeNameIndices,
         const std::unordered_map<std::string, Transition_t>& transitionNameIndices,
-        const IColoredResultPrinter& coloredResultPrinter,
-        const size_t seed
+        const size_t seed,
+        bool createTrace
     ) : _net(std::move(net)),
         _successorGenerator(ColoredSuccessorGenerator{_net}),
         _seed(seed),
-        _coloredResultPrinter(coloredResultPrinter),
-        _encoder(ColoredEncoder{_net.getPlaces()})
+        _encoder(ColoredEncoder{_net.getPlaces()}),
+        _createTrace(createTrace)
     {
-        const GammaQueryCompiler queryCompiler(placeNameIndices, transitionNameIndices, _successorGenerator);
+        const ExplicitQueryPropositionCompiler queryCompiler(placeNameIndices, transitionNameIndices, _successorGenerator);
         if (const auto efGammaQuery = dynamic_cast<PQL::EFCondition*>(query.get())) {
             _quantifier = Quantifier::EF;
             _gammaQuery = queryCompiler.compile(efGammaQuery->getCond());
@@ -33,7 +32,7 @@ namespace PetriEngine::ExplicitColored {
             _quantifier = Quantifier::AG;
             _gammaQuery = queryCompiler.compile(agGammaQuery->getCond());
         } else {
-            throw explicit_error{unsupported_query};
+            throw explicit_error{ExplicitErrorType::UNSUPPORTED_QUERY};
         }
     }
 
@@ -44,11 +43,32 @@ namespace PetriEngine::ExplicitColored {
         if (coloredSuccessorGeneratorOption == ColoredSuccessorGeneratorOption::EVEN) {
             return _search<ColoredPetriNetStateEven>(searchStrategy, encodeWaitingList);
         }
-        throw explicit_error(unsupported_generator);
+        throw explicit_error(ExplicitErrorType::UNSUPPORTED_GENERATOR);
     }
 
     const SearchStatistics & ExplicitWorklist::GetSearchStatistics() const {
         return _searchStatistics;
+    }
+
+    std::optional<uint64_t> ExplicitWorklist::getCounterExampleId() const {
+        return _counterExampleId;
+    }
+
+    std::optional<std::vector<InternalTraceStep>> ExplicitWorklist::getTraceTo(uint64_t counterExampleId) const {
+        uint64_t currentId = counterExampleId;
+        std::vector<InternalTraceStep> trace;
+        while (currentId != 0) {
+            auto it = _stateMap.transitions.find(currentId);
+            if (it == _stateMap.transitions.end()) {
+                return std::nullopt;
+            }
+            currentId = it->second.predecessorId;
+            trace.push_back(InternalTraceStep {
+                it->second.binding,
+                it->second.transition
+            });
+        }
+        return std::vector(trace.rbegin(), trace.rend());
     }
 
     bool ExplicitWorklist::_check(const ColoredPetriNetMarking& state, size_t id) const {
@@ -62,6 +82,10 @@ namespace PetriEngine::ExplicitColored {
         const auto earlyTerminationCondition = _quantifier == Quantifier::EF;
 
         auto size = _encoder.encode(initialState);
+        if (!_encoder.testEncodingDecoding(initialState)) {
+            std::cout << "En/decoding is incorrect" << std::endl;
+        }
+
         passed.insert(_encoder.data(), size);
         if constexpr (std::is_same_v<T, ColoredPetriNetStateEven>) {
             auto initial = ColoredPetriNetStateEven{initialState, _net.getTransitionCount()};
@@ -75,20 +99,20 @@ namespace PetriEngine::ExplicitColored {
             waiting.add(std::move(initial));
         }
 
-        _searchStatistics.passedCount = 1;
-        _searchStatistics.checkedStates = 1;
+        _searchStatistics.exploredStates = 1;
+        _searchStatistics.discoveredStates = 1;
+
         if (_check(initialState, 0) == earlyTerminationCondition) {
-            _encoder.printBiggestEncoding();
+            _counterExampleId = 0;
             return _getResult(true, _encoder.isFullStatespace());
         }
         if (_net.getTransitionCount() == 0) {
-            _encoder.printBiggestEncoding();
             return _getResult(false, _encoder.isFullStatespace());
         }
 
         while (!waiting.empty()){
             auto& next = waiting.next();
-            auto successor = _successorGenerator.next(next);
+            auto [successor, traceStep] = _successorGenerator.next(next);
             if (next.done()) {
                 waiting.remove();
                 _successorGenerator.shrinkState(next.id);
@@ -102,26 +126,30 @@ namespace PetriEngine::ExplicitColored {
                     continue;
                 }
             }
+
             successor.shrink();
             const auto& marking = successor.marking;
             size = _encoder.encode(marking);
-            _searchStatistics.exploredStates++;
+            _searchStatistics.discoveredStates++;
             if (!passed.exists(_encoder.data(), size).first) {
-                _searchStatistics.checkedStates += 1;
+                if (_createTrace) {
+                    _stateMap.transitions.emplace(successor.id, traceStep);
+                }
+                _searchStatistics.exploredStates += 1;
                 if (_check(marking, successor.id) == earlyTerminationCondition) {
                     _searchStatistics.endWaitingStates = waiting.size();
-                   _encoder.printBiggestEncoding();
-                    return _getResult(true,_encoder.isFullStatespace());
+                    _searchStatistics.biggestEncoding = _encoder.getBiggestEncoding();
+                    _counterExampleId = successor.id;
+                    return _getResult(true, _encoder.isFullStatespace());
                 }
                 successor.addEncoding(_encoder.data(), size);
                 waiting.add(std::move(successor));
                 passed.insert(_encoder.data(), size);
-                _searchStatistics.passedCount += 1;
                 _searchStatistics.peakWaitingStates = std::max(waiting.size(), _searchStatistics.peakWaitingStates);
             }
         }
-        _encoder.printBiggestEncoding();
         _searchStatistics.endWaitingStates = waiting.size();
+        _searchStatistics.biggestEncoding = _encoder.getBiggestEncoding();
         return _getResult(false, _encoder.isFullStatespace());
     }
 
@@ -138,7 +166,7 @@ namespace PetriEngine::ExplicitColored {
             case Strategy::HEUR:
                 return _bestfs<SuccessorGeneratorState>(encodeWaitingList);
             default:
-                throw explicit_error(unsupported_strategy);
+                throw explicit_error(ExplicitErrorType::UNSUPPORTED_STRATEGY);
         }
     }
 
@@ -200,7 +228,6 @@ namespace PetriEngine::ExplicitColored {
                ? Reachability::ResultPrinter::Result::Satisfied
                : Reachability::ResultPrinter::Result::NotSatisfied;
         }
-        _coloredResultPrinter.printResults(_searchStatistics, res);
         return res == Reachability::ResultPrinter::Result::Satisfied;
     }
 }

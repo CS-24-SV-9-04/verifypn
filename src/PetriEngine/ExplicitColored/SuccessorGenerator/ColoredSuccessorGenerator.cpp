@@ -2,8 +2,7 @@
 #define COLOREDSUCCESSORGENERATOR_CPP
 
 #include <memory>
-#include "PetriEngine/ExplicitColored/ColoredSuccessorGenerator.h"
-
+#include "PetriEngine/ExplicitColored/SuccessorGenerator/ColoredSuccessorGenerator.h"
 
 namespace PetriEngine::ExplicitColored{
     ColoredSuccessorGenerator::ColoredSuccessorGenerator(const ColoredPetriNet& net)
@@ -79,7 +78,7 @@ namespace PetriEngine::ExplicitColored{
         }
     }
 
-    void ColoredSuccessorGenerator::_fire(ColoredPetriNetMarking& state, const Transition_t tid, const Binding& binding) const{
+    void ColoredSuccessorGenerator::fire(ColoredPetriNetMarking& state, const Transition_t tid, const Binding& binding) const{
         consumePreset(state, tid, binding);
         producePostset(state, tid, binding);
     }
@@ -93,9 +92,10 @@ namespace PetriEngine::ExplicitColored{
         std::vector<Color_t> stateMaxes;
         for (Variable_t variable : allVariables) {
             PossibleValues values = PossibleValues::getAll();
+            const auto variableColorSize = _net._variables[variable].colorSize;
             const auto& constraints = _net._transitions[transition].preplacesVariableConstraints.find(variable);
             if (constraints == _net._transitions[transition].preplacesVariableConstraints.end()) {
-                stateMaxes.push_back(_net._variables[variable].colorSize);
+                stateMaxes.push_back(variableColorSize);
                 constraintData.possibleVariableValues.push_back(PossibleValues::getAll());
                 continue;
             }
@@ -113,22 +113,21 @@ namespace PetriEngine::ExplicitColored{
                 }
 
                 for (const auto& tokens : place.counts()) {
-                    auto bindingValue = add_color_offset(
+                    auto bindingValue = addColorOffset(
                         _net._places[constraint.place].colorType->colorCodec.decode(tokens.first, constraint.colorIndex),
                         -constraint.colorOffset,
-                        _net._variables[variable].colorSize
+                        variableColorSize
                     );
-
-                    if (values.allColors) {
-                        values.colors.push_back(bindingValue);
-                    } else {
-                        possibleColors.insert(bindingValue);
-                    }
+                    possibleColors.insert(bindingValue);
                 }
 
                 if (values.allColors) {
-                    values.allColors = false;
-                    std::sort(values.colors.begin(), values.colors.end());
+                    if (possibleColors.size() != variableColorSize) {
+                        values.allColors = false;
+                        for (const auto& color : possibleColors) {
+                            values.colors.push_back(color);
+                        }
+                    }
                 } else {
                     values.intersect(possibleColors);
                 }
@@ -139,7 +138,7 @@ namespace PetriEngine::ExplicitColored{
                 }
             }
             stateMaxes.push_back(values.allColors
-                ? _net._variables[variable].colorSize
+                ? variableColorSize
                 : values.colors.size());
             constraintData.possibleVariableValues.emplace_back(std::move(values));
         }
@@ -151,8 +150,8 @@ namespace PetriEngine::ExplicitColored{
             allVariables.begin(),
             allVariables.end()
         );
-        _constraintData.emplace(getKey(id, transition), std::move(constraintData));
-        return _constraintData.find(getKey(id, transition));
+        _constraintData.emplace(_getKey(id, transition), std::move(constraintData));
+        return _constraintData.find(_getKey(id, transition));
     }
 
     bool ColoredSuccessorGenerator::_hasMinimalCardinality(const ColoredPetriNetMarking &marking, const Transition_t tid) const {
@@ -168,7 +167,7 @@ namespace PetriEngine::ExplicitColored{
         return true;
     }
 
-    [[nodiscard]] Binding_t ColoredSuccessorGenerator::findNextValidBinding(const ColoredPetriNetMarking& marking, const Transition_t tid, Binding_t bid, const uint64_t totalBindings, Binding& binding, size_t stateId) const {
+    Binding_t ColoredSuccessorGenerator::findNextValidBinding(const ColoredPetriNetMarking& marking, const Transition_t tid, Binding_t bid, const uint64_t totalBindings, Binding& binding, size_t stateId) const {
         if (bid == 0 && _shouldEarlyTerminateTransition(marking, tid)) {
             return std::numeric_limits<Binding_t>::max();
         }
@@ -180,7 +179,7 @@ namespace PetriEngine::ExplicitColored{
             return std::numeric_limits<Binding_t>::max();
         }
 
-        auto constraintDataIt = _constraintData.find(getKey(stateId, tid));
+        auto constraintDataIt = _constraintData.find(_getKey(stateId, tid));
         if (totalBindings > 30 && constraintDataIt == _constraintData.end()) {
             bool noPossibleBinding = false;
             constraintDataIt = _calculateConstraintData(marking, stateId, tid, noPossibleBinding);
@@ -219,7 +218,6 @@ namespace PetriEngine::ExplicitColored{
                 return bid;
             }
         }
-
         return std::numeric_limits<Binding_t>::max();
     }
 }

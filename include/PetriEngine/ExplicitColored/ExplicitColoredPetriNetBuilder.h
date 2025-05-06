@@ -1,5 +1,5 @@
-#ifndef COLORED_PETRI_NET_BUILDER_H
-#define COLORED_PETRI_NET_BUILDER_H
+#ifndef EXPLICIT_COLORED_PETRI_NET_BUILDER_H
+#define EXPLICIT_COLORED_PETRI_NET_BUILDER_H
 #include "PetriEngine/AbstractPetriNetBuilder.h"
 #include "ColoredPetriNet.h"
 
@@ -8,11 +8,12 @@ namespace PetriEngine::ExplicitColored {
         OK,
         TOO_MANY_BINDINGS
     };
-    class ColoredPetriNetBuilder final : public AbstractPetriNetBuilder {
+
+    class ExplicitColoredPetriNetBuilder final : public AbstractPetriNetBuilder {
     public:
-        ColoredPetriNetBuilder();
-        ColoredPetriNetBuilder(ColoredPetriNetBuilder&&) = default;
-        ColoredPetriNetBuilder& operator=(const ColoredPetriNetBuilder&) = default;
+        ExplicitColoredPetriNetBuilder();
+        ExplicitColoredPetriNetBuilder(ExplicitColoredPetriNetBuilder&&) = default;
+        ExplicitColoredPetriNetBuilder& operator=(const ExplicitColoredPetriNetBuilder&) = default;
 
         void addPlace(const std::string& name, uint32_t tokens, double, double) override;
         void addTransition(const std::string& name, int32_t, double, double) override;
@@ -28,11 +29,16 @@ namespace PetriEngine::ExplicitColored {
         void addToColorType(Colored::ProductType* colorType, const Colored::ColorType* newConstituent) override;
         void sort() override;
 
-        std::unordered_map<std::string, uint32_t> takePlaceIndices();
-        std::unordered_map<std::string, Transition_t> takeTransitionIndices();
+        const std::unordered_map<std::string, uint32_t>& getPlaceIndices() const;
+        const std::unordered_map<std::string, Transition_t>& getTransitionIndices() const;
+        const std::shared_ptr<std::unordered_map<std::string, Variable_t>>& getVariableIndices() const;
+        const std::vector<const Colored::ColorType*>& getUnderlyingVariableColorTypes() const;
+        const Colored::ColorType* getPlaceUnderlyingColorType(Place_t place) const;
+
         ColoredPetriNetBuilderStatus build();
         ColoredPetriNet takeNet();
     private:
+        std::unordered_map<Place_t, const Colored::ColorType*> _underlyingColorType;
         std::unordered_map<std::string, uint32_t> _placeIndices;
         std::unordered_map<std::string, uint32_t> _transitionIndices;
         std::shared_ptr<std::unordered_map<std::string, Variable_t>> _variableMap;
@@ -46,6 +52,7 @@ namespace PetriEngine::ExplicitColored {
         ColoredPetriNet _currentNet;
         std::shared_ptr<ColorType> _dotColorType;
         std::shared_ptr<Colored::ColorTypeMap> _colors;
+        std::vector<const Colored::ColorType*> _underlyingVariableColorTypes;
 
         void _createArcsAndTransitions();
         ColoredPetriNetBuilderStatus _calculateTransitionVariables();

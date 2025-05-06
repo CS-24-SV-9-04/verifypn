@@ -29,6 +29,11 @@ namespace PetriEngine::ExplicitColored {
 
         void setCount(const Color_t& color, MarkingCount_t count) {
             const auto it = lower_bound(color);
+
+            if (count > std::numeric_limits<sMarkingCount_t>::max() || _cardinality + count < count) {
+                throw explicit_error{ExplicitErrorType::TOO_MANY_TOKENS};
+            }
+
             _cardinality += static_cast<sMarkingCount_t>(count);
 
             if (it != _counts.end() && it->first == color) {
@@ -39,11 +44,14 @@ namespace PetriEngine::ExplicitColored {
             _counts.insert(it, {color, count});
         }
 
-        void addCount(const ColorSequence& colorSequence, sMarkingCount_t count) {
-            const Color_t& color = colorSequence.encodedValue;
+        void addCount(const ColorSequence& colorSequence, const sMarkingCount_t count) {
+            addCount(colorSequence.encodedValue, count);
+        }
+
+        void addCount(const Color_t& color, const sMarkingCount_t count) {
             const auto it = lower_bound(color);
             if (count > 0 && _cardinality > std::numeric_limits<sMarkingCount_t>::max() - count) {
-                throw explicit_error{too_many_tokens};
+                throw explicit_error{ExplicitErrorType::TOO_MANY_TOKENS};
             }
             _cardinality += count;
             if (it != _counts.end() && it->first == color) {
@@ -63,15 +71,17 @@ namespace PetriEngine::ExplicitColored {
             while (aIt != _counts.end() && bIt != other._counts.end()) {
                 if (aIt->first == bIt->first) {
                     if (bIt->second > 0 && _cardinality > std::numeric_limits<sMarkingCount_t>::max() - bIt->second) {
-                        throw explicit_error{too_many_tokens};
+                        throw explicit_error{ExplicitErrorType::TOO_MANY_TOKENS};
                     }
                     aIt->second += bIt->second;
                     _cardinality += bIt->second;
                     ++aIt;
                     ++bIt;
-                } else if (aIt->first < bIt->first) {
+                }
+                else if (aIt->first < bIt->first) {
                     ++aIt;
-                } else {
+                }
+                else {
                     aIt = _counts.insert(aIt, *bIt);
                     _cardinality += bIt->second;
                     ++bIt;
@@ -93,9 +103,11 @@ namespace PetriEngine::ExplicitColored {
                     _cardinality -= bIt->second;
                     ++aIt;
                     ++bIt;
-                } else if (aIt->first < bIt->first) {
+                }
+                else if (aIt->first < bIt->first) {
                     ++aIt;
-                } else {
+                }
+                else {
                     aIt = _counts.insert(aIt, {bIt->first, -bIt->second});
                     _cardinality -= bIt->second;
                     ++bIt;
@@ -113,7 +125,7 @@ namespace PetriEngine::ExplicitColored {
                 count *= static_cast<sMarkingCount_t>(scalar);
             }
             if (_cardinality > std::numeric_limits<sMarkingCount_t>::max() / scalar) {
-                throw explicit_error{too_many_tokens};
+                throw explicit_error{ ExplicitErrorType::TOO_MANY_TOKENS };
             }
 
             _cardinality *= static_cast<sMarkingCount_t>(scalar);
@@ -165,9 +177,11 @@ namespace PetriEngine::ExplicitColored {
                     }
                     ++aIt;
                     ++bIt;
-                } else if (aIt->first < bIt->first) {
+                }
+                else if (aIt->first < bIt->first) {
                     ++aIt;
-                } else {
+                }
+                else {
                     return false;
                 }
             }
@@ -201,9 +215,11 @@ namespace PetriEngine::ExplicitColored {
                     }
                     ++aIt;
                     ++bIt;
-                } else if (aIt->first < bIt->first) {
+                }
+                else if (aIt->first < bIt->first) {
                     return false;
-                } else {
+                }
+                else {
                     ++bIt;
                 }
             }
@@ -260,28 +276,31 @@ namespace PetriEngine::ExplicitColored {
             }
             return out;
         }
+
     private:
         std::vector<std::pair<Color_t, sMarkingCount_t>>::iterator lower_bound(const Color_t& key) {
             return std::lower_bound(
-                 _counts.begin(),
-                 _counts.end(),
-                 key,
-                 [](const auto& a, const auto& b) {
-                     return a.first < b;
-                 }
+                _counts.begin(),
+                _counts.end(),
+                key,
+                [](const auto& a, const auto& b) {
+                    return a.first < b;
+                }
             );
         }
 
-        [[nodiscard]] std::vector<std::pair<Color_t, sMarkingCount_t>>::const_iterator clower_bound(const Color_t& key) const {
+        [[nodiscard]] std::vector<std::pair<Color_t, sMarkingCount_t>>::const_iterator clower_bound(
+            const Color_t& key) const {
             return std::lower_bound(
-                 _counts.cbegin(),
-                 _counts.cend(),
-                 key,
-                 [](const auto& a, const auto& b) {
-                     return a.first < b;
-                 }
+                _counts.cbegin(),
+                _counts.cend(),
+                key,
+                [](const auto& a, const auto& b) {
+                    return a.first < b;
+                }
             );
         }
+
         std::vector<std::pair<Color_t, sMarkingCount_t>> _counts;
         sMarkingCount_t _cardinality = 0;
     };

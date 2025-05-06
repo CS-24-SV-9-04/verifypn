@@ -1,5 +1,3 @@
-
-
 #include <iomanip>
 #include <cstring>
 #include <vector>
@@ -146,8 +144,6 @@ void options_t::print(std::ostream& optionsOut) {
         }
     }
 
-
-
     optionsOut << "\n";
 }
 
@@ -235,6 +231,10 @@ void printHelp() {
         "  --encode-waiting-list                Whether the elements in the waiting list should be encoded to save space.\n"
         "                                       - 0       Disabled\n"
         "                                       - 1       Enabled\n"
+        "                                       Only supports -R, -t, --colored-successor-generator and -s options.\n"
+        "  --colored-successor-generator        Sets the the successor generator used in the explicit colored engine\n"
+        "                                       - fixed   transitions and bindings are traversed in a fixed order\n"
+        "                                       - even    transitions and bindings are checked evenly (default)\n"
         "  --disable-cfp                        Disable the computation of possible colors in the Petri Net (CPN only)\n"
         "  --disable-partitioning               Disable the partitioning of colors in the Petri Net (CPN only)\n"
         "  --disable-symmetry-vars              Disable search for symmetric variables (CPN only)\n"

@@ -1,77 +1,80 @@
-//
-// Created by emil on 2/12/25.
-//
-
 #ifndef PTRIE_TOO_SMALL_H
 #define PTRIE_TOO_SMALL_H
 
 #include <exception>
 
-
 namespace PetriEngine::ExplicitColored {
-    enum ExplicitErrorType {
-        ptrie_too_small = 0,
-        unsupported_query = 1,
-        unsupported_strategy = 2,
-        unsupported_generator = 3,
-        unsupported_net = 4,
-        unexpected_expression = 5,
-        unknown_variable = 6,
-        too_many_tokens = 7,
-        too_many_bindings = 8,
-        unknown_encoding = 9,
+    enum class ExplicitErrorType {
+        PTRIE_TOO_SMALL = 0,
+        UNSUPPORTED_QUERY = 1,
+        UNSUPPORTED_STRATEGY = 2,
+        UNSUPPORTED_GENERATOR = 3,
+        UNSUPPORTED_NET = 4,
+        UNEXPECTED_EXPRESSION = 5,
+        UNKNOWN_VARIABLE = 6,
+        TOO_MANY_TOKENS = 7,
+        TOO_MANY_BINDINGS = 8,
+        UNKNOWN_ENCODING = 9,
+        INVALID_TRACE = 10
     };
 
-    class explicit_error : public std::exception {
+    class explicit_error final : public std::exception {
     public:
-        explicit explicit_error(ExplicitErrorType type) : std::exception(), type(type) {}
+        explicit explicit_error(const ExplicitErrorType type) : std::exception(), type(type) {
+        }
+
         ExplicitErrorType type;
 
         void print(std::ostream& os) const {
-            switch (type){
-                case unsupported_strategy:
+            switch (type) {
+                case ExplicitErrorType::UNSUPPORTED_STRATEGY:
                     os << "Strategy is not supported for explicit colored engine" << std::endl
-                    << "UNSUPPORTED STRATEGY" << std::endl;
+                        << "UNSUPPORTED STRATEGY" << std::endl;
                     break;
-                case unsupported_query:
+                case ExplicitErrorType::UNSUPPORTED_QUERY:
                     os << "Query is not supported for explicit colored engine" << std::endl
-                    << "UNSUPPORTED QUERY" << std::endl;
+                        << "UNSUPPORTED QUERY" << std::endl;
                     break;
-                case ptrie_too_small:
+                case ExplicitErrorType::PTRIE_TOO_SMALL:
                     os << "Marking was too big to be stored in passed list" << std::endl
-                    << "PTRIE TOO SMALL" << std::endl;
+                        << "PTRIE TOO SMALL" << std::endl;
                     break;
-                case unsupported_generator:
+                case ExplicitErrorType::UNSUPPORTED_GENERATOR:
                     os << "Type of successor generator not supported" << std::endl
-                    << "UNSUPPORTED GENERATOR" << std::endl;
+                        << "UNSUPPORTED GENERATOR" << std::endl;
                     break;
-                case unsupported_net:
+                case ExplicitErrorType::UNSUPPORTED_NET:
                     os << "Net is not supported" << std::endl
-                    << "UNSUPPORTED NET" << std::endl;
+                        << "UNSUPPORTED NET" << std::endl;
                     break;
-                case unexpected_expression:
+                case ExplicitErrorType::UNEXPECTED_EXPRESSION:
                     os << "Unexpected expression in arc" << std::endl
                     << "UNEXPECTED EXPRESSION" << std::endl;
                     break;
-                case unknown_variable:
+                case ExplicitErrorType::UNKNOWN_VARIABLE:
                     os << "Unknown variable in arc" << std::endl
-                    << "UNKNOWN VARIABLE" << std::endl;
+                        << "UNKNOWN VARIABLE" << std::endl;
                     break;
-                case too_many_tokens:
+                case ExplicitErrorType::TOO_MANY_TOKENS:
                     os << "Too many tokens to represent" << std::endl
-                    << "TOO MANY TOKENS" << std::endl;
+                        << "TOO MANY TOKENS" << std::endl;
                     break;
-                case too_many_bindings:
+                case ExplicitErrorType::TOO_MANY_BINDINGS:
                     os << "The colored petri net has too many bindings to be represented" << std::endl
-                            << "TOO_MANY_BINDINGS" << std::endl;
+                        << "TOO_MANY_BINDINGS" << std::endl;
+                    break;
+                case ExplicitErrorType::INVALID_TRACE:
+                    os << "Trace contained unknown transition, variable or color" << std::endl
+                        << "INVALID TRACE" << std::endl;
                     break;
                 default:
                     os << "Something went wrong in explicit colored exploration" << std::endl
-                    << "UNKNOWN EXPLICIT COLORED ERROR" << std::endl;
+                        << "UNKNOWN EXPLICIT COLORED ERROR" << std::endl;
                     break;
-                }
+            }
         }
-        friend std::ostream &operator<<(std::ostream &os, const explicit_error &error) {
+
+        friend std::ostream& operator<<(std::ostream& os, const explicit_error& error) {
             error.print(os);
             return os;
         }
