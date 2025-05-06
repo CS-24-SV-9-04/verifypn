@@ -52,7 +52,7 @@
 #include "PetriEngine/Synthesis/SimpleSynthesis.h"
 #include "LTL/LTLSearch.h"
 #include "PetriEngine/PQL/PQL.h"
-#include "PetriEngine/ExplicitColored/ColoredPetriNetBuilder.h"
+#include "PetriEngine/ExplicitColored/ExplicitColoredPetriNetBuilder.h"
 #include "PetriEngine/ExplicitColored/Algorithms/ExplicitWorklist.h"
 #include "PetriEngine/ExplicitColored/ExplicitColoredModelChecker.h"
 using namespace PetriEngine;
@@ -88,8 +88,17 @@ int main(int argc, const char** argv) {
         try {
             cpnBuilder.parse_model(options.modelfile);
             options.isCPN = cpnBuilder.isColored(); // TODO: this is really nasty, should be moved in a refactor
-            if (options.explicit_colored) {
-                return explicitColored(string_set, options, queries, querynames);
+            if (options.explicitColored) {
+                if (options.isCPN && !queries.empty() && isReachability(queries[0])) {
+                    try {
+                        return explicitColored(string_set, options, queries, querynames);
+                    } catch (const ExplicitColored::explicit_error& e) {
+                        std::cout << e << std::endl;
+                        return to_underlying(ReturnValue::ErrorCode);
+                    }
+                }
+                std::cerr << "Explicit state-space search is supported only for colored nets and reachability queries.";
+                return to_underlying(ReturnValue::ErrorCode);
             }
         } catch (const base_error &err) {
             throw base_error("CANNOT_COMPUTE\nError parsing the model\n", err.what());

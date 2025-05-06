@@ -24,10 +24,7 @@ namespace PetriEngine::ExplicitColored {
         typedef ptrie::binarywrapper_t scratchpad_t;
 
         explicit ColoredEncoder(const std::vector<ColoredPetriNetPlace>& places) : _places(places),
-            _placeSize(_convertToTypeSize(places.size())) {
-            //Will get resized if needed
-            _size = 512;
-
+            _size(512), _placeSize(_convertToTypeSize(places.size())) {
             for (const auto& place : _places) {
                 _placeColorSize.push_back(_convertToTypeSize(place.colorType->colorSize));
             }
@@ -75,6 +72,7 @@ namespace PetriEngine::ExplicitColored {
         ColoredPetriNetMarking decode(const unsigned char* encoding) const {
             size_t offset = 0;
             ColoredPetriNetMarking marking{};
+            marking.markings.reserve(_places.size());
             for (auto pid = 0; pid < _places.size(); ++pid) {
                 const auto type = static_cast<ENCODING_TYPE>(_readFromEncoding(encoding, EIGHT, offset));
                 CPNMultiSet placeMultiset;
@@ -88,14 +86,14 @@ namespace PetriEngine::ExplicitColored {
                 case EMPTY:
                     break;
                 default:
-                    throw explicit_error{ExplicitErrorType::unknown_encoding};
+                    throw explicit_error{ExplicitErrorType::UNKNOWN_ENCODING};
                 }
-                marking.markings.push_back(placeMultiset);
+                marking.markings.push_back(std::move(placeMultiset));
             }
             return marking;
         }
 
-        [[nodiscard]] const uchar* data() const {
+        [[nodiscard]] const ptrie::uchar* data() const {
             return _scratchpad.const_raw();
         }
 
@@ -149,7 +147,7 @@ namespace PetriEngine::ExplicitColored {
             auto colorNumIndex = offset;
             auto colorNum = 0;
             offset += placeColorSize;
-            _writeToPad(placeCountSize, placeCountSize, offset);
+            _writeToPad(placeCountSize, EIGHT, offset);
 
             //Puts every token id followed by token count
             for (auto [color, count] : place.counts()) {
@@ -195,7 +193,7 @@ namespace PetriEngine::ExplicitColored {
             return THIRTYTWO;
         }
 
-        static CPNMultiSet _decodeTokenCounts(const uchar* encoding, const Color_t colorNum, size_t& offset) {
+        static CPNMultiSet _decodeTokenCounts(const ptrie::uchar* encoding, const Color_t colorNum, size_t& offset) {
             CPNMultiSet multiset{};
             const auto placeCountSize = static_cast<TYPE_SIZE>(_readFromEncoding(encoding, EIGHT, offset));
             for (size_t colorId = 0; colorId < colorNum; colorId++) {
@@ -207,7 +205,7 @@ namespace PetriEngine::ExplicitColored {
             return multiset;
         }
 
-        static CPNMultiSet _decodePlaceTokenCounts(const uchar* encoding, const TYPE_SIZE placeColorSize,
+        static CPNMultiSet _decodePlaceTokenCounts(const ptrie::uchar* encoding, const TYPE_SIZE placeColorSize,
                                                    size_t& offset) {
             CPNMultiSet multiset{};
             const auto multisetCardinality = _readFromEncoding(encoding, placeColorSize, offset);
@@ -254,13 +252,13 @@ namespace PetriEngine::ExplicitColored {
                 break;
             }
             default:
-                throw explicit_error{ExplicitErrorType::unknown_encoding};
+                throw explicit_error{ExplicitErrorType::UNKNOWN_ENCODING};
             }
             offset += typeSize;
         }
 
         [[nodiscard]] static uint32_t
-        _readFromEncoding(const uchar* encoding, const TYPE_SIZE typeSize, size_t& offset) {
+        _readFromEncoding(const ptrie::uchar* encoding, const TYPE_SIZE typeSize, size_t& offset) {
             if (offset + typeSize > UINT16_MAX) {
                 //If encoding is too big then we decode to 0
                 return 0;
@@ -277,7 +275,7 @@ namespace PetriEngine::ExplicitColored {
                 result = *(uint32_t*)(&encoding[offset]);
                 break;
             default:
-                throw explicit_error{ExplicitErrorType::unknown_encoding};
+                throw explicit_error{ExplicitErrorType::UNKNOWN_ENCODING};
             }
             offset += typeSize;
             return result;

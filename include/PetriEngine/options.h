@@ -115,8 +115,9 @@ struct options_t {
     int max_intervals_reduced = 5;
     bool print_bindings = false;
 
-    bool explicit_colored = false;
-    ColoredSuccessorGeneratorOption colored_sucessor_generator = ColoredSuccessorGeneratorOption::EVEN;
+    bool explicitColored = false;
+    ColoredSuccessorGeneratorOption coloredSuccessorGenerator = ColoredSuccessorGeneratorOption::EVEN;
+    bool encodeWaitingList = true;
 
     std::string strategy_output;
 

@@ -3,28 +3,76 @@
 
 #include <queue>
 #include <utility>
+#include <utils/structures/binarywrapper.h>
+
+#include "ColoredEncoder.h"
 #include "ColoredPetriNetMarking.h"
 
 namespace PetriEngine::ExplicitColored {
+    // struct AbstractColoredPetriNetState {
+    //     ~AbstractColoredPetriNetState() = default;
+    //
+    //     AbstractColoredPetriNetState(AbstractColoredPetriNetState&& state) = default;
+    //     AbstractColoredPetriNetState& operator=(const AbstractColoredPetriNetState& state) = default;
+    //     AbstractColoredPetriNetState(AbstractColoredPetriNetState&) = default;
+    //     AbstractColoredPetriNetState& operator=(AbstractColoredPetriNetState&&) = default;
+    //
+    //     AbstractColoredPetriNetState(const AbstractColoredPetriNetState& state) : id(state.id), _encoding(state._encoding) {};
+    //     explicit AbstractColoredPetriNetState(ColoredPetriNetMarking marking) : marking(std::move(marking)) {};
+    //
+    //     void addEncoding(const ptrie::uchar* encoding, const size_t encodingSize) {
+    //         _encodingSize = encodingSize;
+    //         //En/decoding is not implemented for encodings bigger than uint16_max
+    //         if (UINT16_MAX == encodingSize) {
+    //             return;
+    //         }
+    //         _encoding = new ptrie::uchar[encodingSize];
+    //         memcpy(_encoding, encoding, encodingSize);
+    //     }
+    //
+    //     void encode() {
+    //         if (_encoded || _encodingSize == UINT16_MAX) return;
+    //         marking = ColoredPetriNetMarking{};
+    //         _encoded = true;
+    //     }
+    //
+    //     void decode(const ColoredEncoder* encoder) {
+    //         if (!_encoded) return;
+    //         marking = encoder->decode(_encoding);
+    //         _encoded = false;
+    //     }
+    //
+    //     [[nodiscard]] bool done() const {
+    //         return _done;
+    //     }
+    //
+    //     void setDone() {
+    //         _done = true;
+    //     }
+    //
+    //     void shrink() {
+    //         marking.shrink();
+    //     }
+    //
+    //     bool shuffle = false;
+    //     size_t id;
+    //     ColoredPetriNetMarking marking;
+    // protected:
+    //     bool _done = false;
+    //     ptrie::uchar* _encoding;
+    //     size_t _encodingSize = 0;
+    // private:
+    //     bool _encoded = false;
+    // };
+
     struct ColoredPetriNetStateFixed {
         explicit ColoredPetriNetStateFixed(ColoredPetriNetMarking marking) : marking(std::move(marking)) {
         };
-        ColoredPetriNetStateFixed(const ColoredPetriNetStateFixed& oldState) = default;
+        ColoredPetriNetStateFixed(const ColoredPetriNetStateFixed&) = default;
         ColoredPetriNetStateFixed(ColoredPetriNetStateFixed&&) = default;
+        ColoredPetriNetStateFixed(ColoredPetriNetStateFixed&) = default;
         ColoredPetriNetStateFixed& operator=(const ColoredPetriNetStateFixed&) = default;
         ColoredPetriNetStateFixed& operator=(ColoredPetriNetStateFixed&&) = default;
-
-        void shrink() {
-            marking.shrink();
-        }
-
-        void setDone() {
-            _done = true;
-        }
-
-        [[nodiscard]] bool done() const {
-            return _done;
-        }
 
         [[nodiscard]] const Transition_t& getCurrentTransition() const {
             return _currentTransition;
@@ -47,29 +95,66 @@ namespace PetriEngine::ExplicitColored {
             _currentBinding = bid + 1;
         }
 
-        ColoredPetriNetMarking marking;
+        void addEncoding(const ptrie::uchar* encoding, const size_t encodingSize) {
+            _encodingSize = encodingSize;
+            //En/decoding is not implemented for encodings bigger than uint16_max
+            if (UINT16_MAX == encodingSize) {
+                return;
+            }
+            _encoding = new ptrie::uchar[encodingSize];
+            memcpy(_encoding, encoding, encodingSize);
+        }
+
+        void encode() {
+            if (_encoded || _encodingSize == UINT16_MAX) return;
+            marking = ColoredPetriNetMarking{};
+            _encoded = true;
+        }
+
+        void decode(const ColoredEncoder* encoder) {
+            if (!_encoded) return;
+            marking = encoder->decode(_encoding);
+            _encoded = false;
+        }
+
+        [[nodiscard]] bool done() const {
+            return _done;
+        }
+
+        void setDone() {
+            _done = true;
+        }
+
+        void shrink() {
+            marking.shrink();
+        }
+
+        bool shuffle = false;
         size_t id;
-
+        ColoredPetriNetMarking marking;
     private:
-        bool _done = false;
-
         Binding_t _currentBinding = 0;
         Transition_t _currentTransition = 0;
+        bool _done = false;
+        ptrie::uchar* _encoding;
+        size_t _encodingSize = 0;
+        bool _encoded = false;
     };
 
-    struct ColoredPetriNetStateEven {
-        ColoredPetriNetStateEven(const ColoredPetriNetStateEven& oldState, const size_t& numberOfTransitions) : marking(
-            oldState.marking) {
+    struct ColoredPetriNetStateEven final {
+        ColoredPetriNetStateEven(const ColoredPetriNetStateEven& oldState, const size_t& numberOfTransitions) :
+            marking(oldState.marking) {
             _map = std::vector<Binding_t>(numberOfTransitions);
         }
 
-        ColoredPetriNetStateEven(ColoredPetriNetMarking marking, const size_t& numberOfTransitions) : marking(
-            std::move(marking)) {
+        ColoredPetriNetStateEven(const ColoredPetriNetMarking& marking, const size_t& numberOfTransitions) :
+            marking(marking)  {
             _map = std::vector<Binding_t>(numberOfTransitions);
         }
 
         ColoredPetriNetStateEven(ColoredPetriNetStateEven&& state) = default;
         ColoredPetriNetStateEven(const ColoredPetriNetStateEven& state) = default;
+        ColoredPetriNetStateEven(ColoredPetriNetStateEven& state) = default;
         ColoredPetriNetStateEven& operator=(const ColoredPetriNetStateEven&) = default;
         ColoredPetriNetStateEven& operator=(ColoredPetriNetStateEven&&) = default;
 
@@ -115,23 +200,51 @@ namespace PetriEngine::ExplicitColored {
             }
         }
 
-        void shrink() {
-            marking.shrink();
+        void addEncoding(const ptrie::uchar* encoding, const size_t encodingSize) {
+            _encodingSize = encodingSize;
+            //En/decoding is not implemented for encodings bigger than uint16_max
+            if (UINT16_MAX == encodingSize) {
+                return;
+            }
+            _encoding = new ptrie::uchar[encodingSize];
+            memcpy(_encoding, encoding, encodingSize);
+        }
+
+        void encode() {
+            if (_encoded || _encodingSize == UINT16_MAX) return;
+            marking = ColoredPetriNetMarking{};
+            _encoded = true;
+        }
+
+        void decode(const ColoredEncoder* encoder) {
+            if (!_encoded) return;
+            marking = encoder->decode(_encoding);
+            _encoded = false;
         }
 
         [[nodiscard]] bool done() const {
             return _done;
         }
 
-        ColoredPetriNetMarking marking;
+        void setDone() {
+            _done = true;
+        }
+
+        void shrink() {
+            marking.shrink();
+        }
+
         bool shuffle = false;
         size_t id;
-
+        ColoredPetriNetMarking marking;
     private:
-        bool _done = false;
         std::vector<Binding_t> _map;
         uint32_t _currentIndex = 0;
         uint32_t _completedTransitions = 0;
+        bool _done = false;
+        ptrie::uchar* _encoding;
+        size_t _encodingSize = 0;
+        bool _encoded = false;
     };
 }
 
