@@ -1,7 +1,7 @@
 #include "PetriEngine/ExplicitColored/ExplicitColoredModelChecker.h"
 #include <VerifyPN.h>
 #include <PetriEngine/Colored/PnmlWriter.h>
-#include <PetriEngine/ExplicitColored/ColoredPetriNetBuilder.h>
+#include <PetriEngine/ExplicitColored/ExplicitColoredPetriNetBuilder.h>
 #include <PetriEngine/ExplicitColored/ColorIgnorantPetriNetBuilder.h>
 #include <PetriEngine/ExplicitColored/Algorithms/ExplicitWorklist.h>
 #include <PetriEngine/PQL/Evaluation.h>
@@ -28,7 +28,7 @@ namespace PetriEngine::ExplicitColored {
             pnmlModel = std::move(reducedPnml).str();
         }
 
-        if (options.use_query_reductions) {
+        if (options.queryReductionTimeout > 0) {
             result = checkColorIgnorantLP(pnmlModel, query, options);
             if (result != Result::UNKNOWN) {
                 if (resultPrinter) {
@@ -206,7 +206,7 @@ namespace PetriEngine::ExplicitColored {
         options_t& options,
         SearchStatistics* searchStatistics
     ) const {
-        ColoredPetriNetBuilder cpnBuilder;
+        ExplicitColoredPetriNetBuilder cpnBuilder;
         auto pnmlModelStream = std::istringstream {pnmlModel};
         cpnBuilder.parse_model(pnmlModelStream);
 
@@ -271,7 +271,7 @@ namespace PetriEngine::ExplicitColored {
 
     std::vector<TraceStep> ExplicitColoredModelChecker::_translateTraceStep(
         const std::vector<InternalTraceStep> &internalTrace,
-        const ColoredPetriNetBuilder& cpnBuilder,
+        const ExplicitColoredPetriNetBuilder& cpnBuilder,
         const ColoredPetriNet& net
     ) const {
         std::unordered_map<Transition_t, std::string> transitionToId;
@@ -294,67 +294,92 @@ namespace PetriEngine::ExplicitColored {
         ColoredSuccessorGenerator successorGenerator(net);
         auto currentState = net.initial();
         std::vector<TraceStep> trace;
+
+        trace.emplace_back(_translateMarking(currentState, placeToId, cpnBuilder, net));
+
         for (auto& traceStep : internalTrace) {
+            Binding traceBinding;
+
+            successorGenerator.findNextValidBinding(
+                currentState,
+                traceStep.transition,
+                traceStep.binding,
+                net.getTotalBindings(traceStep.transition),
+                traceBinding,
+                0
+            );
+
+            successorGenerator.shrinkState(0);
+
             std::unordered_map<std::string, std::string> binding;
-            for (auto [variable, value] : traceStep.binding.getValues()) {
+            for (auto [variable, value] : traceBinding.getValues()) {
                 const auto variableIt = variableToId.find(variable);
                 if (variableIt == variableToId.end()) {
                     std::cerr << "Could not find variable id corresponding to variable index " << variable << std::endl;
-                    throw explicit_error(ExplicitErrorType::invalid_trace);
+                    throw explicit_error(ExplicitErrorType::INVALID_TRACE);
                 }
                 if (variable >= variableColorTypes.size()) {
                     std::cerr << "Could not find color type for variable index " << variable << "(" << variableIt->second << ")" << std::endl;
-                    throw explicit_error(ExplicitErrorType::invalid_trace);
+                    throw explicit_error(ExplicitErrorType::INVALID_TRACE);
                 }
                 const auto& variableColorType = (*variableColorTypes[variable]);
                 if (variableColorType.size() < value) {
                     std::cerr << "Could not find corresponding color id for color index" << value << " in color type " << variableColorType.getName() << std::endl;
-                    throw explicit_error(ExplicitErrorType::invalid_trace);
+                    throw explicit_error(ExplicitErrorType::INVALID_TRACE);
                 }
                 binding.emplace(variableIt->second, variableColorType[value].getColorName());
             }
             const auto transitionIt = transitionToId.find(traceStep.transition);
             if (transitionIt == transitionToId.end()) {
                 std::cerr << "Could not find transition id corresponding to transition with index " << traceStep.transition << std::endl;
-                throw explicit_error(ExplicitErrorType::invalid_trace);
+                throw explicit_error(ExplicitErrorType::INVALID_TRACE);
             }
 
-            successorGenerator.fire(currentState, traceStep.transition, traceStep.binding);
-            std::unordered_map<std::string, std::vector<std::pair<std::vector<std::string>, MarkingCount_t>>> marking;
-            for (Place_t place = 0; place < currentState.markings.size(); place++) {
-                auto placeIdIt = placeToId.find(place);
-                if (placeIdIt == placeToId.end()) {
-                    std::cerr << "Could not find corresponding place id for place index" << place << std::endl;
-                    throw explicit_error(ExplicitErrorType::invalid_trace);
-                }
-                std::vector<std::pair<std::vector<std::string>, MarkingCount_t>> tokenCounts;
-                for (const auto& [tokenColor, tokenCount] : currentState.markings[place].counts()) {
-                    if (tokenCount <= 0) {
-                        continue;
-                    }
-                    std::vector<std::string> colors;
-                    const auto underlyingColor = cpnBuilder.getPlaceUnderlyingColorType(place);
-                    if (underlyingColor == nullptr) {
-                        std::cerr << "Could not find corresponding color type forplace index" << place << std::endl;
-                        throw explicit_error(ExplicitErrorType::invalid_trace);
-                    }
-                    if (const auto productColorType = dynamic_cast<const Colored::ProductType*>(underlyingColor)) {
-                        for (size_t colorIndex = 0; colorIndex < net.getPlaces()[place].colorType->colorCodec.getColorCount(); colorIndex++) {
-                            colors.push_back((*(*productColorType).getNestedColorType(colorIndex))[colorIndex].getColorName());
-                        }
-                    } else {
-                        colors.push_back((*underlyingColor)[tokenColor].getColorName());
-                    }
-                    tokenCounts.emplace_back(std::move(colors), tokenCount);
-                }
-                marking.emplace(placeIdIt->second, std::move(tokenCounts));
-            }
-            trace.emplace_back(TraceStep {
-                transitionIt->second,
-                std::move(binding),
-                std::move(marking)
-            });
+            successorGenerator.fire(currentState, traceStep.transition, traceBinding);
+            currentState.shrink();
+            auto translatedMarking = _translateMarking(currentState, placeToId, cpnBuilder, net);
+            trace.emplace_back(transitionIt->second, std::move(binding), std::move(translatedMarking));
         }
         return trace;
+    }
+
+    std::unordered_map<std::string, std::vector<std::pair<std::vector<std::string>, MarkingCount_t>>>
+        ExplicitColoredModelChecker::_translateMarking(
+            const ColoredPetriNetMarking& marking,
+            const std::unordered_map<Place_t, std::string>& placeToId,
+            const ExplicitColoredPetriNetBuilder& cpnBuilder,
+            const ColoredPetriNet& net
+        ) const {
+        std::unordered_map<std::string, std::vector<std::pair<std::vector<std::string>, MarkingCount_t>>> translatedMarking;
+        for (Place_t place = 0; place < marking.markings.size(); place++) {
+            auto placeIdIt = placeToId.find(place);
+            if (placeIdIt == placeToId.end()) {
+                std::cerr << "Could not find corresponding place id for place index" << place << std::endl;
+                throw explicit_error(ExplicitErrorType::INVALID_TRACE);
+            }
+            std::vector<std::pair<std::vector<std::string>, MarkingCount_t>> tokenCounts;
+            for (const auto& [tokenColor, tokenCount] : marking.markings[place].counts()) {
+                if (tokenCount <= 0) {
+                    continue;
+                }
+                std::vector<std::string> colors;
+                const auto underlyingColor = cpnBuilder.getPlaceUnderlyingColorType(place);
+                if (underlyingColor == nullptr) {
+                    std::cerr << "Could not find corresponding color type for place index" << place << std::endl;
+                    throw explicit_error(ExplicitErrorType::INVALID_TRACE);
+                }
+                if (const auto productColorType = dynamic_cast<const Colored::ProductType*>(underlyingColor)) {
+                    for (size_t colorIndex = 0; colorIndex < net.getPlaces()[place].colorType->colorCodec.getColorCount(); colorIndex++) {
+                        auto color = net.getPlaces()[place].colorType->colorCodec.decode(tokenColor, colorIndex);
+                        colors.push_back((*(*productColorType).getNestedColorType(colorIndex))[color].getColorName());
+                    }
+                } else {
+                    colors.push_back((*underlyingColor)[tokenColor].getColorName());
+                }
+                tokenCounts.emplace_back(std::move(colors), tokenCount);
+            }
+            translatedMarking.emplace(placeIdIt->second, std::move(tokenCounts));
+        }
+        return translatedMarking;
     }
 }

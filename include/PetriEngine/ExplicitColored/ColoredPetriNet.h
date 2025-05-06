@@ -42,7 +42,7 @@ namespace PetriEngine::ExplicitColored {
         Color_t colorSize;
     };
 
-    class ColoredPetriNetBuilder;
+    class ExplicitColoredPetriNetBuilder;
 
     class ColoredPetriNet {
     public:
@@ -67,8 +67,12 @@ namespace PetriEngine::ExplicitColored {
             return _places;
         }
 
+        [[nodiscard]] uint64_t getTotalBindings(Transition_t transition) const {
+            return _transitions[transition].totalBindings;
+        }
+
     private:
-        friend class ColoredPetriNetBuilder;
+        friend class ExplicitColoredPetriNetBuilder;
         friend class ColoredSuccessorGenerator;
         friend class ValidVariableGenerator;
         friend class FireabilityChecker;

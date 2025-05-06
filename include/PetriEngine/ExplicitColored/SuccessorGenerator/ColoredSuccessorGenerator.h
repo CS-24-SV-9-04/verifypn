@@ -39,7 +39,7 @@ namespace PetriEngine::ExplicitColored {
             return _net;
         }
 
-        [[nodiscard]] Binding_t findNextValidBinding(const ColoredPetriNetMarking& marking, Transition_t tid, Binding_t bid, uint64_t totalBindings, Binding& binding, size_t stateId) const;
+        Binding_t findNextValidBinding(const ColoredPetriNetMarking& marking, Transition_t tid, Binding_t bid, uint64_t totalBindings, Binding& binding, size_t stateId) const;
 
         void shrinkState(const size_t stateId) const {
             const auto lower = _constraintData.lower_bound(_getKey(stateId, 0));
@@ -102,24 +102,21 @@ namespace PetriEngine::ExplicitColored {
             Binding binding;
             //If bid is updated at the end optimizations seem to make the loop not work
             while (bid != std::numeric_limits<Binding_t>::max()) {
-                {
-                    const auto nextBid = findNextValidBinding(state.marking, tid, bid, totalBindings, binding, state.id);
-                    state.updatePair(tid, nextBid);
-                    if (nextBid != std::numeric_limits<Binding_t>::max()) {
-                        auto newState = ColoredPetriNetStateEven{state, _net.getTransitionCount()};
-                        newState.id = _nextId++;
-                        fire(newState.marking, tid, binding);
-                        return std::make_pair(newState, TraceMapStep {
-                            newState.id,
-                            state.id,
-                            tid,
-                            nextBid
-                        });
-                    }
+                const auto nextBid = findNextValidBinding(state.marking, tid, bid, totalBindings, binding, state.id);
+                state.updatePair(tid, nextBid);
+                if (nextBid != std::numeric_limits<Binding_t>::max()) {
+                    auto newState = ColoredPetriNetStateEven{state, _net.getTransitionCount()};
+                    newState.id = _nextId++;
+                    fire(newState.marking, tid, binding);
+
+                    return std::make_pair(newState, TraceMapStep {
+                        newState.id,
+                        state.id,
+                        tid,
+                        nextBid
+                    });
                 }
-                auto [nextTid, nextBid] = state.getNextPair();
-                tid = nextTid;
-                bid = nextBid;
+                std::tie(tid, bid) = state.getNextPair();
                 totalBindings = _net._transitions[tid].totalBindings;
             }
             return std::make_pair(ColoredPetriNetStateEven {{}, 0}, TraceMapStep {});
