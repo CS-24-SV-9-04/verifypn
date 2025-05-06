@@ -17,15 +17,17 @@ namespace PetriEngine::ExplicitColored {
     }
 
     bool LTLNdfs::check() {
+        ProductStateGenerator generator{_net, _buchiAutomaton, _placeNameIndices, _transitionNameIndices};
+        return dfs(generator, {_net.initial(), _buchiAutomaton.buchi().get_init_state()->hash()});
     }
 
-    bool LTLNdfs::dfs(ProductStateGenerator productStateGenerator, ColoredPetriNetProductState initialState) {
+    bool LTLNdfs::dfs(const ProductStateGenerator& productStateGenerator, ColoredPetriNetProductState initialState) {
         _waiting.push(std::move(initialState));
         while (!_waiting.empty()){
             auto& state = _waiting.top();
             auto nextState = productStateGenerator.next(state);
             if(_buchiAutomaton.buchi().state_is_accepting(nextState.getBuchiState())){
-                if (ndfs(productStateGenerator, nextState)){
+                if (ndfs(productStateGenerator, nextState.copy(_buchiAutomaton))){
                     return true;
                 }
             }
@@ -37,7 +39,7 @@ namespace PetriEngine::ExplicitColored {
         return false;
     }
 
-    bool LTLNdfs::ndfs(ProductStateGenerator productStateGenerator, ColoredPetriNetProductState& initialState) {
+    bool LTLNdfs::ndfs(const ProductStateGenerator& productStateGenerator, ColoredPetriNetProductState initialState) {
         _localPassed.add({initialState.marking, initialState.getBuchiState()});
         _waiting.push(std::move(initialState));
 

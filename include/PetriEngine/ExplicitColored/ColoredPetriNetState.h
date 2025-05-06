@@ -5,6 +5,7 @@
 #include <utility>
 #include <spot/twa/twagraph.hh>
 
+#include "LTL/Structures/BuchiAutomaton.h"
 #include "ColoredPetriNetMarking.h"
 
 namespace PetriEngine::ExplicitColored {

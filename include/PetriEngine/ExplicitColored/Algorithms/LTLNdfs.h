@@ -28,8 +28,8 @@ namespace PetriEngine::ExplicitColored {
         std::stack<ColoredPetriNetProductState> _waiting;
         PassedList<ProductColorEncoder, std::pair<ColoredPetriNetMarking, size_t>> _globalPassed;
         PassedList<ProductColorEncoder, std::pair<ColoredPetriNetMarking, size_t>>  _localPassed;
-        bool dfs(ProductStateGenerator,  ColoredPetriNetProductState);
-        bool ndfs(ProductStateGenerator, ColoredPetriNetProductState&);
+        bool dfs(const ProductStateGenerator&,  ColoredPetriNetProductState);
+        bool ndfs(const ProductStateGenerator&, ColoredPetriNetProductState);
     };
 }
 

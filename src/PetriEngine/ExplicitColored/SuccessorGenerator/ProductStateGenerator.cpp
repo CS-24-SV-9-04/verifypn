@@ -15,7 +15,7 @@ namespace PetriEngine::ExplicitColored {
 
     ColoredPetriNetProductState ProductStateGenerator::next(
         ColoredPetriNetProductState &currentState
-    ) {
+    ) const {
         if (currentState.iterState == nullptr) {
             const auto state = _buchiAutomaton.buchi().state_from_number(currentState.getBuchiState());
             currentState.iterState = std::unique_ptr<spot::twa_succ_iterator, BuchiStateIterDeleter>(_buchiAutomaton.buchi().succ_iter(state), BuchiStateIterDeleter{ &_buchiAutomaton.buchi() });
@@ -40,7 +40,7 @@ namespace PetriEngine::ExplicitColored {
         return {{}, 0};
     }
 
-    bool ProductStateGenerator::_check_condition(bdd cond, const ColoredPetriNetMarking &marking, size_t markingId) {
+    bool ProductStateGenerator::_check_condition(bdd cond, const ColoredPetriNetMarking &marking, size_t markingId) const {
         while (cond.id() > 1) {
             auto varIndex = bdd_var(cond);
             const auto& ap = _compiledAtomicPropositions.at(varIndex);
