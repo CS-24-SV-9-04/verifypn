@@ -163,8 +163,12 @@ namespace PetriEngine::ExplicitColored {
         ProductStateGenerator productStateGenerator(net, buchiAutomaton, placeIndices, transitionIndices);
 
         LTLNdfs ndfs(net, negated_formula, placeIndices, transitionIndices);
-        auto res = ndfs.check();
-        return Result::UNKNOWN;
+        auto result = ndfs.check();
+
+        if (searchStatistics) {
+            *searchStatistics = ndfs.GetSearchStatistics();
+        }
+        return result ? Result::SATISFIED : Result::UNSATISFIED;
     }
 
     ExplicitColoredModelChecker::Result ExplicitColoredModelChecker::_explicitColorReachability(

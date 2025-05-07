@@ -20,6 +20,7 @@ namespace PetriEngine::ExplicitColored {
             const std::unordered_map<std::string, Transition_t>& transitionNameIndices
         );
         bool check();
+        const SearchStatistics & GetSearchStatistics() const;
     private:
         LTL::Structures::BuchiAutomaton _buchiAutomaton;
         const ColoredPetriNet& _net;

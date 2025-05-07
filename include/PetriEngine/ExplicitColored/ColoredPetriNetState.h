@@ -83,19 +83,24 @@ namespace PetriEngine::ExplicitColored {
         [[nodiscard]] ColoredPetriNetProductState copy(const LTL::Structures::BuchiAutomaton& sourceAutomaton) const {
             ColoredPetriNetProductState copy(marking, _buchiState);
             copy.currentSuccessor = currentSuccessor;
-            auto state = sourceAutomaton.buchi().state_from_number(_buchiState);
-            copy.iterState =
-                std::unique_ptr<spot::twa_succ_iterator, BuchiStateIterDeleter>(sourceAutomaton.buchi().succ_iter(state));
-            state->destroy();
-            if (copy.iterState->first()) {
-                do {
-                    const auto dstState = iterState->dst();
-                    const auto copyDstStateNumber = sourceAutomaton.buchi().state_number(dstState);
-                    dstState->destroy();
-                    if (copyDstStateNumber == _buchiState) {
-                        break;
-                    }
-                } while (copy.iterState->next());
+            if (iterState != nullptr) {
+                auto state = sourceAutomaton.buchi().state_from_number(_buchiState);
+                copy.iterState =
+                        std::unique_ptr<spot::twa_succ_iterator, BuchiStateIterDeleter>(
+                                sourceAutomaton.buchi().succ_iter(state));
+                state->destroy();
+                if (copy.iterState->first()) {
+                    do {
+                        const auto dstState = copy.iterState->dst();
+                        const auto copyDstStateNumber = sourceAutomaton.buchi().state_number(dstState);
+                        dstState->destroy();
+                        if (copyDstStateNumber == _buchiState) {
+                            break;
+                        }
+                    } while (copy.iterState->next());
+                }
+            } else {
+                copy.iterState = nullptr;
             }
             return copy;
         }

@@ -28,25 +28,37 @@ namespace PetriEngine::ExplicitColored {
         _searchStatistics.exploredStates = 1;
         _searchStatistics.discoveredStates = 1;
         if (_buchiAutomaton.buchi().state_is_accepting(initialState.getBuchiState()) && ndfs(productStateGenerator, initialState.copy(_buchiAutomaton))){
+            _searchStatistics.endWaitingStates = waiting.size();
+            _searchStatistics.biggestEncoding = _globalPassed.getBiggestEncoding();
             return true;
         }
         waiting.push(std::move(initialState));
+        _searchStatistics.peakWaitingStates = waiting.size();
         while (!waiting.empty()){
             auto& state = waiting.top();
             auto nextState = productStateGenerator.next(state);
+
+            _searchStatistics.discoveredStates += 1;
             if (state.done()) {
                 waiting.pop();
                 continue;
             }
             if (!_globalPassed.existsOrAdd({nextState.marking, nextState.getBuchiState()})) {
+                _searchStatistics.exploredStates += 1;
                 if (_buchiAutomaton.buchi().state_is_accepting(nextState.getBuchiState())) {
                     if (ndfs(productStateGenerator, nextState.copy(_buchiAutomaton))) {
+                        _searchStatistics.endWaitingStates = waiting.size();
+                        _searchStatistics.biggestEncoding = _globalPassed.getBiggestEncoding();
                         return true;
                     }
                 }
                 waiting.push(std::move(nextState));
+                _searchStatistics.peakWaitingStates  = std::max(static_cast<uint32_t>(waiting.size()), _searchStatistics.peakWaitingStates);
+
             }
         }
+        _searchStatistics.endWaitingStates = waiting.size();
+        _searchStatistics.biggestEncoding = _globalPassed.getBiggestEncoding();
         return false;
     }
 
@@ -58,10 +70,10 @@ namespace PetriEngine::ExplicitColored {
 
         while (!waiting.empty()){
             auto& state = waiting.top();
-            if (productStateGenerator.next(state).marking.markings.empty()){
+            auto nextState = productStateGenerator.next(state);
+            if (state.done()){
                 return true;
             }
-            auto nextState = productStateGenerator.next(state);
             if (_buchiAutomaton.buchi().state_is_accepting(nextState.getBuchiState())) {
                 if (nextState.marking == state.marking && nextState.getBuchiState() == state.getBuchiState()) {
                     return true;
@@ -69,10 +81,15 @@ namespace PetriEngine::ExplicitColored {
                 if (!localPassed.existsOrAdd({nextState.marking, nextState.getBuchiState()}) &&
                     !_globalPassed.exists({nextState.marking, nextState.getBuchiState()})) {
                     waiting.push(std::move(nextState));
+                    _searchStatistics.peakWaitingStates  = std::max(static_cast<uint32_t>(waiting.size()), _searchStatistics.peakWaitingStates);
                 }
             }
             waiting.pop();
         }
         return false;
+    }
+
+    const SearchStatistics & LTLNdfs::GetSearchStatistics() const {
+        return _searchStatistics;
     }
 }
