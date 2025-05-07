@@ -4,6 +4,8 @@
 #include <PetriEngine/ExplicitColored/AtomicTypes.h>
 #include <PetriEngine/PQL/PQL.h>
 #include <PetriEngine/ExplicitColored/ColoredPetriNet.h>
+
+#include "SearchStatistics.h"
 #include "PetriEngine/ExplicitColored/SuccessorGenerator/ProductStateGenerator.h"
 #include "PetriEngine/ExplicitColored/PassedList.h"
 #include "PetriEngine/ExplicitColored/ProductColorEncoder.h"
@@ -27,6 +29,7 @@ namespace PetriEngine::ExplicitColored {
         PassedList<ProductColorEncoder, std::pair<ColoredPetriNetMarking, size_t>> _globalPassed;
         bool dfs(const ProductStateGenerator&,  ColoredPetriNetProductState);
         bool ndfs(const ProductStateGenerator&, ColoredPetriNetProductState);
+        SearchStatistics _searchStatistics;
     };
 }
 

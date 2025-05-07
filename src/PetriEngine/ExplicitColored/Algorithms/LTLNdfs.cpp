@@ -20,12 +20,14 @@ namespace PetriEngine::ExplicitColored {
 
     bool LTLNdfs::check() {
         const ProductStateGenerator generator{_net, _buchiAutomaton, _placeNameIndices, _transitionNameIndices};
-        return dfs(generator, {_net.initial(), _buchiAutomaton.buchi().get_init_state()->hash()});
+        return dfs(generator, {_net.initial(), _buchiAutomaton.buchi().get_init_state_number()});
     }
 
     bool LTLNdfs::dfs(const ProductStateGenerator& productStateGenerator, ColoredPetriNetProductState initialState) {
         std::stack<ColoredPetriNetProductState> waiting;
         waiting.push(std::move(initialState));
+        _searchStatistics.exploredStates = 1;
+        _searchStatistics.discoveredStates = 1;
         while (!waiting.empty()){
             auto& state = waiting.top();
             auto nextState = productStateGenerator.next(state);
