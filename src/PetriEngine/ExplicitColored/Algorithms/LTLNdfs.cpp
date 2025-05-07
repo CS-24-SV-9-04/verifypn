@@ -25,9 +25,12 @@ namespace PetriEngine::ExplicitColored {
 
     bool LTLNdfs::dfs(const ProductStateGenerator& productStateGenerator, ColoredPetriNetProductState initialState) {
         std::stack<ColoredPetriNetProductState> waiting;
-        waiting.push(std::move(initialState));
         _searchStatistics.exploredStates = 1;
         _searchStatistics.discoveredStates = 1;
+        if (_buchiAutomaton.buchi().state_is_accepting(initialState.getBuchiState()) && ndfs(productStateGenerator, initialState.copy(_buchiAutomaton))){
+            return true;
+        }
+        waiting.push(std::move(initialState));
         while (!waiting.empty()){
             auto& state = waiting.top();
             auto nextState = productStateGenerator.next(state);
@@ -35,8 +38,8 @@ namespace PetriEngine::ExplicitColored {
                 waiting.pop();
                 continue;
             }
-            if(!_globalPassed.existsOrAdd({nextState.marking, nextState.getBuchiState()})) {
-                if(_buchiAutomaton.buchi().state_is_accepting(nextState.getBuchiState())) {
+            if (!_globalPassed.existsOrAdd({nextState.marking, nextState.getBuchiState()})) {
+                if (_buchiAutomaton.buchi().state_is_accepting(nextState.getBuchiState())) {
                     if (ndfs(productStateGenerator, nextState.copy(_buchiAutomaton))) {
                         return true;
                     }
@@ -55,7 +58,7 @@ namespace PetriEngine::ExplicitColored {
 
         while (!waiting.empty()){
             auto& state = waiting.top();
-            if(productStateGenerator.next(state).marking.markings.empty()){
+            if (productStateGenerator.next(state).marking.markings.empty()){
                 return true;
             }
             auto nextState = productStateGenerator.next(state);
