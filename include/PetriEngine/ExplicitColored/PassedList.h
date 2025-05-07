@@ -7,7 +7,7 @@ namespace PetriEngine::ExplicitColored {
     template<typename E, typename S>
     class PassedList {
     public:
-        explicit PassedList(E encoder) : _encoder(std::move(encoder)) { }
+        explicit PassedList(E& encoder) : _encoder(encoder) { }
 
         void add(const S& state) {
             size_t size = _encoder.encode(state);
@@ -16,12 +16,12 @@ namespace PetriEngine::ExplicitColored {
 
         //Returns true if the element exists or false if it does not exist and inserts the element
         bool existsOrAdd(const S& state) {
-            size_t size = _encoder.encode(state);
+            const size_t size = _encoder.encode(state);
             return _passed.insert(_encoder.data(), size).first;
         }
 
         bool exists(const S& state) {
-            size_t size = _encoder.encode(state);
+            const size_t size = _encoder.encode(state);
             return _passed.exists(_encoder.data(), size).first;
         }
 
@@ -34,7 +34,7 @@ namespace PetriEngine::ExplicitColored {
         }
     private:
         ptrie::set<uint8_t> _passed;
-        E _encoder;
+        E& _encoder;
     };
 }
 

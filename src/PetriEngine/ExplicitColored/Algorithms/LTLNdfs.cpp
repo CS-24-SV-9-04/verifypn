@@ -8,43 +8,51 @@ namespace PetriEngine::ExplicitColored {
         const ColoredPetriNet& net,
         const PQL::Condition_ptr& condition,
         const std::unordered_map<std::string, uint32_t>& placeNameIndices,
-        const std::unordered_map<std::string, Transition_t>& transitionNameIndices,
-        const ProductColorEncoder& encoder
+        const std::unordered_map<std::string, Transition_t>& transitionNameIndices
         )
-    : _net(net), _placeNameIndices(placeNameIndices), _transitionNameIndices(transitionNameIndices), _globalPassed(encoder),
-      _localPassed(encoder) {
-        _buchiAutomaton = make_buchi_automaton(condition, LTL::BuchiOptimization::Low, LTL::APCompression::None);
-    }
+    :
+        _buchiAutomaton(make_buchi_automaton(condition, LTL::BuchiOptimization::Low, LTL::APCompression::None)),
+        _net(net),
+        _placeNameIndices(placeNameIndices),
+        _transitionNameIndices(transitionNameIndices),
+        _productColorEncoder(ColoredEncoder(net.getPlaces())),
+        _globalPassed(_productColorEncoder) { }
 
     bool LTLNdfs::check() {
-        ProductStateGenerator generator{_net, _buchiAutomaton, _placeNameIndices, _transitionNameIndices};
+        const ProductStateGenerator generator{_net, _buchiAutomaton, _placeNameIndices, _transitionNameIndices};
         return dfs(generator, {_net.initial(), _buchiAutomaton.buchi().get_init_state()->hash()});
     }
 
     bool LTLNdfs::dfs(const ProductStateGenerator& productStateGenerator, ColoredPetriNetProductState initialState) {
-        _waiting.push(std::move(initialState));
-        while (!_waiting.empty()){
-            auto& state = _waiting.top();
+        std::stack<ColoredPetriNetProductState> waiting;
+        waiting.push(std::move(initialState));
+        while (!waiting.empty()){
+            auto& state = waiting.top();
             auto nextState = productStateGenerator.next(state);
-            if(_buchiAutomaton.buchi().state_is_accepting(nextState.getBuchiState())){
-                if (ndfs(productStateGenerator, nextState.copy(_buchiAutomaton))){
-                    return true;
+            if (state.done()) {
+                waiting.pop();
+                continue;
+            }
+            if(!_globalPassed.existsOrAdd({nextState.marking, nextState.getBuchiState()})) {
+                if(_buchiAutomaton.buchi().state_is_accepting(nextState.getBuchiState())) {
+                    if (ndfs(productStateGenerator, nextState.copy(_buchiAutomaton))) {
+                        return true;
+                    }
                 }
+                waiting.push(std::move(nextState));
             }
-            if(_globalPassed.existsOrAdd({nextState.marking, nextState.getBuchiState()})){
-                _waiting.push(std::move(nextState));
-            }
-            _waiting.pop();
         }
         return false;
     }
 
     bool LTLNdfs::ndfs(const ProductStateGenerator& productStateGenerator, ColoredPetriNetProductState initialState) {
-        _localPassed.add({initialState.marking, initialState.getBuchiState()});
-        _waiting.push(std::move(initialState));
+        PassedList<ProductColorEncoder, std::pair<ColoredPetriNetMarking, size_t>> localPassed(_productColorEncoder);
+        std::stack<ColoredPetriNetProductState> waiting;
+        localPassed.add({initialState.marking, initialState.getBuchiState()});
+        waiting.push(std::move(initialState));
 
-        while (!_waiting.empty()){
-            auto& state = _waiting.top();
+        while (!waiting.empty()){
+            auto& state = waiting.top();
             if(productStateGenerator.next(state).marking.markings.empty()){
                 return true;
             }
@@ -53,12 +61,12 @@ namespace PetriEngine::ExplicitColored {
                 if (nextState.marking == state.marking && nextState.getBuchiState() == state.getBuchiState()) {
                     return true;
                 }
-                if (!_localPassed.existsOrAdd({nextState.marking, nextState.getBuchiState()}) &&
+                if (!localPassed.existsOrAdd({nextState.marking, nextState.getBuchiState()}) &&
                     !_globalPassed.exists({nextState.marking, nextState.getBuchiState()})) {
-                    _waiting.push(std::move(nextState));
+                    waiting.push(std::move(nextState));
                 }
             }
-            _waiting.pop();
+            waiting.pop();
         }
         return false;
     }

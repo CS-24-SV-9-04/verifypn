@@ -15,8 +15,7 @@ namespace PetriEngine::ExplicitColored {
             const ColoredPetriNet& net,
             const PQL::Condition_ptr& condition,
             const std::unordered_map<std::string, uint32_t>& placeNameIndices,
-            const std::unordered_map<std::string, Transition_t>& transitionNameIndices,
-            const ProductColorEncoder& encoder
+            const std::unordered_map<std::string, Transition_t>& transitionNameIndices
         );
         bool check();
     private:
@@ -24,10 +23,8 @@ namespace PetriEngine::ExplicitColored {
         const ColoredPetriNet& _net;
         const std::unordered_map<std::string, uint32_t>& _placeNameIndices;
         const std::unordered_map<std::string, Transition_t>& _transitionNameIndices;
-
-        std::stack<ColoredPetriNetProductState> _waiting;
+        ProductColorEncoder _productColorEncoder;
         PassedList<ProductColorEncoder, std::pair<ColoredPetriNetMarking, size_t>> _globalPassed;
-        PassedList<ProductColorEncoder, std::pair<ColoredPetriNetMarking, size_t>>  _localPassed;
         bool dfs(const ProductStateGenerator&,  ColoredPetriNetProductState);
         bool ndfs(const ProductStateGenerator&, ColoredPetriNetProductState);
     };

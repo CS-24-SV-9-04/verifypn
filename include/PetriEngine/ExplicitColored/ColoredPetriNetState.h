@@ -80,7 +80,7 @@ namespace PetriEngine::ExplicitColored {
         ColoredPetriNetProductState(const ColoredPetriNetProductState&) = delete;
         ColoredPetriNetProductState& operator=(const ColoredPetriNetProductState&) = delete;
 
-        ColoredPetriNetProductState copy(const LTL::Structures::BuchiAutomaton& sourceAutomaton) const {
+        [[nodiscard]] ColoredPetriNetProductState copy(const LTL::Structures::BuchiAutomaton& sourceAutomaton) const {
             ColoredPetriNetProductState copy(marking, _buchiState);
             copy.currentSuccessor = currentSuccessor;
             auto state = sourceAutomaton.buchi().state_from_number(_buchiState);

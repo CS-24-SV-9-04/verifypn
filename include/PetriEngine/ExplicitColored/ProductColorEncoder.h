@@ -13,6 +13,10 @@ namespace PetriEngine::ExplicitColored {
 
     class ProductColorEncoder{
     public:
+        explicit ProductColorEncoder(ColoredEncoder colored_encoder)
+            : _coloredEncoder(std::move(colored_encoder)) {
+        }
+
         size_t encode(std::pair<ColoredPetriNetMarking, size_t> state){
             const auto& marking = state.first;
             size_t buchiState = state.second;

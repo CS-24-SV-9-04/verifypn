@@ -55,7 +55,8 @@ namespace PetriEngine::ExplicitColored {
 
     template <template <typename> typename WaitingList, typename T>
     bool ExplicitWorklist::_genericSearch(WaitingList<T> waiting) {
-        PassedList<ColoredEncoder, ColoredPetriNetMarking> passed(ColoredEncoder{_net.getPlaces()});
+        auto encoder = ColoredEncoder{_net.getPlaces()};
+        PassedList<ColoredEncoder, ColoredPetriNetMarking> passed(encoder);
 
         const auto& initialState = _net.initial();
         const auto earlyTerminationCondition = _quantifier == Quantifier::EF;
