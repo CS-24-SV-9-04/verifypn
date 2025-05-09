@@ -168,7 +168,7 @@ namespace PetriEngine::ExplicitColored {
         if (searchStatistics) {
             *searchStatistics = ndfs.GetSearchStatistics();
         }
-        return result ? Result::SATISFIED : Result::UNSATISFIED;
+        return (result ^ negated_answer) ? Result::SATISFIED : Result::UNSATISFIED;
     }
 
     ExplicitColoredModelChecker::Result ExplicitColoredModelChecker::_explicitColorReachability(

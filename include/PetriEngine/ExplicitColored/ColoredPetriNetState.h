@@ -50,14 +50,19 @@ namespace PetriEngine::ExplicitColored {
             _currentBinding = bid + 1;
         }
 
+        [[nodiscard]] bool isDeadlock() const {
+            return _deadlock;
+        }
+
         ColoredPetriNetMarking marking;
         size_t id = 0;
 
     private:
-        bool _done = false;
-
         Binding_t _currentBinding = 0;
         Transition_t _currentTransition = 0;
+        bool _done = false;
+        bool _deadlock = true;
+        friend class ColoredSuccessorGenerator;
     };
 
     struct BuchiStateIterDeleter {

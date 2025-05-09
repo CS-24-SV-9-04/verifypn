@@ -25,32 +25,31 @@ namespace PetriEngine::ExplicitColored {
 
     bool LTLNdfs::dfs(const ProductStateGenerator& productStateGenerator, ColoredPetriNetProductState initialState) {
         std::stack<ColoredPetriNetProductState> waiting;
-        _searchStatistics.exploredStates = 1;
-        _searchStatistics.discoveredStates = 1;
         if (_buchiAutomaton.buchi().state_is_accepting(initialState.getBuchiState()) && ndfs(productStateGenerator, initialState.copy(_buchiAutomaton))){
             _searchStatistics.endWaitingStates = waiting.size();
             _searchStatistics.biggestEncoding = _globalPassed.getBiggestEncoding();
             return true;
         }
-        waiting.push(std::move(initialState));
+        _searchStatistics.exploredStates = 1;
+        _searchStatistics.discoveredStates = 1;
+        for (auto& initState : productStateGenerator.get_initial_states(initialState.marking)) {
+            waiting.push(std::move(initState));
+        }
         _searchStatistics.peakWaitingStates = waiting.size();
         while (!waiting.empty()){
             auto& state = waiting.top();
             auto nextState = productStateGenerator.next(state);
-
-            _searchStatistics.discoveredStates += 1;
             if (state.done()) {
                 waiting.pop();
                 continue;
             }
+            _searchStatistics.discoveredStates += 1;
             if (!_globalPassed.existsOrAdd({nextState.marking, nextState.getBuchiState()})) {
                 _searchStatistics.exploredStates += 1;
-                if (_buchiAutomaton.buchi().state_is_accepting(nextState.getBuchiState())) {
-                    if (ndfs(productStateGenerator, nextState.copy(_buchiAutomaton))) {
-                        _searchStatistics.endWaitingStates = waiting.size();
-                        _searchStatistics.biggestEncoding = _globalPassed.getBiggestEncoding();
-                        return true;
-                    }
+                if (_buchiAutomaton.buchi().state_is_accepting(nextState.getBuchiState()) && ndfs(productStateGenerator, nextState.copy(_buchiAutomaton))) {
+                    _searchStatistics.endWaitingStates = waiting.size();
+                    _searchStatistics.biggestEncoding = _globalPassed.getBiggestEncoding();
+                    return true;
                 }
                 waiting.push(std::move(nextState));
                 _searchStatistics.peakWaitingStates  = std::max(static_cast<uint32_t>(waiting.size()), _searchStatistics.peakWaitingStates);
@@ -66,21 +65,25 @@ namespace PetriEngine::ExplicitColored {
         PassedList<ProductColorEncoder, std::pair<ColoredPetriNetMarking, size_t>> localPassed(_productColorEncoder);
         std::stack<ColoredPetriNetProductState> waiting;
         localPassed.add({initialState.marking, initialState.getBuchiState()});
+        auto targetState = std::make_pair(initialState.marking, initialState.getBuchiState());
         waiting.push(std::move(initialState));
 
-        while (!waiting.empty()){
+        while (!waiting.empty()) {
             auto& state = waiting.top();
             auto nextState = productStateGenerator.next(state);
-            if (state.done()){
-                return true;
+            _searchStatistics.discoveredStates += 1;
+            if (state.done()) {
+                waiting.pop();
+                continue;
             }
             if (_buchiAutomaton.buchi().state_is_accepting(nextState.getBuchiState())) {
-                if (nextState.marking == state.marking && nextState.getBuchiState() == state.getBuchiState()) {
+                if (nextState.getBuchiState() == targetState.second && nextState.marking == targetState.first) {
                     return true;
                 }
                 if (!localPassed.existsOrAdd({nextState.marking, nextState.getBuchiState()}) &&
                     !_globalPassed.exists({nextState.marking, nextState.getBuchiState()})) {
                     waiting.push(std::move(nextState));
+                    _searchStatistics.exploredStates += 1;
                     _searchStatistics.peakWaitingStates  = std::max(static_cast<uint32_t>(waiting.size()), _searchStatistics.peakWaitingStates);
                 }
             }

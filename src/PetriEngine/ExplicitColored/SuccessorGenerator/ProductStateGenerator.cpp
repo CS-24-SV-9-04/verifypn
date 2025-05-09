@@ -23,21 +23,52 @@ namespace PetriEngine::ExplicitColored {
             currentState.currentSuccessor = _successorGenerator.next(currentState);
             currentState.iterState->first();
         }
-        while (!currentState.done()) {
+        if (currentState.isDeadlock()) {
             for (; !currentState.iterState->done(); currentState.iterState->next()) {
-                if (_check_condition(currentState.iterState->cond(), currentState.currentSuccessor.marking, currentState.currentSuccessor.id)) {
-                    auto dstState = currentState.iterState->dst();
-                    ColoredPetriNetProductState newState(currentState.currentSuccessor, _buchiAutomaton.buchi().state_number(dstState));
+                if (_check_condition(currentState.iterState->cond(), currentState.marking, currentState.id)) {
+                    const auto dstState = currentState.iterState->dst();
+                    ColoredPetriNetProductState newState(currentState.marking, _buchiAutomaton.buchi().state_number(dstState));
                     dstState->destroy();
                     currentState.iterState->next();
                     return newState;
                 }
             }
-            currentState.currentSuccessor = _successorGenerator.next(currentState);
-            currentState.iterState->first();
+        } else {
+            while (!currentState.done() || currentState.isDeadlock()) {
+                for (; !currentState.iterState->done(); currentState.iterState->next()) {
+                    if (_check_condition(currentState.iterState->cond(), currentState.currentSuccessor.marking, currentState.currentSuccessor.id)) {
+                        const auto dstState = currentState.iterState->dst();
+                        ColoredPetriNetProductState newState(currentState.currentSuccessor, _buchiAutomaton.buchi().state_number(dstState));
+                        dstState->destroy();
+                        currentState.iterState->next();
+                        return newState;
+                    }
+                }
+                currentState.currentSuccessor = _successorGenerator.next(currentState);
+                currentState.iterState->first();
+            }
         }
         currentState.setDone();
         return {{}, 0};
+    }
+
+    std::vector<ColoredPetriNetProductState> ProductStateGenerator::get_initial_states(
+        const ColoredPetriNetMarking &initialMarking) const {
+        const auto initBuchiState = _buchiAutomaton.buchi().get_init_state();
+        std::vector<ColoredPetriNetProductState> initialStates;
+        auto iter = _buchiAutomaton.buchi().succ_iter(initBuchiState);
+        if (iter->first()) {
+            do {
+                if (_check_condition(iter->cond(), initialMarking, 0)) {
+                    auto buchiState = iter->dst();
+                    ColoredPetriNetProductState state(initialMarking, _buchiAutomaton.buchi().state_number(buchiState));
+                    buchiState->destroy();
+                    initialStates.push_back(std::move(state));
+                }
+            } while (iter->next());
+        }
+        initBuchiState->destroy();
+        return initialStates;
     }
 
     bool ProductStateGenerator::_check_condition(bdd cond, const ColoredPetriNetMarking &marking, size_t markingId) const {
