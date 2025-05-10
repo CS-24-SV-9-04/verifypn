@@ -144,7 +144,15 @@ namespace PetriEngine::ExplicitColored {
         if (!isReachability(query)) {
             return _explicitColorLTL(std::move(cpnBuilder), query, options, searchStatistics);
         }
-        return _explicitColorReachability(std::move(cpnBuilder), query, options, searchStatistics);
+        try {
+            return _explicitColorReachability(cpnBuilder, query, options, searchStatistics);
+        }
+        catch (const explicit_error& e) {
+            if (e.type == ExplicitErrorType::unsupported_query) {
+                std::cerr << "Query seemed to be reachability, but unsupported query was thrown. Falling back to LTL" << std::endl;
+                return _explicitColorLTL(std::move(cpnBuilder), query, options, searchStatistics);
+            }
+        }
     }
 
     ExplicitColoredModelChecker::Result ExplicitColoredModelChecker::_explicitColorLTL(
@@ -163,26 +171,29 @@ namespace PetriEngine::ExplicitColored {
         ProductStateGenerator productStateGenerator(net, buchiAutomaton, placeIndices, transitionIndices);
 
         LTLNdfs ndfs(net, negated_formula, placeIndices, transitionIndices);
-        auto result = ndfs.check();
+        auto result = !ndfs.check();
 
         if (searchStatistics) {
             *searchStatistics = ndfs.GetSearchStatistics();
         }
-        return (result ^ negated_answer) ? Result::SATISFIED : Result::UNSATISFIED;
+        return (result != negated_answer) ? Result::SATISFIED : Result::UNSATISFIED;
     }
 
     ExplicitColoredModelChecker::Result ExplicitColoredModelChecker::_explicitColorReachability(
-        ColoredPetriNetBuilder cpnBuilder,
+        const ColoredPetriNetBuilder& cpnBuilder,
         const PQL::Condition_ptr &query,
         options_t &options,
-        SearchStatistics *searchStatistics\
+        SearchStatistics *searchStatistics
     ) const {
-        auto net = cpnBuilder.takeNet();
-        auto placeIndices = cpnBuilder.takePlaceIndices();
-        auto transitionIndices = cpnBuilder.takeTransitionIndices();
+        ExplicitWorklist worklist(
+            cpnBuilder.getNet(),
+            query,
+            cpnBuilder.getPlaceIndices(),
+            cpnBuilder.getTransitionIndices(),
+            options.seed()
+        );
 
-        ExplicitWorklist worklist(net, query, placeIndices, transitionIndices, options.seed());
-        bool result = worklist.check(options.strategy, options.colored_sucessor_generator);
+        const bool result = worklist.check(options.strategy, options.colored_sucessor_generator);
 
         if (searchStatistics) {
             *searchStatistics = worklist.GetSearchStatistics();

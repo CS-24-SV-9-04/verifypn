@@ -30,8 +30,11 @@ namespace PetriEngine::ExplicitColored {
 
         std::unordered_map<std::string, uint32_t> takePlaceIndices();
         std::unordered_map<std::string, Transition_t> takeTransitionIndices();
+        const std::unordered_map<std::string, uint32_t>& getPlaceIndices() const;
+        const std::unordered_map<std::string, uint32_t>& getTransitionIndices() const;
         ColoredPetriNetBuilderStatus build();
         ColoredPetriNet takeNet();
+        const ColoredPetriNet& getNet() const;
     private:
         std::unordered_map<std::string, uint32_t> _placeIndices;
         std::unordered_map<std::string, uint32_t> _transitionIndices;
