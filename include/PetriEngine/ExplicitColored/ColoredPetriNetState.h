@@ -5,6 +5,7 @@
 #include <utility>
 #include <spot/twa/twagraph.hh>
 
+#include "LTL/Structures/BuchiAutomaton.h"
 #include "ColoredPetriNetMarking.h"
 
 namespace PetriEngine::ExplicitColored {
@@ -49,14 +50,19 @@ namespace PetriEngine::ExplicitColored {
             _currentBinding = bid + 1;
         }
 
+        [[nodiscard]] bool isDeadlock() const {
+            return _deadlock;
+        }
+
         ColoredPetriNetMarking marking;
         size_t id = 0;
 
     private:
-        bool _done = false;
-
         Binding_t _currentBinding = 0;
         Transition_t _currentTransition = 0;
+        bool _done = false;
+        bool _deadlock = true;
+        friend class ColoredSuccessorGenerator;
     };
 
     struct BuchiStateIterDeleter {
@@ -74,6 +80,36 @@ namespace PetriEngine::ExplicitColored {
             : ColoredPetriNetStateFixed(std::move(marking)), _buchiState(buchiState), currentSuccessor({}) {}
         ColoredPetriNetProductState(ColoredPetriNetStateFixed markingState, size_t buchiState)
             : ColoredPetriNetStateFixed(std::move(markingState)), _buchiState(buchiState), currentSuccessor({}) {}
+        ColoredPetriNetProductState(ColoredPetriNetProductState&& state) noexcept = default;
+        ColoredPetriNetProductState& operator=(ColoredPetriNetProductState&&) noexcept = default;
+        ColoredPetriNetProductState(const ColoredPetriNetProductState&) = delete;
+        ColoredPetriNetProductState& operator=(const ColoredPetriNetProductState&) = delete;
+
+        [[nodiscard]] ColoredPetriNetProductState copy(const LTL::Structures::BuchiAutomaton& sourceAutomaton) const {
+            ColoredPetriNetProductState copy(marking, _buchiState);
+            copy.currentSuccessor = currentSuccessor;
+            if (iterState != nullptr) {
+                auto state = sourceAutomaton.buchi().state_from_number(_buchiState);
+                copy.iterState =
+                        std::unique_ptr<spot::twa_succ_iterator, BuchiStateIterDeleter>(
+                                sourceAutomaton.buchi().succ_iter(state));
+                state->destroy();
+                if (copy.iterState->first()) {
+                    do {
+                        const auto dstState = copy.iterState->dst();
+                        const auto copyDstStateNumber = sourceAutomaton.buchi().state_number(dstState);
+                        dstState->destroy();
+                        if (copyDstStateNumber == _buchiState) {
+                            break;
+                        }
+                    } while (copy.iterState->next());
+                }
+            } else {
+                copy.iterState = nullptr;
+            }
+            return copy;
+        }
+
         size_t getBuchiState() const {
             return _buchiState;
         }
@@ -81,7 +117,6 @@ namespace PetriEngine::ExplicitColored {
         ColoredPetriNetStateFixed currentSuccessor;
     private:
         size_t _buchiState;
-
     };
 
     struct ColoredPetriNetStateEven {

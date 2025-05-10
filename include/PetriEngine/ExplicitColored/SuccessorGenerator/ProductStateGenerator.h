@@ -15,9 +15,10 @@ namespace PetriEngine {
                 const std::unordered_map<std::string, uint32_t>& placeNameIndices,
                 const std::unordered_map<std::string, uint32_t>& transitionNameIndices
             );
-            ColoredPetriNetProductState next(ColoredPetriNetProductState& currentState);
+            ColoredPetriNetProductState next(ColoredPetriNetProductState& currentState) const;
+            std::vector<ColoredPetriNetProductState> get_initial_states(const ColoredPetriNetMarking& initialMarking) const;
         private:
-            bool _check_condition(bdd cond, const ColoredPetriNetMarking& marking, size_t markingId);
+            bool _check_condition(bdd cond, const ColoredPetriNetMarking& marking, size_t markingId) const;
             const ColoredPetriNet& _net;
             LTL::Structures::BuchiAutomaton _buchiAutomaton;
             ColoredSuccessorGenerator _successorGenerator;

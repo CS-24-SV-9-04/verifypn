@@ -75,6 +75,7 @@ namespace PetriEngine::ExplicitColored {
                     newState.id = _nextId++;
                     _fire(newState.marking, tid, binding);
                     state.nextBinding(nextBid);
+                    state._deadlock = false;
                     return newState;
                 }
                 state.nextTransition();
