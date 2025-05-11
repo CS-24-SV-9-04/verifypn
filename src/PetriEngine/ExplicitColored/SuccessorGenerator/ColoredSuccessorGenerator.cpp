@@ -180,7 +180,7 @@ namespace PetriEngine::ExplicitColored{
         }
 
         auto constraintDataIt = _constraintData.find(_getKey(stateId, tid));
-        if (totalBindings > 30 && constraintDataIt == _constraintData.end()) {
+        if (totalBindings > 300000000 && constraintDataIt == _constraintData.end()) {
             bool noPossibleBinding = false;
             constraintDataIt = _calculateConstraintData(marking, stateId, tid, noPossibleBinding);
             if (noPossibleBinding) {

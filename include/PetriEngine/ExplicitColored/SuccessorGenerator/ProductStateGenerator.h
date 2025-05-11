@@ -15,9 +15,9 @@ namespace PetriEngine {
                 const std::unordered_map<std::string, uint32_t>& placeNameIndices,
                 const std::unordered_map<std::string, uint32_t>& transitionNameIndices
             );
-            ColoredPetriNetProductStateFixed next(ColoredPetriNetProductStateFixed& currentState) const;
-            std::vector<ColoredPetriNetProductStateFixed> get_initial_states(const ColoredPetriNetMarking& initialMarking) const;
-            bool has_invariant_self_loop(const ColoredPetriNetProductStateFixed& state) const;
+            CPNProductState next(CPNProductStateFixed& currentState) const;
+            std::vector<CPNProductState> get_initial_states(const ColoredPetriNetMarking& initialMarking) const;
+            bool has_invariant_self_loop(const CPNProductState& state) const;
         private:
             bool _check_condition(bdd cond, const ColoredPetriNetMarking& marking, size_t markingId) const;
             const ColoredPetriNet& _net;

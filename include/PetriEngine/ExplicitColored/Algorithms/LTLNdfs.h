@@ -22,14 +22,16 @@ namespace PetriEngine::ExplicitColored {
         bool check();
         const SearchStatistics & GetSearchStatistics() const;
     private:
+        bool _dfs(CPNProductState initialState);
+        bool _ndfs(CPNProductState initialState);
+
         LTL::Structures::BuchiAutomaton _buchiAutomaton;
         const ColoredPetriNet& _net;
         const std::unordered_map<std::string, uint32_t>& _placeNameIndices;
         const std::unordered_map<std::string, Transition_t>& _transitionNameIndices;
         ProductColorEncoder _productColorEncoder;
         PassedList<ProductColorEncoder, std::pair<ColoredPetriNetMarking, size_t>> _globalPassed;
-        bool dfs(const ProductStateGenerator&,  ColoredPetriNetProductStateFixed);
-        bool ndfs(const ProductStateGenerator&, ColoredPetriNetProductStateFixed);
+        ProductStateGenerator _productStateGenerator;
         SearchStatistics _searchStatistics;
     };
 }

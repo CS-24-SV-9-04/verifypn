@@ -16,54 +16,54 @@ namespace PetriEngine::ExplicitColored {
         _placeNameIndices(placeNameIndices),
         _transitionNameIndices(transitionNameIndices),
         _productColorEncoder(ColoredEncoder(net.getPlaces())),
-        _globalPassed(_productColorEncoder) { }
+        _globalPassed(_productColorEncoder),
+        _productStateGenerator(net, _buchiAutomaton, placeNameIndices, _transitionNameIndices)
+    { }
 
     bool LTLNdfs::check() {
         const ProductStateGenerator generator{_net, _buchiAutomaton, _placeNameIndices, _transitionNameIndices};
         auto initialStates = generator.get_initial_states(_net.initial());
         for (auto& initialState : initialStates) {
-            if (dfs(generator, std::move(initialState)))
+            if (_dfs(initialState))
                 return true;
         }
         return false;
     }
 
-    bool LTLNdfs::dfs(const ProductStateGenerator& productStateGenerator, ColoredPetriNetProductStateFixed initialState) {
-        std::stack<ColoredPetriNetProductStateFixed> waiting;
+    bool LTLNdfs::_dfs(CPNProductState initialState) {
+        std::stack<CPNProductStateFixed> waiting;
         if (
-            _buchiAutomaton.buchi().state_is_accepting(initialState.getBuchiState())
-            && ndfs(productStateGenerator, initialState.copyProductState())
+            _buchiAutomaton.buchi().state_is_accepting(initialState.buchiState)
+            && _ndfs(initialState)
         ) {
             _searchStatistics.endWaitingStates = waiting.size();
             _searchStatistics.biggestEncoding = _globalPassed.getBiggestEncoding();
             return true;
         }
+        waiting.emplace(std::move(initialState));
         _searchStatistics.exploredStates = 1;
         _searchStatistics.discoveredStates = 1;
-        for (auto& initState : productStateGenerator.get_initial_states(initialState.marking)) {
-            waiting.push(std::move(initState));
-        }
         _searchStatistics.peakWaitingStates = waiting.size();
         while (!waiting.empty()){
             auto& state = waiting.top();
-            auto nextState = productStateGenerator.next(state);
+            auto nextState = _productStateGenerator.next(state);
             if (state.done()) {
                 waiting.pop();
                 continue;
             }
             _searchStatistics.discoveredStates += 1;
             if (!_globalPassed.existsOrAdd({
-                nextState.marking, nextState.getBuchiState()})) {
+                nextState.marking, nextState.buchiState})) {
                 _searchStatistics.exploredStates += 1;
                 if (
-                    _buchiAutomaton.buchi().state_is_accepting(nextState.getBuchiState())
-                    && ndfs(productStateGenerator, nextState.copyProductState())
+                    _buchiAutomaton.buchi().state_is_accepting(nextState.buchiState)
+                    && _ndfs(nextState)
                 ) {
                     _searchStatistics.endWaitingStates = waiting.size();
                     _searchStatistics.biggestEncoding = _globalPassed.getBiggestEncoding();
                     return true;
                 }
-                waiting.push(std::move(nextState));
+                waiting.emplace(std::move(nextState));
                 _searchStatistics.peakWaitingStates  = std::max(static_cast<uint32_t>(waiting.size()), _searchStatistics.peakWaitingStates);
             }
         }
@@ -72,33 +72,33 @@ namespace PetriEngine::ExplicitColored {
         return false;
     }
 
-    bool LTLNdfs::ndfs(const ProductStateGenerator& productStateGenerator, ColoredPetriNetProductStateFixed initialState) {
-        if (productStateGenerator.has_invariant_self_loop(initialState)) {
+    bool LTLNdfs::_ndfs(CPNProductState initialState) {
+        if (_productStateGenerator.has_invariant_self_loop(initialState)) {
             return true;
         }
         PassedList<ProductColorEncoder, std::pair<ColoredPetriNetMarking, size_t>> localPassed(_productColorEncoder);
-        std::stack<ColoredPetriNetProductStateFixed> waiting;
-        localPassed.add({initialState.marking, initialState.getBuchiState()});
+        std::stack<CPNProductStateFixed> waiting;
+        localPassed.add({initialState.marking, initialState.buchiState});
 
-        auto targetState = initialState.copyProductState();
+        const auto targetState = initialState;
 
-        waiting.push(std::move(initialState));
+        waiting.emplace(std::move(initialState));
 
         while (!waiting.empty()) {
-            auto& state = waiting.top();
-            auto nextState = productStateGenerator.next(state);
+            auto& currentState = waiting.top();
+            auto nextState = _productStateGenerator.next(currentState);
             _searchStatistics.discoveredStates += 1;
-            if (state.done()) {
+            if (currentState.done()) {
                 waiting.pop();
                 continue;
             }
-            if (_buchiAutomaton.buchi().state_is_accepting(nextState.getBuchiState())) {
-                if (nextState.getBuchiState() == targetState.getBuchiState() && nextState.marking == targetState.marking) {
+            if (_buchiAutomaton.buchi().state_is_accepting(nextState.buchiState)) {
+                if (nextState == targetState) {
                     return true;
                 }
-                if (!localPassed.existsOrAdd({nextState.marking, nextState.getBuchiState()}) &&
-                    !_globalPassed.exists({nextState.marking, nextState.getBuchiState()})) {
-                    waiting.push(std::move(nextState));
+                if (!localPassed.existsOrAdd({nextState.marking, nextState.buchiState}) &&
+                    !_globalPassed.exists({nextState.marking, nextState.buchiState})) {
+                    waiting.emplace(std::move(nextState));
                     _searchStatistics.exploredStates += 1;
                     _searchStatistics.peakWaitingStates  = std::max(static_cast<uint32_t>(waiting.size()), _searchStatistics.peakWaitingStates);
                 }

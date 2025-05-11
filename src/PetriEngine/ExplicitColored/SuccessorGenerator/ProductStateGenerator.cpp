@@ -13,55 +13,58 @@ namespace PetriEngine::ExplicitColored {
         }
     }
 
-    ColoredPetriNetProductStateFixed ProductStateGenerator::next(
-        ColoredPetriNetProductStateFixed &currentState
+    CPNProductState ProductStateGenerator::next(
+        CPNProductStateFixed &currentState
     ) const {
-        if (currentState.iterState == nullptr) {
-            const auto state = _buchiAutomaton.buchi().state_from_number(currentState.getBuchiState());
-            currentState.iterState = std::unique_ptr<spot::twa_succ_iterator, BuchiStateIterDeleter>(_buchiAutomaton.buchi().succ_iter(state), BuchiStateIterDeleter{ &_buchiAutomaton.buchi() });
+        if (currentState._iterState == nullptr) {
+            const auto state = _buchiAutomaton.buchi().state_from_number(currentState._buchiState);
+            currentState._iterState = std::unique_ptr<spot::twa_succ_iterator, BuchiStateIterDeleter>(
+                _buchiAutomaton.buchi().succ_iter(state),
+                BuchiStateIterDeleter{ &_buchiAutomaton.buchi() }
+            );
             state->destroy();
-            currentState.currentSuccessor = _successorGenerator.next(currentState);
-            currentState.iterState->first();
+            currentState._iterState->first();
+            currentState._currentSuccessor.marking = _successorGenerator.next(currentState._markingGeneratorState).marking;
         }
-        if (currentState.isDeadlock()) {
-            for (; !currentState.iterState->done(); currentState.iterState->next()) {
-                if (_check_condition(currentState.iterState->cond(), currentState.marking, currentState.id)) {
-                    const auto dstState = currentState.iterState->dst();
-                    ColoredPetriNetProductStateFixed newState(currentState.marking, _buchiAutomaton.buchi().state_number(dstState));
+        if (currentState._markingGeneratorState.isDeadlock()) {
+            for (; !currentState._iterState->done(); currentState._iterState->next()) {
+                if (_check_condition(currentState._iterState->cond(), currentState._markingGeneratorState.marking, currentState._markingGeneratorState.id)) {
+                    const auto dstState = currentState._iterState->dst();
+                    auto buchiState = _buchiAutomaton.buchi().state_number(dstState);
                     dstState->destroy();
-                    currentState.iterState->next();
-                    return newState;
+                    currentState._iterState->next();
+                    return { currentState._markingGeneratorState.marking, buchiState };
                 }
             }
         } else {
-            while (!currentState.done() || currentState.isDeadlock()) {
-                for (; !currentState.iterState->done(); currentState.iterState->next()) {
-                    if (_check_condition(currentState.iterState->cond(), currentState.currentSuccessor.marking, currentState.currentSuccessor.id)) {
-                        const auto dstState = currentState.iterState->dst();
-                        ColoredPetriNetProductStateFixed newState(currentState.currentSuccessor, _buchiAutomaton.buchi().state_number(dstState));
+            while (!currentState._markingGeneratorState.done()) {
+                for (; !currentState._iterState->done(); currentState._iterState->next()) {
+                    if (_check_condition(currentState._iterState->cond(), currentState._currentSuccessor.marking, currentState._markingGeneratorState.id)) {
+                        const auto dstState = currentState._iterState->dst();
+                        currentState._currentSuccessor.buchiState = _buchiAutomaton.buchi().state_number(dstState);
                         dstState->destroy();
-                        currentState.iterState->next();
-                        return newState;
+                        currentState._iterState->next();
+                        return currentState._currentSuccessor;
                     }
                 }
-                currentState.currentSuccessor = _successorGenerator.next(currentState);
-                currentState.iterState->first();
+                currentState._currentSuccessor.marking = _successorGenerator.next(currentState._markingGeneratorState).marking;
+                currentState._iterState->first();
             }
         }
-        currentState.setDone();
+        currentState._done = true;
         return {{}, 0};
     }
 
-    std::vector<ColoredPetriNetProductStateFixed> ProductStateGenerator::get_initial_states(
+    std::vector<CPNProductState> ProductStateGenerator::get_initial_states(
         const ColoredPetriNetMarking &initialMarking) const {
         const auto initBuchiState = _buchiAutomaton.buchi().get_init_state();
-        std::vector<ColoredPetriNetProductStateFixed> initialStates;
+        std::vector<CPNProductState> initialStates;
         auto iter = _buchiAutomaton.buchi().succ_iter(initBuchiState);
         if (iter->first()) {
             do {
                 if (_check_condition(iter->cond(), initialMarking, 0)) {
                     auto buchiState = iter->dst();
-                    ColoredPetriNetProductStateFixed state(initialMarking, _buchiAutomaton.buchi().state_number(buchiState));
+                    CPNProductState state(initialMarking, _buchiAutomaton.buchi().state_number(buchiState));
                     buchiState->destroy();
                     initialStates.push_back(std::move(state));
                 }
@@ -71,9 +74,9 @@ namespace PetriEngine::ExplicitColored {
         return initialStates;
     }
 
-    bool ProductStateGenerator::has_invariant_self_loop(const ColoredPetriNetProductStateFixed &state) const {
-        auto buchi_state = _buchiAutomaton.buchi().state_from_number(state.getBuchiState());
-        auto iter =_buchiAutomaton.buchi().succ_iter(buchi_state);
+    bool ProductStateGenerator::has_invariant_self_loop(const CPNProductState &state) const {
+        const auto buchi_state = _buchiAutomaton.buchi().state_from_number(state.buchiState);
+        const auto iter =_buchiAutomaton.buchi().succ_iter(buchi_state);
         if (iter->first()) {
             do {
                 if (iter->cond() == bddtrue) {
