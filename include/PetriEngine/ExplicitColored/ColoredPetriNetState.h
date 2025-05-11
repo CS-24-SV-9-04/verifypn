@@ -75,44 +75,27 @@ namespace PetriEngine::ExplicitColored {
     };
 
 
-    struct ColoredPetriNetProductState : ColoredPetriNetStateFixed {
-        ColoredPetriNetProductState(ColoredPetriNetMarking marking, size_t buchiState)
+    struct ColoredPetriNetProductStateFixed : ColoredPetriNetStateFixed {
+        ColoredPetriNetProductStateFixed(ColoredPetriNetMarking marking, size_t buchiState)
             : ColoredPetriNetStateFixed(std::move(marking)), _buchiState(buchiState), currentSuccessor({}) {}
-        ColoredPetriNetProductState(ColoredPetriNetStateFixed markingState, size_t buchiState)
+        ColoredPetriNetProductStateFixed(ColoredPetriNetStateFixed markingState, size_t buchiState)
             : ColoredPetriNetStateFixed(std::move(markingState)), _buchiState(buchiState), currentSuccessor({}) {}
-        ColoredPetriNetProductState(ColoredPetriNetProductState&& state) noexcept = default;
-        ColoredPetriNetProductState& operator=(ColoredPetriNetProductState&&) noexcept = default;
-        ColoredPetriNetProductState(const ColoredPetriNetProductState&) = delete;
-        ColoredPetriNetProductState& operator=(const ColoredPetriNetProductState&) = delete;
-
-        [[nodiscard]] ColoredPetriNetProductState copy(const LTL::Structures::BuchiAutomaton& sourceAutomaton) const {
-            ColoredPetriNetProductState copy(marking, _buchiState);
-            copy.currentSuccessor = currentSuccessor;
-            if (iterState != nullptr) {
-                auto state = sourceAutomaton.buchi().state_from_number(_buchiState);
-                copy.iterState =
-                        std::unique_ptr<spot::twa_succ_iterator, BuchiStateIterDeleter>(
-                                sourceAutomaton.buchi().succ_iter(state));
-                state->destroy();
-                if (copy.iterState->first()) {
-                    do {
-                        const auto dstState = copy.iterState->dst();
-                        const auto copyDstStateNumber = sourceAutomaton.buchi().state_number(dstState);
-                        dstState->destroy();
-                        if (copyDstStateNumber == _buchiState) {
-                            break;
-                        }
-                    } while (copy.iterState->next());
-                }
-            } else {
-                copy.iterState = nullptr;
-            }
-            return copy;
-        }
+        ColoredPetriNetProductStateFixed(ColoredPetriNetProductStateFixed&& state) noexcept = default;
+        ColoredPetriNetProductStateFixed& operator=(ColoredPetriNetProductStateFixed&&) noexcept = default;
+        ColoredPetriNetProductStateFixed(const ColoredPetriNetProductStateFixed&) = delete;
+        ColoredPetriNetProductStateFixed& operator=(const ColoredPetriNetProductStateFixed&) = delete;
 
         size_t getBuchiState() const {
             return _buchiState;
         }
+
+        [[nodiscard]] ColoredPetriNetProductStateFixed copyProductState() const {
+            auto rv = ColoredPetriNetProductStateFixed(marking, _buchiState);
+            rv.id = id;
+            rv.iterState = nullptr;
+            return rv;
+        }
+
         std::unique_ptr<spot::twa_succ_iterator, BuchiStateIterDeleter> iterState;
         ColoredPetriNetStateFixed currentSuccessor;
     private:

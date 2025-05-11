@@ -13,8 +13,8 @@ namespace PetriEngine::ExplicitColored {
         }
     }
 
-    ColoredPetriNetProductState ProductStateGenerator::next(
-        ColoredPetriNetProductState &currentState
+    ColoredPetriNetProductStateFixed ProductStateGenerator::next(
+        ColoredPetriNetProductStateFixed &currentState
     ) const {
         if (currentState.iterState == nullptr) {
             const auto state = _buchiAutomaton.buchi().state_from_number(currentState.getBuchiState());
@@ -27,7 +27,7 @@ namespace PetriEngine::ExplicitColored {
             for (; !currentState.iterState->done(); currentState.iterState->next()) {
                 if (_check_condition(currentState.iterState->cond(), currentState.marking, currentState.id)) {
                     const auto dstState = currentState.iterState->dst();
-                    ColoredPetriNetProductState newState(currentState.marking, _buchiAutomaton.buchi().state_number(dstState));
+                    ColoredPetriNetProductStateFixed newState(currentState.marking, _buchiAutomaton.buchi().state_number(dstState));
                     dstState->destroy();
                     currentState.iterState->next();
                     return newState;
@@ -38,7 +38,7 @@ namespace PetriEngine::ExplicitColored {
                 for (; !currentState.iterState->done(); currentState.iterState->next()) {
                     if (_check_condition(currentState.iterState->cond(), currentState.currentSuccessor.marking, currentState.currentSuccessor.id)) {
                         const auto dstState = currentState.iterState->dst();
-                        ColoredPetriNetProductState newState(currentState.currentSuccessor, _buchiAutomaton.buchi().state_number(dstState));
+                        ColoredPetriNetProductStateFixed newState(currentState.currentSuccessor, _buchiAutomaton.buchi().state_number(dstState));
                         dstState->destroy();
                         currentState.iterState->next();
                         return newState;
@@ -52,16 +52,16 @@ namespace PetriEngine::ExplicitColored {
         return {{}, 0};
     }
 
-    std::vector<ColoredPetriNetProductState> ProductStateGenerator::get_initial_states(
+    std::vector<ColoredPetriNetProductStateFixed> ProductStateGenerator::get_initial_states(
         const ColoredPetriNetMarking &initialMarking) const {
         const auto initBuchiState = _buchiAutomaton.buchi().get_init_state();
-        std::vector<ColoredPetriNetProductState> initialStates;
+        std::vector<ColoredPetriNetProductStateFixed> initialStates;
         auto iter = _buchiAutomaton.buchi().succ_iter(initBuchiState);
         if (iter->first()) {
             do {
                 if (_check_condition(iter->cond(), initialMarking, 0)) {
                     auto buchiState = iter->dst();
-                    ColoredPetriNetProductState state(initialMarking, _buchiAutomaton.buchi().state_number(buchiState));
+                    ColoredPetriNetProductStateFixed state(initialMarking, _buchiAutomaton.buchi().state_number(buchiState));
                     buchiState->destroy();
                     initialStates.push_back(std::move(state));
                 }
@@ -69,6 +69,23 @@ namespace PetriEngine::ExplicitColored {
         }
         initBuchiState->destroy();
         return initialStates;
+    }
+
+    bool ProductStateGenerator::has_invariant_self_loop(const ColoredPetriNetProductStateFixed &state) const {
+        auto buchi_state = _buchiAutomaton.buchi().state_from_number(state.getBuchiState());
+        auto iter =_buchiAutomaton.buchi().succ_iter(buchi_state);
+        if (iter->first()) {
+            do {
+                if (iter->cond() == bddtrue) {
+                    buchi_state->destroy();
+                    _buchiAutomaton.buchi().release_iter(iter);
+                    return true;
+                }
+            } while (iter->next());
+        }
+        buchi_state->destroy();
+        _buchiAutomaton.buchi().release_iter(iter);
+        return false;
     }
 
     bool ProductStateGenerator::_check_condition(bdd cond, const ColoredPetriNetMarking &marking, size_t markingId) const {

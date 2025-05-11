@@ -168,6 +168,7 @@ namespace PetriEngine::ExplicitColored {
         auto [negated_formula, negated_answer] = LTL::to_ltl(query, traces);
         
         auto buchiAutomaton = make_buchi_automaton(negated_formula, LTL::BuchiOptimization::Low, LTL::APCompression::None);
+
         ProductStateGenerator productStateGenerator(net, buchiAutomaton, placeIndices, transitionIndices);
 
         LTLNdfs ndfs(net, negated_formula, placeIndices, transitionIndices);

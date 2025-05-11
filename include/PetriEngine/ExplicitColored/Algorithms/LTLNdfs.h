@@ -28,8 +28,8 @@ namespace PetriEngine::ExplicitColored {
         const std::unordered_map<std::string, Transition_t>& _transitionNameIndices;
         ProductColorEncoder _productColorEncoder;
         PassedList<ProductColorEncoder, std::pair<ColoredPetriNetMarking, size_t>> _globalPassed;
-        bool dfs(const ProductStateGenerator&,  ColoredPetriNetProductState);
-        bool ndfs(const ProductStateGenerator&, ColoredPetriNetProductState);
+        bool dfs(const ProductStateGenerator&,  ColoredPetriNetProductStateFixed);
+        bool ndfs(const ProductStateGenerator&, ColoredPetriNetProductStateFixed);
         SearchStatistics _searchStatistics;
     };
 }
