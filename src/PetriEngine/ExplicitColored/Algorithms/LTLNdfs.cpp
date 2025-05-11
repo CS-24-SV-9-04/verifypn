@@ -73,9 +73,9 @@ namespace PetriEngine::ExplicitColored {
     }
 
     bool LTLNdfs::ndfs(const ProductStateGenerator& productStateGenerator, ColoredPetriNetProductStateFixed initialState) {
-        /*if (productStateGenerator.has_invariant_self_loop(initialState)) {
+        if (productStateGenerator.has_invariant_self_loop(initialState)) {
             return true;
-        }*/
+        }
         PassedList<ProductColorEncoder, std::pair<ColoredPetriNetMarking, size_t>> localPassed(_productColorEncoder);
         std::stack<ColoredPetriNetProductStateFixed> waiting;
         localPassed.add({initialState.marking, initialState.getBuchiState()});
