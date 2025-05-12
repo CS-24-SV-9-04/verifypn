@@ -17,7 +17,7 @@ namespace PetriEngine::ExplicitColored {
 
     class ColoredSuccessorGenerator {
     public:
-        explicit ColoredSuccessorGenerator(const ColoredPetriNet& net, MarkingCount_t constraintBindingThreshold);
+        explicit ColoredSuccessorGenerator(const ColoredPetriNet& net, Binding_t constraintBindingThreshold);
         ~ColoredSuccessorGenerator() = default;
 
         ColoredPetriNetStateFixed next(ColoredPetriNetStateFixed& state) const {
@@ -47,7 +47,7 @@ namespace PetriEngine::ExplicitColored {
         void consumePreset(ColoredPetriNetMarking& state, Transition_t tid, const Binding& binding) const;
         void producePostset(ColoredPetriNetMarking& state, Transition_t tid, const Binding& binding) const;
     private:
-        MarkingCount_t _constraintBindingThreshold;
+        Binding_t _constraintBindingThreshold;
         mutable size_t _nextId = 1;
         const ColoredPetriNet& _net;
         mutable std::map<size_t, ConstraintData> _constraintData;

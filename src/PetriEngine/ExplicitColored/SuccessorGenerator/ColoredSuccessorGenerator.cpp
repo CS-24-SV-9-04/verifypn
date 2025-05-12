@@ -5,7 +5,7 @@
 #include "PetriEngine/ExplicitColored/SuccessorGenerator/ColoredSuccessorGenerator.h"
 
 namespace PetriEngine::ExplicitColored{
-    ColoredSuccessorGenerator::ColoredSuccessorGenerator(const ColoredPetriNet& net, MarkingCount_t constraintBindingThreshold)
+    ColoredSuccessorGenerator::ColoredSuccessorGenerator(const ColoredPetriNet& net, const Binding_t constraintBindingThreshold)
     : _constraintBindingThreshold(constraintBindingThreshold), _net(net) {}
 
     void updateVariableMap(std::map<Variable_t, std::vector<uint32_t>>& map, const std::map<Variable_t, std::vector<uint32_t>>& newMap){
