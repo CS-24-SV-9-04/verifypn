@@ -75,19 +75,22 @@ namespace PetriEngine::ExplicitColored {
     }
 
     bool ProductStateGenerator::has_invariant_self_loop(const CPNProductState &state) const {
-        const auto buchi_state = _buchiAutomaton.buchi().state_from_number(state.buchiState);
-        const auto iter =_buchiAutomaton.buchi().succ_iter(buchi_state);
+        const auto buchiState = _buchiAutomaton.buchi().state_from_number(state.buchiState);
+        const auto iter = std::unique_ptr<spot::twa_succ_iterator, BuchiStateIterDeleter>(
+                _buchiAutomaton.buchi().succ_iter(buchiState),
+                BuchiStateIterDeleter{ &_buchiAutomaton.buchi() }
+            );
+        buchiState->destroy();
         if (iter->first()) {
             do {
-                if (iter->cond() == bddtrue) {
-                    buchi_state->destroy();
-                    _buchiAutomaton.buchi().release_iter(iter);
+                const auto dst = iter->dst();
+                const auto dst_number = _buchiAutomaton.buchi().state_number(dst);
+                dst->destroy();
+                if (iter->cond() == bddtrue && dst_number == state.buchiState) {
                     return true;
                 }
             } while (iter->next());
         }
-        buchi_state->destroy();
-        _buchiAutomaton.buchi().release_iter(iter);
         return false;
     }
 
