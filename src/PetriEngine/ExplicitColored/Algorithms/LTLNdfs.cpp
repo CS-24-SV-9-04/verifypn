@@ -53,7 +53,8 @@ namespace PetriEngine::ExplicitColored {
             }
             _searchStatistics.discoveredStates += 1;
             if (!_globalPassed.existsOrAdd({
-                nextState.marking, nextState.buchiState})) {
+                nextState.marking, nextState.buchiState
+            })) {
                 _searchStatistics.exploredStates += 1;
                 if (
                     _buchiAutomaton.buchi().state_is_accepting(nextState.buchiState)
@@ -92,16 +93,14 @@ namespace PetriEngine::ExplicitColored {
                 waiting.pop();
                 continue;
             }
-            if (_buchiAutomaton.buchi().state_is_accepting(nextState.buchiState)) {
-                if (nextState == targetState) {
-                    return true;
-                }
-                if (!localPassed.existsOrAdd({nextState.marking, nextState.buchiState}) &&
-                    !_globalPassed.exists({nextState.marking, nextState.buchiState})) {
-                    waiting.emplace(std::move(nextState));
-                    _searchStatistics.exploredStates += 1;
-                    _searchStatistics.peakWaitingStates  = std::max(static_cast<uint32_t>(waiting.size()), _searchStatistics.peakWaitingStates);
-                }
+            if (nextState == targetState) {
+                return true;
+            }
+            if (!localPassed.existsOrAdd({nextState.marking, nextState.buchiState}) &&
+                !_globalPassed.exists({nextState.marking, nextState.buchiState})) {
+                waiting.emplace(std::move(nextState));
+                _searchStatistics.exploredStates += 1;
+                _searchStatistics.peakWaitingStates  = std::max(static_cast<uint32_t>(waiting.size()), _searchStatistics.peakWaitingStates);
             }
         }
         return false;

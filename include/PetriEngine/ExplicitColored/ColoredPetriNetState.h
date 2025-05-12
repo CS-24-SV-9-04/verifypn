@@ -171,7 +171,7 @@ namespace PetriEngine::ExplicitColored {
 
         ColoredPetriNetMarking marking;
         bool shuffle = false;
-        size_t id;
+        size_t id = 0;
 
     private:
         bool _done = false;
