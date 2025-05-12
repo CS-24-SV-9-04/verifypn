@@ -6,8 +6,8 @@ namespace PetriEngine::ExplicitColored {
         LTL::Structures::BuchiAutomaton buchiAutomaton,
         const std::unordered_map<std::string, uint32_t>& placeNameIndices,
         const std::unordered_map<std::string, uint32_t>& transitionNameIndices
-    ) : _net(net), _buchiAutomaton(std::move(buchiAutomaton)), _successorGenerator(net) {
-        GammaQueryCompiler compiler(placeNameIndices, transitionNameIndices, _successorGenerator);
+    ) : _net(net), _buchiAutomaton(std::move(buchiAutomaton)), _successorGenerator(net, std::numeric_limits<MarkingCount_t>::max()) {
+        const GammaQueryCompiler compiler(placeNameIndices, transitionNameIndices, _successorGenerator);
         for (const auto& [index, atomicProposition] : _buchiAutomaton.ap_info()) {
             _compiledAtomicPropositions.emplace(index, compiler.compile(atomicProposition._expression));
         }

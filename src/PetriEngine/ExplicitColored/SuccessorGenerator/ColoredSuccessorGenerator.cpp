@@ -5,8 +5,8 @@
 #include "PetriEngine/ExplicitColored/SuccessorGenerator/ColoredSuccessorGenerator.h"
 
 namespace PetriEngine::ExplicitColored{
-    ColoredSuccessorGenerator::ColoredSuccessorGenerator(const ColoredPetriNet& net)
-    : _net(net) {}
+    ColoredSuccessorGenerator::ColoredSuccessorGenerator(const ColoredPetriNet& net, MarkingCount_t constraintBindingThreshold)
+    : _constraintBindingThreshold(constraintBindingThreshold), _net(net) {}
 
     void updateVariableMap(std::map<Variable_t, std::vector<uint32_t>>& map, const std::map<Variable_t, std::vector<uint32_t>>& newMap){
         for (auto&& pair : newMap){
@@ -180,7 +180,7 @@ namespace PetriEngine::ExplicitColored{
         }
 
         auto constraintDataIt = _constraintData.find(_getKey(stateId, tid));
-        if (totalBindings > 300000000 && constraintDataIt == _constraintData.end()) {
+        if (totalBindings > _constraintBindingThreshold && constraintDataIt == _constraintData.end()) {
             bool noPossibleBinding = false;
             constraintDataIt = _calculateConstraintData(marking, stateId, tid, noPossibleBinding);
             if (noPossibleBinding) {

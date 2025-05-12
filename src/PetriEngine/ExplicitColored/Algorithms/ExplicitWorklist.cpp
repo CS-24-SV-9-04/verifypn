@@ -20,7 +20,7 @@ namespace PetriEngine::ExplicitColored {
         const std::unordered_map<std::string, Transition_t>& transitionNameIndices,
         const size_t seed
     ) : _net(std::move(net)),
-        _successorGenerator(ColoredSuccessorGenerator{_net}),
+        _successorGenerator(ColoredSuccessorGenerator{_net, 30}),
         _seed(seed)
     {
         const GammaQueryCompiler queryCompiler(placeNameIndices, transitionNameIndices, _successorGenerator);
