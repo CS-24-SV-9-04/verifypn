@@ -4,6 +4,7 @@
 #include <PetriEngine/ExplicitColored/AtomicTypes.h>
 #include <PetriEngine/PQL/PQL.h>
 #include <PetriEngine/ExplicitColored/ColoredPetriNet.h>
+#include <PetriEngine/ExplicitColored/ColoredResultPrinter.h>
 
 #include "SearchStatistics.h"
 #include "PetriEngine/ExplicitColored/SuccessorGenerator/ProductStateGenerator.h"
@@ -19,12 +20,11 @@ namespace PetriEngine::ExplicitColored {
             const std::unordered_map<std::string, uint32_t>& placeNameIndices,
             const std::unordered_map<std::string, Transition_t>& transitionNameIndices
         );
-        bool check();
-        const SearchStatistics & GetSearchStatistics() const;
+        Result check();
+        const SearchStatistics& GetSearchStatistics() const;
     private:
         bool _dfs(CPNProductState initialState);
         bool _ndfs(CPNProductState initialState);
-
         LTL::Structures::BuchiAutomaton _buchiAutomaton;
         const ColoredPetriNet& _net;
         const std::unordered_map<std::string, uint32_t>& _placeNameIndices;
@@ -33,6 +33,7 @@ namespace PetriEngine::ExplicitColored {
         PassedList<ProductColorEncoder, std::pair<ColoredPetriNetMarking, size_t>> _globalPassed;
         ProductStateGenerator _productStateGenerator;
         SearchStatistics _searchStatistics;
+        bool _isFullStateSpace = true;
     };
 }
 

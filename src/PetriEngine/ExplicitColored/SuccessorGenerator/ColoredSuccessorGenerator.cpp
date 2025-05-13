@@ -78,7 +78,7 @@ namespace PetriEngine::ExplicitColored{
         }
     }
 
-    void ColoredSuccessorGenerator::_fire(ColoredPetriNetMarking& state, const Transition_t tid, const Binding& binding) const{
+    void ColoredSuccessorGenerator::fire(ColoredPetriNetMarking& state, const Transition_t tid, const Binding& binding) const{
         consumePreset(state, tid, binding);
         producePostset(state, tid, binding);
     }
@@ -167,7 +167,7 @@ namespace PetriEngine::ExplicitColored{
         return true;
     }
 
-    [[nodiscard]] Binding_t ColoredSuccessorGenerator::findNextValidBinding(const ColoredPetriNetMarking& marking, const Transition_t tid, Binding_t bid, const uint64_t totalBindings, Binding& binding, size_t stateId) const {
+    Binding_t ColoredSuccessorGenerator::findNextValidBinding(const ColoredPetriNetMarking& marking, const Transition_t tid, Binding_t bid, const uint64_t totalBindings, Binding& binding, size_t stateId) const {
         if (bid == 0 && _shouldEarlyTerminateTransition(marking, tid)) {
             return std::numeric_limits<Binding_t>::max();
         }

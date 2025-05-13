@@ -52,7 +52,7 @@
 #include "PetriEngine/Synthesis/SimpleSynthesis.h"
 #include "LTL/LTLSearch.h"
 #include "PetriEngine/PQL/PQL.h"
-#include "PetriEngine/ExplicitColored/ColoredPetriNetBuilder.h"
+#include "PetriEngine/ExplicitColored/ExplicitColoredPetriNetBuilder.h"
 #include "PetriEngine/ExplicitColored/Algorithms/ExplicitWorklist.h"
 #include "PetriEngine/ExplicitColored/ExplicitColoredModelChecker.h"
 using namespace PetriEngine;
@@ -583,14 +583,14 @@ int explicitColored(shared_string_set& stringSet, options_t& options, std::vecto
 
         ExplicitColoredModelChecker ecpnChecker(stringSet, fullStatisticsOut);
 
-        ColoredResultPrinter resultPrinter(0, std::cout, queryNames[0], options.seed());
+        ColoredResultPrinter resultPrinter(0, std::cout, queryNames[0], options.seed(), std::cerr);
         auto result = ecpnChecker.checkQuery(options.modelfile, queries[0], options, &resultPrinter);
 
-        if (result == ExplicitColoredModelChecker::Result::SATISFIED) {
+        if (result == Result::SATISFIED) {
             return to_underlying(ReturnValue::SuccessCode);
         }
 
-        if (result == ExplicitColoredModelChecker::Result::UNSATISFIED) {
+        if (result == Result::UNSATISFIED) {
             return to_underlying(ReturnValue::FailedCode);
         }
 

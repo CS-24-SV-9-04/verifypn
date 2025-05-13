@@ -1,6 +1,6 @@
 #include <LTL/Structures/BuchiAutomaton.h>
 #include <PetriEngine/ExplicitColored/ColoredPetriNet.h>
-#include <PetriEngine/ExplicitColored/ExpressionCompilers/GammaQueryCompiler.h>
+#include <PetriEngine/ExplicitColored/ExpressionCompilers/ExplicitQueryPropositionCompiler.h>
 
 #include "ColoredSuccessorGenerator.h"
 #include "PetriEngine/ExplicitColored/ColoredPetriNetState.h"
@@ -23,7 +23,7 @@ namespace PetriEngine {
             const ColoredPetriNet& _net;
             LTL::Structures::BuchiAutomaton _buchiAutomaton;
             ColoredSuccessorGenerator _successorGenerator;
-            std::unordered_map<int, std::unique_ptr<CompiledGammaQueryExpression>> _compiledAtomicPropositions;
+            std::unordered_map<int, std::unique_ptr<ExplicitQueryProposition>> _compiledAtomicPropositions;
         };
     }
 }

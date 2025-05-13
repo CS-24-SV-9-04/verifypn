@@ -1,7 +1,7 @@
-#include <PetriEngine/ExplicitColored/PassedList.h>
 #ifndef EXPLICITWORKLIST_CPP
 #define EXPLICITWORKLIST_CPP
 
+#include <PetriEngine/ExplicitColored/PassedList.h>
 #include "PetriEngine/ExplicitColored/Algorithms/ExplicitWorklist.h"
 #include <PetriEngine/options.h>
 #include "PetriEngine/ExplicitColored/SuccessorGenerator/ColoredSuccessorGenerator.h"
@@ -18,12 +18,14 @@ namespace PetriEngine::ExplicitColored {
         const PQL::Condition_ptr &query,
         const std::unordered_map<std::string, uint32_t>& placeNameIndices,
         const std::unordered_map<std::string, Transition_t>& transitionNameIndices,
-        const size_t seed
+        const size_t seed,
+        bool createTrace
     ) : _net(std::move(net)),
         _successorGenerator(ColoredSuccessorGenerator{_net, 30}),
-        _seed(seed)
+        _seed(seed),
+        _createTrace(createTrace)
     {
-        const GammaQueryCompiler queryCompiler(placeNameIndices, transitionNameIndices, _successorGenerator);
+        const ExplicitQueryPropositionCompiler queryCompiler(placeNameIndices, transitionNameIndices, _successorGenerator);
         if (const auto efGammaQuery = dynamic_cast<PQL::EFCondition*>(query.get())) {
             _quantifier = Quantifier::EF;
             _gammaQuery = queryCompiler.compile(efGammaQuery->getCond());
@@ -31,22 +33,43 @@ namespace PetriEngine::ExplicitColored {
             _quantifier = Quantifier::AG;
             _gammaQuery = queryCompiler.compile(agGammaQuery->getCond());
         } else {
-            throw explicit_error{ExplicitErrorType::unsupported_query};
+            throw explicit_error{ExplicitErrorType::UNSUPPORTED_QUERY};
         }
     }
 
-    bool ExplicitWorklist::check(const Strategy searchStrategy, const ColoredSuccessorGeneratorOption coloredSuccessorGeneratorOption) {
+    Result ExplicitWorklist::check(const Strategy searchStrategy, const ColoredSuccessorGeneratorOption coloredSuccessorGeneratorOption) {
         if (coloredSuccessorGeneratorOption == ColoredSuccessorGeneratorOption::FIXED) {
             return _search<ColoredPetriNetStateFixed>(searchStrategy);
         }
         if (coloredSuccessorGeneratorOption == ColoredSuccessorGeneratorOption::EVEN) {
             return _search<ColoredPetriNetStateEven>(searchStrategy);
         }
-        throw explicit_error(ExplicitErrorType::unsupported_generator);
+        throw explicit_error(ExplicitErrorType::UNSUPPORTED_GENERATOR);
     }
 
     const SearchStatistics & ExplicitWorklist::GetSearchStatistics() const {
         return _searchStatistics;
+    }
+
+    std::optional<uint64_t> ExplicitWorklist::getCounterExampleId() const {
+        return _counterExampleId;
+    }
+
+    std::optional<std::vector<InternalTraceStep>> ExplicitWorklist::getTraceTo(uint64_t counterExampleId) const {
+        uint64_t currentId = counterExampleId;
+        std::vector<InternalTraceStep> trace;
+        while (currentId != 0) {
+            auto it = _stateMap.transitions.find(currentId);
+            if (it == _stateMap.transitions.end()) {
+                return std::nullopt;
+            }
+            currentId = it->second.predecessorId;
+            trace.push_back(InternalTraceStep {
+                it->second.binding,
+                it->second.transition
+            });
+        }
+        return std::vector(trace.rbegin(), trace.rend());
     }
 
     bool ExplicitWorklist::_check(const ColoredPetriNetMarking& state, size_t id) const {
@@ -54,7 +77,7 @@ namespace PetriEngine::ExplicitColored {
     }
 
     template <template <typename> typename WaitingList, typename T>
-    bool ExplicitWorklist::_genericSearch(WaitingList<T> waiting) {
+    Result ExplicitWorklist::_genericSearch(WaitingList<T> waiting) {
         auto encoder = ColoredEncoder{_net.getPlaces()};
         PassedList<ColoredEncoder, ColoredPetriNetMarking> passed(encoder);
 
@@ -78,6 +101,7 @@ namespace PetriEngine::ExplicitColored {
         _searchStatistics.discoveredStates = 1;
 
         if (_check(initialState, 0) == earlyTerminationCondition) {
+            _counterExampleId = 0;
             return _getResult(true, passed.isFullStateSpace());
         }
         if (_net.getTransitionCount() == 0) {
@@ -86,7 +110,7 @@ namespace PetriEngine::ExplicitColored {
 
         while (!waiting.empty()){
             auto& next = waiting.next();
-            auto successor = _successorGenerator.next(next);
+            auto [successor, traceStep] = _successorGenerator.next(next);
             if (next.done()) {
                 waiting.remove();
                 _successorGenerator.shrinkState(next.id);
@@ -105,10 +129,14 @@ namespace PetriEngine::ExplicitColored {
             const auto& marking = successor.marking;
             _searchStatistics.discoveredStates++;
             if (!passed.existsOrAdd(marking)) {
+                if (_createTrace) {
+                    _stateMap.transitions.emplace(successor.id, traceStep);
+                }
                 _searchStatistics.exploredStates += 1;
                 if (_check(marking, successor.id) == earlyTerminationCondition) {
                     _searchStatistics.endWaitingStates = waiting.size();
                     _searchStatistics.biggestEncoding = passed.getBiggestEncoding();
+                    _counterExampleId = successor.id;
                     return _getResult(true, passed.isFullStateSpace());
                 }
                 waiting.add(std::move(successor));
@@ -122,7 +150,7 @@ namespace PetriEngine::ExplicitColored {
     }
 
     template<typename SuccessorGeneratorState>
-    bool ExplicitWorklist::_search(const Strategy searchStrategy) {
+    Result ExplicitWorklist::_search(const Strategy searchStrategy) {
         switch (searchStrategy) {
             case Strategy::DEFAULT:
             case Strategy::DFS:
@@ -134,27 +162,27 @@ namespace PetriEngine::ExplicitColored {
             case Strategy::HEUR:
                 return _bestfs<SuccessorGeneratorState>();
             default:
-                throw explicit_error(ExplicitErrorType::unsupported_strategy);
+                throw explicit_error(ExplicitErrorType::UNSUPPORTED_STRATEGY);
         }
     }
 
     template <typename T>
-    bool ExplicitWorklist::_dfs() {
+    Result ExplicitWorklist::_dfs() {
         return _genericSearch<DFSStructure>(DFSStructure<T> {});
     }
 
     template <typename T>
-    bool ExplicitWorklist::_bfs() {
+    Result ExplicitWorklist::_bfs() {
         return _genericSearch<BFSStructure>(BFSStructure<T> {});
     }
 
     template <typename T>
-    bool ExplicitWorklist::_rdfs() {
+    Result ExplicitWorklist::_rdfs() {
         return _genericSearch<RDFSStructure>(RDFSStructure<T>(_seed));
     }
 
     template <typename T>
-    bool ExplicitWorklist::_bestfs() {
+    Result ExplicitWorklist::_bestfs() {
         return _genericSearch<BestFSStructure>(
             BestFSStructure<T>(
                 _seed,
@@ -164,18 +192,18 @@ namespace PetriEngine::ExplicitColored {
             );
     }
 
-    bool ExplicitWorklist::_getResult(const bool found, const bool fullStatespace) const {
-        Reachability::ResultPrinter::Result res;
+    Result ExplicitWorklist::_getResult(const bool found, const bool fullStatespace) const {
+        Result res;
         if (!found && !fullStatespace) {
-            res = Reachability::ResultPrinter::Result::Unknown;
-        }else {
+            res = Result::UNKNOWN;
+        } else {
             res = (
            (!found && _quantifier == Quantifier::AG) ||
            (found && _quantifier == Quantifier::EF))
-               ? Reachability::ResultPrinter::Result::Satisfied
-               : Reachability::ResultPrinter::Result::NotSatisfied;
+               ? Result::SATISFIED
+               : Result::UNSATISFIED;
         }
-        return res == Reachability::ResultPrinter::Result::Satisfied;
+        return res;
     }
 }
 

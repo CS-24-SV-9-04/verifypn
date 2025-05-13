@@ -67,6 +67,10 @@ namespace PetriEngine::ExplicitColored {
             return _lhs->containsNegative() || _rhs->containsNegative();
         }
 
+        [[nodiscard]] MarkingCount_t getUpperBoundMarkingCount() const override {
+            return _lhs->getUpperBoundMarkingCount() + _rhs->getUpperBoundMarkingCount();
+        }
+
     private:
         std::unique_ptr<CompiledArcExpression> _lhs;
         std::unique_ptr<CompiledArcExpression> _rhs;
@@ -93,8 +97,8 @@ namespace PetriEngine::ExplicitColored {
             _minimalColorMarking = _lhs->getMinimalColorMarking();
             const auto& minColRhs = _rhs->getMinimalColorMarking();
             if (minColRhs.variableCount != 0) {
-                for (auto colorSequence : _minimalColorMarking.minimalMarkingMultiSet.counts()) {
-                    colorSequence.second -= minColRhs.variableCount;
+                for (const auto& [color, cardinality] : _minimalColorMarking.minimalMarkingMultiSet.counts()) {
+                    _minimalColorMarking.minimalMarkingMultiSet.addCount(color, -minColRhs.variableCount);
                 }
             }
             else {
@@ -149,6 +153,10 @@ namespace PetriEngine::ExplicitColored {
 
         [[nodiscard]] bool containsNegative() const override {
             return true;
+        }
+
+        [[nodiscard]] MarkingCount_t getUpperBoundMarkingCount() const override {
+            return _lhs->getUpperBoundMarkingCount();
         }
 
     private:
@@ -219,6 +227,10 @@ namespace PetriEngine::ExplicitColored {
             return _expr->containsNegative();
         }
 
+        [[nodiscard]] MarkingCount_t getUpperBoundMarkingCount() const override {
+            return _expr->getUpperBoundMarkingCount() * _scale;
+        }
+
     private:
         std::unique_ptr<CompiledArcExpression> _expr;
         MarkingCount_t _scale;
@@ -277,6 +289,10 @@ namespace PetriEngine::ExplicitColored {
 
         [[nodiscard]] bool containsNegative() const override {
             return false;
+        }
+
+        [[nodiscard]] MarkingCount_t getUpperBoundMarkingCount() const override {
+            return _minimalMarkingCount;
         }
 
     private:
@@ -361,7 +377,7 @@ namespace PetriEngine::ExplicitColored {
 
         sMarkingCount_t getSignedCount() const {
             if (_count > std::numeric_limits<int32_t>::max()) {
-                throw explicit_error{ExplicitErrorType::too_many_tokens};
+                throw explicit_error{ExplicitErrorType::TOO_MANY_TOKENS};
             }
             return static_cast<int32_t>(_count);
         }
@@ -386,6 +402,10 @@ namespace PetriEngine::ExplicitColored {
             return false;
         }
 
+        [[nodiscard]] MarkingCount_t getUpperBoundMarkingCount() const override {
+            return _minimalMarkingCount;
+        }
+
     private:
         ColorSequence getColorSequence(const std::vector<ParameterizedColor>& sequence, const Binding& binding) const {
             std::vector<Color_t> colorSequence;
@@ -403,7 +423,6 @@ namespace PetriEngine::ExplicitColored {
             }
             return ColorSequence {colorSequence, _colorSizes };
         }
-
         std::vector<Color_t> _colorSizes;
         std::vector<std::vector<ParameterizedColor>> _parameterizedColorSequences;
         MarkingCount_t _count;
@@ -428,7 +447,7 @@ namespace PetriEngine::ExplicitColored {
         void accept(const Colored::VariableExpression* expr) override {
             const auto varIt = _variableMap.find(expr->variable()->name);
             if (varIt == _variableMap.end())
-                throw explicit_error{ExplicitErrorType::unknown_variable};
+                throw explicit_error{ExplicitErrorType::UNKNOWN_VARIABLE};
             _maxColor = expr->getColorType(_colorTypeMap)->size();
             _parameterizedColor = ParameterizedColor::fromVariable(varIt->second);
 
@@ -486,7 +505,7 @@ namespace PetriEngine::ExplicitColored {
         Color_t _maxColor;
 
         static void unexpectedExpression() {
-            throw explicit_error{ExplicitErrorType::unexpected_expression};
+            throw explicit_error{ExplicitErrorType::UNEXPECTED_EXPRESSION};
         }
     };
 
@@ -533,11 +552,13 @@ namespace PetriEngine::ExplicitColored {
         }
 
         void accept(const Colored::NumberOfExpression* expr) override {
+            auto oldScale = _scale;
             _scale *= expr->number();
             if (expr->size() > 1) {
-                throw explicit_error{ExplicitErrorType::unsupported_net};
+                throw explicit_error{ExplicitErrorType::UNSUPPORTED_NET};
             }
             (*expr)[0]->visit(*this);
+            _scale = oldScale;
         }
 
         void accept(const Colored::AddExpression* expr) override {
@@ -560,13 +581,16 @@ namespace PetriEngine::ExplicitColored {
         void accept(const Colored::SubtractExpression* expr) override {
             (*expr)[0]->visit(*this);
             auto lhs = std::move(_top);
+            _scale = 1;
             (*expr)[1]->visit(*this);
             _top = std::make_unique<ArcExpressionSubtraction>(std::move(lhs), std::move(_top));
         }
 
         void accept(const Colored::ScalarProductExpression* expr) override {
+            auto oldScale = _scale;
             _scale *= expr->scalar();
             expr->child()->visit(*this);
+            _scale = oldScale;
         }
 
         void accept(const Colored::DotConstantExpression* expr) override {
@@ -627,7 +651,7 @@ namespace PetriEngine::ExplicitColored {
         MarkingCount_t _scale;
 
         static void unexpectedExpression() {
-            throw explicit_error{ExplicitErrorType::unexpected_expression};
+            throw explicit_error{ExplicitErrorType::UNEXPECTED_EXPRESSION};
         }
     };
 
@@ -695,7 +719,7 @@ namespace PetriEngine::ExplicitColored {
                     );
                 } else {
 
-                    throw explicit_error{ExplicitErrorType::unsupported_net};
+                    throw explicit_error{ExplicitErrorType::UNSUPPORTED_NET};
                 }
             }
         }

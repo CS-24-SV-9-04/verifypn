@@ -2,14 +2,16 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 add_library(ExplicitColored
     ArcCompiler.cpp
-    ColoredPetriNetBuilder.cpp
+    ExplicitColoredPetriNetBuilder.cpp
     SuccessorGenerator/ColoredSuccessorGenerator.cpp
     SuccessorGenerator/ProductStateGenerator.cpp
     Algorithms/ExplicitWorklist.cpp
+    Algorithms/FireabilitySearch.cpp
     Algorithms/LTLNdfs.cpp
     ColoredResultPrinter.cpp
     ExpressionCompilers/GuardCompiler.cpp
-    ExpressionCompilers/GammaQueryCompiler.cpp
+    ExpressionCompilers/ExplicitQueryPropositionCompiler.cpp
+    IgnorantFireabilityVisitor.cpp
     ColoredPetriNet.cpp
     ColorIgnorantPetriNetBuilder.cpp
     ExplicitColoredModelChecker.cpp

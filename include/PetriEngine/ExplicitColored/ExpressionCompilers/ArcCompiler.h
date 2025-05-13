@@ -1,11 +1,11 @@
 #ifndef ARCCOMPILER_H
 #define ARCCOMPILER_H
 
-#include "../AtomicTypes.h"
-#include "../../Colored/Expressions.h"
-#include "../SequenceMultiSet.h"
-#include "../Binding.h"
-#include "../SuccessorGenerator/VariableConstraint.h"
+#include "PetriEngine/ExplicitColored/AtomicTypes.h"
+#include "PetriEngine/Colored/Expressions.h"
+#include "PetriEngine/ExplicitColored/SequenceMultiSet.h"
+#include "PetriEngine/ExplicitColored/Binding.h"
+#include "PetriEngine/ExplicitColored/SuccessorGenerator/VariableConstraint.h"
 
 namespace PetriEngine::ExplicitColored {
     union ColorOrVariable {
@@ -78,6 +78,7 @@ namespace PetriEngine::ExplicitColored {
         }
 
         [[nodiscard]] virtual MarkingCount_t getMinimalMarkingCount() const = 0;
+        [[nodiscard]] virtual MarkingCount_t getUpperBoundMarkingCount() const = 0;
         [[nodiscard]] virtual const ColoredMinimalMarking& getMinimalColorMarking() const = 0;
         [[nodiscard]] virtual const std::set<Variable_t>& getVariables() const = 0;
         [[nodiscard]] virtual std::vector<VariableConstraint> calculateVariableConstraints(

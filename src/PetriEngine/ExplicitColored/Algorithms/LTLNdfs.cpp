@@ -20,14 +20,21 @@ namespace PetriEngine::ExplicitColored {
         _productStateGenerator(net, _buchiAutomaton, placeNameIndices, _transitionNameIndices)
     { }
 
-    bool LTLNdfs::check() {
+    Result LTLNdfs::check() {
         const ProductStateGenerator generator{_net, _buchiAutomaton, _placeNameIndices, _transitionNameIndices};
         auto initialStates = generator.get_initial_states(_net.initial());
+        bool found = false;
         for (auto& initialState : initialStates) {
-            if (_dfs(initialState))
-                return true;
+            if (_dfs(initialState)) {
+                found = true;
+                break;
+            }
         }
-        return false;
+        if (found)
+            return Result::SATISFIED;
+        if (_isFullStateSpace)
+            return Result::UNSATISFIED;
+        return Result::UNKNOWN;
     }
 
     bool LTLNdfs::_dfs(CPNProductState initialState) {
@@ -62,6 +69,7 @@ namespace PetriEngine::ExplicitColored {
                 ) {
                     _searchStatistics.endWaitingStates = waiting.size();
                     _searchStatistics.biggestEncoding = _globalPassed.getBiggestEncoding();
+                    _isFullStateSpace = _globalPassed.isFullStateSpace() && _isFullStateSpace;
                     return true;
                 }
                 waiting.emplace(std::move(nextState));
@@ -70,6 +78,7 @@ namespace PetriEngine::ExplicitColored {
         }
         _searchStatistics.endWaitingStates = waiting.size();
         _searchStatistics.biggestEncoding = _globalPassed.getBiggestEncoding();
+        _isFullStateSpace = _globalPassed.isFullStateSpace() && _isFullStateSpace;
         return false;
     }
 
@@ -94,6 +103,7 @@ namespace PetriEngine::ExplicitColored {
                 continue;
             }
             if (nextState == targetState) {
+                _isFullStateSpace = localPassed.isFullStateSpace() && _isFullStateSpace;
                 return true;
             }
             if (!localPassed.existsOrAdd({nextState.marking, nextState.buchiState}) &&
@@ -103,6 +113,7 @@ namespace PetriEngine::ExplicitColored {
                 _searchStatistics.peakWaitingStates  = std::max(static_cast<uint32_t>(waiting.size()), _searchStatistics.peakWaitingStates);
             }
         }
+        _isFullStateSpace = localPassed.isFullStateSpace() && _isFullStateSpace;
         return false;
     }
 

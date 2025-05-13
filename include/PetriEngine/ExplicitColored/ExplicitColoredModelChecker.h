@@ -5,20 +5,15 @@
 #include "utils/structures/shared_string.h"
 #include <sstream>
 
-#include "ColoredPetriNetBuilder.h"
+#include "ExplicitColoredPetriNetBuilder.h"
 #include "Visitors/ConditionCopyVisitor.h"
 
 #include "ColoredResultPrinter.h"
+#include "Algorithms/ExplicitWorklist.h"
 
 namespace PetriEngine::ExplicitColored {
     class ExplicitColoredModelChecker {
     public:
-        enum class Result {
-            SATISFIED,
-            UNSATISFIED,
-            UNKNOWN
-        };
-
         explicit ExplicitColoredModelChecker(shared_string_set& stringSet, std::ostream& fullStatisticOut)
             : _stringSet(stringSet), _fullStatisticOut(fullStatisticOut)
             {}
@@ -36,25 +31,42 @@ namespace PetriEngine::ExplicitColored {
             options_t& options
         ) const;
 
-        Result explicitColorCheck(
+        std::pair<Result, std::optional<std::vector<TraceStep>>> explicitColorCheck(
             const std::string& pnmlModel,
             const PQL::Condition_ptr& query,
             options_t& options,
             SearchStatistics* searchStatistics
         ) const;
         
-        Result _explicitColorLTL(
-            ColoredPetriNetBuilder cpnBuilder,
+        std::pair<Result, std::optional<std::vector<TraceStep>>> _explicitColorLTL(
+            const ExplicitColoredPetriNetBuilder& cpnBuilder,
             const PQL::Condition_ptr& query,
             options_t& options,
             SearchStatistics* searchStatistics
         ) const;
 
-        Result _explicitColorReachability(
-            const ColoredPetriNetBuilder& cpnBuilder,
+        std::pair<Result, std::optional<std::vector<TraceStep>>> _explicitColorReachability(
+            const ExplicitColoredPetriNetBuilder& cpnBuilder,
             const PQL::Condition_ptr& query,
             options_t& options,
             SearchStatistics* searchStatistics
+        ) const;
+
+        Result checkFireabilityColorIgnorantLP(
+            const PQL::EvaluationContext& context,
+            std::vector<std::shared_ptr<PQL::Condition>>& queries,
+            PetriNetBuilder& builder,
+            const std::unique_ptr<PetriNet>& qnet,
+            options_t& options
+        ) const;
+
+        Result checkCardinalityColorIgnorantLP(
+            const PQL::EvaluationContext& context,
+            std::vector<std::shared_ptr<PQL::Condition>>& queries,
+            PetriNetBuilder& builder,
+            const std::unique_ptr<PetriNet>& qnet,
+            const std::unique_ptr<MarkVal[]>& qm0,
+            options_t& options
         ) const;
 
         void _reduce(
@@ -63,6 +75,21 @@ namespace PetriEngine::ExplicitColored {
             const PQL::Condition_ptr& query,
             options_t& options
         ) const;
+
+        [[nodiscard]] std::vector<TraceStep> _translateTraceStep(
+            const std::vector<InternalTraceStep>& internalTrace,
+            const ExplicitColoredPetriNetBuilder& cpnBuilder,
+            const ColoredPetriNet& net
+        ) const;
+
+        [[nodiscard]] std::unordered_map<std::string, std::vector<std::pair<std::vector<std::string>, MarkingCount_t>>>
+        _translateMarking(
+            const ColoredPetriNetMarking& marking,
+            const std::unordered_map<Place_t, std::string>& placeToId,
+            const ExplicitColoredPetriNetBuilder& cpnBuilder,
+            const ColoredPetriNet& net
+        ) const;
+
         shared_string_set& _stringSet;
         std::ostream& _fullStatisticOut;
     };

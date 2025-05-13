@@ -1,8 +1,7 @@
 #include "PetriEngine/ExplicitColored/ExplicitColoredModelChecker.h"
-
 #include <VerifyPN.h>
 #include <PetriEngine/Colored/PnmlWriter.h>
-#include <PetriEngine/ExplicitColored/ColoredPetriNetBuilder.h>
+#include <PetriEngine/ExplicitColored/ExplicitColoredPetriNetBuilder.h>
 #include <PetriEngine/ExplicitColored/ColorIgnorantPetriNetBuilder.h>
 #include <PetriEngine/ExplicitColored/Algorithms/ExplicitWorklist.h>
 #include <PetriEngine/PQL/Evaluation.h>
@@ -10,9 +9,10 @@
 #include <sstream>
 #include <LTL/LTLSearch.h>
 #include <PetriEngine/ExplicitColored/Algorithms/LTLNdfs.h>
+#include <PetriEngine/ExplicitColored/Algorithms/FireabilitySearch.h>
 
 namespace PetriEngine::ExplicitColored {
-    ExplicitColoredModelChecker::Result ExplicitColoredModelChecker::checkQuery(
+    Result ExplicitColoredModelChecker::checkQuery(
         const std::string& modelPath,
         const Condition_ptr& query,
         options_t& options,
@@ -30,7 +30,7 @@ namespace PetriEngine::ExplicitColored {
             pnmlModel = std::move(reducedPnml).str();
         }
 
-        if (options.use_query_reductions) {
+        if (options.queryReductionTimeout > 0) {
             result = checkColorIgnorantLP(pnmlModel, query, options);
             if (result != Result::UNKNOWN) {
                 if (resultPrinter) {
@@ -47,12 +47,18 @@ namespace PetriEngine::ExplicitColored {
         }
 
         SearchStatistics searchStatistics;
-        result = explicitColorCheck(pnmlModel, query, options, &searchStatistics);
+        auto [newResult, trace] = explicitColorCheck(pnmlModel, query, options, &searchStatistics);
+        result = newResult;
         if (result != Result::UNKNOWN) {
             if (resultPrinter) {
-                resultPrinter->printResult(searchStatistics, result == Result::SATISFIED
-                    ? AbstractHandler::Result::Satisfied
-                    : AbstractHandler::Result::NotSatisfied
+                resultPrinter->printResult(
+                    searchStatistics,
+                    result == Result::SATISFIED
+                        ? AbstractHandler::Result::Satisfied
+                        : AbstractHandler::Result::NotSatisfied,
+                    trace.has_value()
+                        ? &trace.value()
+                        : nullptr
                 );
             }
             return result;
@@ -60,7 +66,7 @@ namespace PetriEngine::ExplicitColored {
         return Result::UNKNOWN;
     }
 
-    ExplicitColoredModelChecker::Result ExplicitColoredModelChecker::checkColorIgnorantLP(
+    Result ExplicitColoredModelChecker::checkColorIgnorantLP(
         const std::string& pnmlModel,
         const Condition_ptr& query,
         options_t& options
@@ -68,50 +74,125 @@ namespace PetriEngine::ExplicitColored {
         if (!isReachability(query)) {
             return Result::UNKNOWN;
         }
-        ContainsFireabilityVisitor has_fireability;
-        Visitor::visit(has_fireability, query);
-        if (has_fireability.getReturnValue()) {
-            return Result::UNKNOWN;
-        }
         auto queryCopy = ConditionCopyVisitor::copyCondition(query);
-
-        bool isEf = false;
-        if (dynamic_cast<EFCondition*>(queryCopy.get())) {
-            isEf = true;
-        }
         ColorIgnorantPetriNetBuilder ignorantBuilder(_stringSet);
         std::stringstream pnmlModelStream {pnmlModel};
         ignorantBuilder.parse_model(pnmlModelStream);
-        auto status = ignorantBuilder.build();
-        if (status == ColoredIgnorantPetriNetBuilderStatus::CONTAINS_NEGATIVE) {
-            return Result::UNKNOWN;
-        }
+
+        ignorantBuilder.build();
 
         auto builder = ignorantBuilder.getUnderlying();
-        auto qnet = std::unique_ptr<PetriNet>(builder.makePetriNet(false));
-        std::unique_ptr<MarkVal[]> qm0(qnet->makeInitialMarking());
-        
+        const auto qnet = std::unique_ptr<PetriNet>(builder.makePetriNet(false));
+        const std::unique_ptr<MarkVal[]> qm0(qnet->makeInitialMarking());
         std::vector queries { std::move(queryCopy) };
+        const EvaluationContext context(qm0.get(), qnet.get());
 
+        ContainsFireabilityVisitor hasFireability;
+        Visitor::visit(hasFireability, queries[0]);
+
+        if (hasFireability.getReturnValue()) {
+            return checkFireabilityColorIgnorantLP(context, queries, builder, qnet, options);
+        }
+        return checkCardinalityColorIgnorantLP(context, queries, builder, qnet, qm0, options);
+    }
+
+    Result ExplicitColoredModelChecker::checkFireabilityColorIgnorantLP(
+       const EvaluationContext& context,
+       std::vector<std::shared_ptr<Condition>>& queries,
+       PetriNetBuilder& builder,
+       const std::unique_ptr<PetriNet>& qnet,
+       options_t& options
+    ) const {
+        negstat_t stats;
+        queries[0] = pushNegation(queries[0], stats, context, false, false, false);
         contextAnalysis(false, {}, {}, builder, qnet.get(), queries);
-
-        {
-            EvaluationContext context(qm0.get(), qnet.get());
-
-            auto r = evaluate(queries[0].get(), context);
-            if(r == Condition::RFALSE)
-            {
-                queries[0] = BooleanCondition::FALSE_CONSTANT;
+        auto isEf = false;
+        EFCondition* q1;
+        EFCondition* q2;
+        auto queryCopy = ConditionCopyVisitor::copyCondition(queries[0]);
+        queries.push_back(std::move(queryCopy));
+        queryCopy = ConditionCopyVisitor::copyCondition(queries[0]);
+        queries.push_back(std::move(queryCopy));
+        if (auto efQuery = std::dynamic_pointer_cast<EFCondition>(queries[0])) {
+            isEf = true;
+            q1 = efQuery.get();
+            if (auto efQuery = std::dynamic_pointer_cast<EFCondition>(queries[1])) {
+                q2 = efQuery.get();
+            } else {
+                return Result::UNKNOWN;
             }
-            else if(r == Condition::RTRUE)
-            {
-                queries[0] = BooleanCondition::TRUE_CONSTANT;
+        }else {
+            auto goodQueries = 0;
+            isEf = false;
+            if (const auto notQuery = std::dynamic_pointer_cast<NotCondition>(queries[0])) {
+                if (auto efQuery = std::dynamic_pointer_cast<EFCondition>(notQuery->getCond())) {
+                    q1 = efQuery.get();
+                    goodQueries++;
+                }
+            }
+            if (auto notQuery = std::dynamic_pointer_cast<NotCondition>(queries[1])) {
+                if (auto efQuery = std::dynamic_pointer_cast<EFCondition>(notQuery->getCond())) {
+                    q2 = efQuery.get();
+                    goodQueries++;
+                }
+            }
+            if (goodQueries < 2) {
+                return Result::UNKNOWN;
             }
         }
+        //Copying transforms compare conjunction to fireable, so we need to analyse for safety
+        contextAnalysis(false, {}, {}, builder, qnet.get(), queries);
+        //If the first query is satisfied then the original query is satisfied (reverse if it is an AG query)
+        queries[0] = pushNegation(std::make_shared<AGCondition>(q1->getCond()), stats, context, false, false, false);
+        //If the second query isn't satisfied then the original query is not satisfied (reverse if it is an AG query)
+        //Equal to satisfying AG not e
+        queries[1] = pushNegation(std::make_shared<EFCondition>(*q2), stats, context, false, false, false);
+        //Just for input
+        std::vector<std::string> names;
+        ResultPrinter printer(&builder, &options, names);
+        //Unknown result means not computed, Ignore means it cannot be computed
+        std::vector results(queries.size(), ResultPrinter::Result::Unknown);
+        FireabilitySearch strategy(*qnet, printer, options.queryReductionTimeout);
+        strategy.reachable(queries, results,
+                                Strategy::RDFS,
+                                false,
+                                false,
+                                StatisticsLevel::None,
+                                options.trace != TraceLevel::None,
+                                options.seed()
+                                );
+        if (results[0] == ResultPrinter::Satisfied) {
+            return isEf ? Result::SATISFIED : Result::UNSATISFIED;
+        }
+        if (results[1] == ResultPrinter::NotSatisfied) {
+            return isEf ? Result::UNSATISFIED : Result::SATISFIED;
+        }
+        return Result::UNKNOWN;
+    }
 
-        // simplification. We always want to do negation-push and initial marking check.
+    Result ExplicitColoredModelChecker::checkCardinalityColorIgnorantLP(
+        const EvaluationContext& context,
+        std::vector<std::shared_ptr<Condition>>& queries,
+        PetriNetBuilder& builder,
+        const std::unique_ptr<PetriNet>& qnet,
+        const std::unique_ptr<MarkVal[]>& qm0,
+        options_t& options
+    ) const {
+        auto isEf = false;
+        contextAnalysis(false, {}, {}, builder, qnet.get(), queries);
+        if (dynamic_cast<EFCondition*>(queries[0].get())) {
+            isEf = true;
+        }
+
+        const auto r = evaluate(queries[0].get(), context);
+
+        if(r == Condition::RFALSE) {
+            queries[0] = BooleanCondition::FALSE_CONSTANT;
+        }
+        else if(r == Condition::RTRUE) {
+            queries[0] = BooleanCondition::TRUE_CONSTANT;
+        }
         simplify_queries(qm0.get(), qnet.get(), queries, options, std::cout);
-
         if (queries[0] == BooleanCondition::FALSE_CONSTANT && isEf) {
             return Result::UNSATISFIED;
         }
@@ -121,85 +202,99 @@ namespace PetriEngine::ExplicitColored {
         return Result::UNKNOWN;
     }
 
-    ExplicitColoredModelChecker::Result ExplicitColoredModelChecker::explicitColorCheck(
+    std::pair<Result, std::optional<std::vector<TraceStep>>> ExplicitColoredModelChecker::explicitColorCheck(
         const std::string& pnmlModel,
         const Condition_ptr& query,
         options_t& options,
         SearchStatistics* searchStatistics
     ) const {
-        ColoredPetriNetBuilder cpnBuilder;
+        ExplicitColoredPetriNetBuilder cpnBuilder;
         auto pnmlModelStream = std::istringstream {pnmlModel};
         cpnBuilder.parse_model(pnmlModelStream);
 
         switch (const auto buildStatus = cpnBuilder.build()) {
-            case ColoredPetriNetBuilderStatus::OK:
-                break;
-            case ColoredPetriNetBuilderStatus::TOO_MANY_BINDINGS:
-                std::cout << "The colored petri net has too many bindings to be represented" << std::endl
-                        << "TOO_MANY_BINDINGS" << std::endl;
-                return Result::UNKNOWN;
-            default:
-                throw base_error("Unknown builder error ", static_cast<uint32_t>(buildStatus));
+        case ColoredPetriNetBuilderStatus::OK:
+            break;
+        case ColoredPetriNetBuilderStatus::TOO_MANY_BINDINGS:
+            std::cout << "The colored petri net has too many bindings to be represented" << std::endl
+                    << "TOO_MANY_BINDINGS" << std::endl;
+            return std::make_pair(Result::UNKNOWN, std::nullopt);
+        default:
+            throw base_error("Unknown builder error ", static_cast<uint32_t>(buildStatus));
         }
+
         if (!isReachability(query)) {
-            return _explicitColorLTL(std::move(cpnBuilder), query, options, searchStatistics);
+            return _explicitColorLTL(cpnBuilder, query, options, searchStatistics);
         }
         try {
             return _explicitColorReachability(cpnBuilder, query, options, searchStatistics);
         }
         catch (const explicit_error& e) {
-            if (e.type == ExplicitErrorType::unsupported_query) {
+            if (e.type == ExplicitErrorType::UNSUPPORTED_QUERY) {
                 std::cerr << "Query seemed to be reachability, but unsupported query was thrown. Falling back to LTL" << std::endl;
-                return _explicitColorLTL(std::move(cpnBuilder), query, options, searchStatistics);
+                return _explicitColorLTL(cpnBuilder, query, options, searchStatistics);
             }
+            throw;
         }
     }
 
-    ExplicitColoredModelChecker::Result ExplicitColoredModelChecker::_explicitColorLTL(
-        ColoredPetriNetBuilder cpnBuilder,
+    std::pair<Result, std::optional<std::vector<TraceStep>>> ExplicitColoredModelChecker::_explicitColorLTL(
+        const ExplicitColoredPetriNetBuilder& cpnBuilder,
         const PQL::Condition_ptr &query,
         options_t &options,
         SearchStatistics *searchStatistics
     ) const {
-        auto net = cpnBuilder.takeNet();
-        auto placeIndices = cpnBuilder.takePlaceIndices();
-        auto transitionIndices = cpnBuilder.takeTransitionIndices();
+        const auto& net = cpnBuilder.getNet();
         std::vector<std::string> traces;
         auto [negated_formula, negated_answer] = LTL::to_ltl(query, traces);
-        
-        auto buchiAutomaton = make_buchi_automaton(negated_formula, LTL::BuchiOptimization::Low, LTL::APCompression::None);
 
-        ProductStateGenerator productStateGenerator(net, buchiAutomaton, placeIndices, transitionIndices);
+        const auto buchiAutomaton = make_buchi_automaton(negated_formula, LTL::BuchiOptimization::Low, LTL::APCompression::None);
 
-        LTLNdfs ndfs(net, negated_formula, placeIndices, transitionIndices);
-        auto result = !ndfs.check();
+        ProductStateGenerator productStateGenerator(net, buchiAutomaton, cpnBuilder.getPlaceIndices(), cpnBuilder.getTransitionIndices());
+
+        LTLNdfs ndfs(net, negated_formula, cpnBuilder.getPlaceIndices(), cpnBuilder.getTransitionIndices());
+
+        const auto result = ndfs.check();
 
         if (searchStatistics) {
             *searchStatistics = ndfs.GetSearchStatistics();
         }
-        return (result != negated_answer) ? Result::SATISFIED : Result::UNSATISFIED;
+
+        if (result == Result::UNKNOWN)
+            return { Result::UNKNOWN, std::nullopt };
+
+        const bool queryResult = (result == Result::SATISFIED) != negated_answer;
+
+        return { queryResult ? Result::SATISFIED : Result::UNSATISFIED, std::nullopt };
     }
 
-    ExplicitColoredModelChecker::Result ExplicitColoredModelChecker::_explicitColorReachability(
-        const ColoredPetriNetBuilder& cpnBuilder,
+    std::pair<Result, std::optional<std::vector<TraceStep>>> ExplicitColoredModelChecker::
+    _explicitColorReachability(
+        const ExplicitColoredPetriNetBuilder &cpnBuilder,
         const PQL::Condition_ptr &query,
         options_t &options,
         SearchStatistics *searchStatistics
     ) const {
-        ExplicitWorklist worklist(
-            cpnBuilder.getNet(),
-            query,
-            cpnBuilder.getPlaceIndices(),
-            cpnBuilder.getTransitionIndices(),
-            options.seed()
-        );
+        ExplicitWorklist worklist(cpnBuilder.getNet(), query, cpnBuilder.getPlaceIndices(), cpnBuilder.getTransitionIndices(), options.seed(), options.trace != TraceLevel::None);
+        auto result = worklist.check(options.strategy, options.colored_sucessor_generator);
 
-        const bool result = worklist.check(options.strategy, options.colored_sucessor_generator);
+        std::optional<std::vector<TraceStep>> trace = std::nullopt;
+        if (options.trace != TraceLevel::None) {
+            const auto counterExample = worklist.getCounterExampleId();
+
+            if (counterExample.has_value()) {
+                const auto internalTrace  = worklist.getTraceTo(counterExample.value());
+                if (internalTrace.has_value()) {
+                    trace = _translateTraceStep(internalTrace.value(), cpnBuilder, cpnBuilder.getNet());
+                }
+            }
+        }
 
         if (searchStatistics) {
             *searchStatistics = worklist.GetSearchStatistics();
         }
-        return result ? Result::SATISFIED : Result::UNSATISFIED;
+
+        return { result, trace };
     }
 
     void ExplicitColoredModelChecker::_reduce(
@@ -225,5 +320,119 @@ namespace PetriEngine::ExplicitColored {
         writer.toColPNML();
         _fullStatisticOut << std::endl;
         out << cpnResult.rdbuf();
+    }
+
+    std::vector<TraceStep> ExplicitColoredModelChecker::_translateTraceStep(
+        const std::vector<InternalTraceStep> &internalTrace,
+        const ExplicitColoredPetriNetBuilder& cpnBuilder,
+        const ColoredPetriNet& net
+    ) const {
+        std::unordered_map<Transition_t, std::string> transitionToId;
+        for (const auto& [key, value] : cpnBuilder.getTransitionIndices()) {
+            transitionToId.emplace(value, key);
+        }
+
+        std::unordered_map<Variable_t, std::string> variableToId;
+        for (const auto& [key, value] : *cpnBuilder.getVariableIndices()) {
+            variableToId.emplace(value, key);
+        }
+
+        std::unordered_map<Place_t, std::string> placeToId;
+        for (const auto& [key, value] : cpnBuilder.getPlaceIndices()) {
+            placeToId.emplace(value, key);
+        }
+
+        const auto& variableColorTypes = cpnBuilder.getUnderlyingVariableColorTypes();
+
+        ColoredSuccessorGenerator successorGenerator(net, 30);
+        auto currentState = net.initial();
+        std::vector<TraceStep> trace;
+
+        trace.emplace_back(_translateMarking(currentState, placeToId, cpnBuilder, net));
+
+        for (auto& traceStep : internalTrace) {
+            Binding traceBinding;
+
+            successorGenerator.findNextValidBinding(
+                currentState,
+                traceStep.transition,
+                traceStep.binding,
+                net.getTotalBindings(traceStep.transition),
+                traceBinding,
+                0
+            );
+
+            successorGenerator.shrinkState(0);
+
+            std::unordered_map<std::string, std::string> binding;
+            for (auto [variable, value] : traceBinding.getValues()) {
+                const auto variableIt = variableToId.find(variable);
+                if (variableIt == variableToId.end()) {
+                    std::cerr << "Could not find variable id corresponding to variable index " << variable << std::endl;
+                    throw explicit_error(ExplicitErrorType::INVALID_TRACE);
+                }
+                if (variable >= variableColorTypes.size()) {
+                    std::cerr << "Could not find color type for variable index " << variable << "(" << variableIt->second << ")" << std::endl;
+                    throw explicit_error(ExplicitErrorType::INVALID_TRACE);
+                }
+                const auto& variableColorType = (*variableColorTypes[variable]);
+                if (variableColorType.size() < value) {
+                    std::cerr << "Could not find corresponding color id for color index" << value << " in color type " << variableColorType.getName() << std::endl;
+                    throw explicit_error(ExplicitErrorType::INVALID_TRACE);
+                }
+                binding.emplace(variableIt->second, variableColorType[value].getColorName());
+            }
+            const auto transitionIt = transitionToId.find(traceStep.transition);
+            if (transitionIt == transitionToId.end()) {
+                std::cerr << "Could not find transition id corresponding to transition with index " << traceStep.transition << std::endl;
+                throw explicit_error(ExplicitErrorType::INVALID_TRACE);
+            }
+
+            successorGenerator.fire(currentState, traceStep.transition, traceBinding);
+            currentState.shrink();
+            auto translatedMarking = _translateMarking(currentState, placeToId, cpnBuilder, net);
+            trace.emplace_back(transitionIt->second, std::move(binding), std::move(translatedMarking));
+        }
+        return trace;
+    }
+
+    std::unordered_map<std::string, std::vector<std::pair<std::vector<std::string>, MarkingCount_t>>>
+        ExplicitColoredModelChecker::_translateMarking(
+            const ColoredPetriNetMarking& marking,
+            const std::unordered_map<Place_t, std::string>& placeToId,
+            const ExplicitColoredPetriNetBuilder& cpnBuilder,
+            const ColoredPetriNet& net
+        ) const {
+        std::unordered_map<std::string, std::vector<std::pair<std::vector<std::string>, MarkingCount_t>>> translatedMarking;
+        for (Place_t place = 0; place < marking.markings.size(); place++) {
+            auto placeIdIt = placeToId.find(place);
+            if (placeIdIt == placeToId.end()) {
+                std::cerr << "Could not find corresponding place id for place index" << place << std::endl;
+                throw explicit_error(ExplicitErrorType::INVALID_TRACE);
+            }
+            std::vector<std::pair<std::vector<std::string>, MarkingCount_t>> tokenCounts;
+            for (const auto& [tokenColor, tokenCount] : marking.markings[place].counts()) {
+                if (tokenCount <= 0) {
+                    continue;
+                }
+                std::vector<std::string> colors;
+                const auto underlyingColor = cpnBuilder.getPlaceUnderlyingColorType(place);
+                if (underlyingColor == nullptr) {
+                    std::cerr << "Could not find corresponding color type for place index" << place << std::endl;
+                    throw explicit_error(ExplicitErrorType::INVALID_TRACE);
+                }
+                if (const auto productColorType = dynamic_cast<const Colored::ProductType*>(underlyingColor)) {
+                    for (size_t colorIndex = 0; colorIndex < net.getPlaces()[place].colorType->colorCodec.getColorCount(); colorIndex++) {
+                        auto color = net.getPlaces()[place].colorType->colorCodec.decode(tokenColor, colorIndex);
+                        colors.push_back((*(*productColorType).getNestedColorType(colorIndex))[color].getColorName());
+                    }
+                } else {
+                    colors.push_back((*underlyingColor)[tokenColor].getColorName());
+                }
+                tokenCounts.emplace_back(std::move(colors), tokenCount);
+            }
+            translatedMarking.emplace(placeIdIt->second, std::move(tokenCounts));
+        }
+        return translatedMarking;
     }
 }

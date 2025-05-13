@@ -25,10 +25,7 @@ namespace PetriEngine::ExplicitColored {
         friend class ProductColorEncoder;
 
         explicit ColoredEncoder(const std::vector<ColoredPetriNetPlace>& places) : _places(places),
-            _placeSize(_convertToTypeSize(places.size())) {
-            //Will get resized if needed
-            _size = 512;
-
+            _placeSize(_convertToTypeSize(places.size())), _size(512) {
             for (const auto& place : _places) {
                 _placeColorSize.push_back(_convertToTypeSize(place.colorType->colorSize));
             }
@@ -72,6 +69,7 @@ namespace PetriEngine::ExplicitColored {
         ColoredPetriNetMarking decode(const unsigned char* encoding) const {
             size_t offset = _isProductColor ? _productColorOffset : 0;
             ColoredPetriNetMarking marking{};
+            marking.markings.reserve(_places.size());
             for (auto pid = 0; pid < _places.size(); ++pid) {
                 const auto type = static_cast<ENCODING_TYPE>(_readFromEncoding(encoding, EIGHT, offset));
                 CPNMultiSet placeMultiset;
@@ -85,9 +83,9 @@ namespace PetriEngine::ExplicitColored {
                 case EMPTY:
                     break;
                 default:
-                    throw explicit_error{ExplicitErrorType::unknown_encoding};
+                    throw explicit_error{ExplicitErrorType::UNKNOWN_ENCODING};
                 }
-                marking.markings.push_back(placeMultiset);
+                marking.markings.push_back(std::move(placeMultiset));
             }
             return marking;
         }
@@ -113,7 +111,6 @@ namespace PetriEngine::ExplicitColored {
         [[nodiscard]] bool isFullStateSpace() const {
             return _fullStatespace;
         }
-
     private:
         scratchpad_t _scratchpad;
         const std::vector<ColoredPetriNetPlace>& _places;
@@ -253,7 +250,7 @@ namespace PetriEngine::ExplicitColored {
                 break;
             }
             default:
-                throw explicit_error{ExplicitErrorType::unknown_encoding};
+                throw explicit_error{ExplicitErrorType::UNKNOWN_ENCODING};
             }
             offset += typeSize;
         }
@@ -276,7 +273,7 @@ namespace PetriEngine::ExplicitColored {
                 result = *(uint32_t*)(&encoding[offset]);
                 break;
             default:
-                throw explicit_error{ExplicitErrorType::unknown_encoding};
+                throw explicit_error{ExplicitErrorType::UNKNOWN_ENCODING};
             }
             offset += typeSize;
             return result;

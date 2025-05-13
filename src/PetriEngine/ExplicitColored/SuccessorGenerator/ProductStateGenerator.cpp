@@ -7,7 +7,7 @@ namespace PetriEngine::ExplicitColored {
         const std::unordered_map<std::string, uint32_t>& placeNameIndices,
         const std::unordered_map<std::string, uint32_t>& transitionNameIndices
     ) : _net(net), _buchiAutomaton(std::move(buchiAutomaton)), _successorGenerator(net, std::numeric_limits<Binding_t>::max()) {
-        const GammaQueryCompiler compiler(placeNameIndices, transitionNameIndices, _successorGenerator);
+        const ExplicitQueryPropositionCompiler compiler(placeNameIndices, transitionNameIndices, _successorGenerator);
         for (const auto& [index, atomicProposition] : _buchiAutomaton.ap_info()) {
             _compiledAtomicPropositions.emplace(index, compiler.compile(atomicProposition._expression));
         }
@@ -24,7 +24,7 @@ namespace PetriEngine::ExplicitColored {
             );
             state->destroy();
             currentState._iterState->first();
-            currentState._currentSuccessor.marking = _successorGenerator.next(currentState._markingGeneratorState).marking;
+            currentState._currentSuccessor.marking = _successorGenerator.next(currentState._markingGeneratorState).first.marking;
         }
         if (currentState._markingGeneratorState.isDeadlock()) {
             for (; !currentState._iterState->done(); currentState._iterState->next()) {
@@ -47,7 +47,7 @@ namespace PetriEngine::ExplicitColored {
                         return currentState._currentSuccessor;
                     }
                 }
-                currentState._currentSuccessor.marking = _successorGenerator.next(currentState._markingGeneratorState).marking;
+                currentState._currentSuccessor.marking = _successorGenerator.next(currentState._markingGeneratorState).first.marking;
                 currentState._iterState->first();
             }
         }
