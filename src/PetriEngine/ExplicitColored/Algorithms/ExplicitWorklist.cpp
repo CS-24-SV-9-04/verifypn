@@ -1,3 +1,4 @@
+#include <PetriEngine/ExplicitColored/PassedList.h>
 #ifndef EXPLICITWORKLIST_CPP
 #define EXPLICITWORKLIST_CPP
 
@@ -19,7 +20,7 @@ namespace PetriEngine::ExplicitColored {
         const std::unordered_map<std::string, Transition_t>& transitionNameIndices,
         const size_t seed
     ) : _net(std::move(net)),
-        _successorGenerator(ColoredSuccessorGenerator{_net}),
+        _successorGenerator(ColoredSuccessorGenerator{_net, 30}),
         _seed(seed)
     {
         const GammaQueryCompiler queryCompiler(placeNameIndices, transitionNameIndices, _successorGenerator);
@@ -54,13 +55,15 @@ namespace PetriEngine::ExplicitColored {
 
     template <template <typename> typename WaitingList, typename T>
     bool ExplicitWorklist::_genericSearch(WaitingList<T> waiting) {
-        ptrie::set<uint8_t> passed;
-        ColoredEncoder encoder = ColoredEncoder{_net.getPlaces()};
+        auto encoder = ColoredEncoder{_net.getPlaces()};
+        PassedList<ColoredEncoder, ColoredPetriNetMarking> passed(encoder);
+
         const auto& initialState = _net.initial();
         const auto earlyTerminationCondition = _quantifier == Quantifier::EF;
 
-        auto size = encoder.encode(initialState);
-        passed.insert(encoder.data(), size);
+
+        passed.add(initialState);
+
         if constexpr (std::is_same_v<T, ColoredPetriNetStateEven>) {
             auto initial = ColoredPetriNetStateEven{initialState, _net.getTransitionCount()};
             initial.id = 0;
@@ -75,10 +78,10 @@ namespace PetriEngine::ExplicitColored {
         _searchStatistics.discoveredStates = 1;
 
         if (_check(initialState, 0) == earlyTerminationCondition) {
-            return _getResult(true, encoder.isFullStatespace());
+            return _getResult(true, passed.isFullStateSpace());
         }
         if (_net.getTransitionCount() == 0) {
-            return _getResult(false, encoder.isFullStatespace());
+            return _getResult(false, passed.isFullStateSpace());
         }
 
         while (!waiting.empty()){
@@ -100,24 +103,22 @@ namespace PetriEngine::ExplicitColored {
 
             successor.shrink();
             const auto& marking = successor.marking;
-            size = encoder.encode(marking);
             _searchStatistics.discoveredStates++;
-            if (!passed.exists(encoder.data(), size).first) {
+            if (!passed.existsOrAdd(marking)) {
                 _searchStatistics.exploredStates += 1;
                 if (_check(marking, successor.id) == earlyTerminationCondition) {
                     _searchStatistics.endWaitingStates = waiting.size();
-                    _searchStatistics.biggestEncoding = encoder.getBiggestEncoding();
-                    return _getResult(true, encoder.isFullStatespace());
+                    _searchStatistics.biggestEncoding = passed.getBiggestEncoding();
+                    return _getResult(true, passed.isFullStateSpace());
                 }
                 waiting.add(std::move(successor));
-                passed.insert(encoder.data(), size);
                 _searchStatistics.peakWaitingStates = std::max(waiting.size(), _searchStatistics.peakWaitingStates);
             }
         }
 
         _searchStatistics.endWaitingStates = waiting.size();
-        _searchStatistics.biggestEncoding = encoder.getBiggestEncoding();
-        return _getResult(false, encoder.isFullStatespace());
+        _searchStatistics.biggestEncoding = passed.getBiggestEncoding();
+        return _getResult(false, passed.isFullStateSpace());
     }
 
     template<typename SuccessorGeneratorState>

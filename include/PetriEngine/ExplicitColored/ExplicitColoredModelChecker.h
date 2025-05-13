@@ -51,11 +51,12 @@ namespace PetriEngine::ExplicitColored {
         ) const;
 
         Result _explicitColorReachability(
-            ColoredPetriNetBuilder cpnBuilder,
+            const ColoredPetriNetBuilder& cpnBuilder,
             const PQL::Condition_ptr& query,
             options_t& options,
             SearchStatistics* searchStatistics
         ) const;
+
         void _reduce(
             const std::string& pnmlModel,
             std::stringstream& out,

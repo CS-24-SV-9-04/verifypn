@@ -180,6 +180,10 @@ namespace PetriEngine::ExplicitColored {
         return std::move(_currentNet);
     }
 
+    const ColoredPetriNet & ColoredPetriNetBuilder::getNet() const {
+        return _currentNet;
+    }
+
     void ColoredPetriNetBuilder::_createArcsAndTransitions() {
         const auto transitions = _currentNet._transitions.size();
         auto transIndices = std::vector<std::pair<uint32_t,uint32_t>>(transitions + 1);
@@ -325,5 +329,13 @@ namespace PetriEngine::ExplicitColored {
 
     std::unordered_map<std::string, Transition_t> ColoredPetriNetBuilder::takeTransitionIndices() {
         return std::move(_transitionIndices);
+    }
+
+    const std::unordered_map<std::string, uint32_t> & ColoredPetriNetBuilder::getPlaceIndices() const {
+        return _placeIndices;
+    }
+
+    const std::unordered_map<std::string, uint32_t> & ColoredPetriNetBuilder::getTransitionIndices() const {
+        return _transitionIndices;
     }
 }
