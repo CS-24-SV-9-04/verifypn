@@ -160,9 +160,9 @@ namespace PetriEngine::ExplicitColored{
             if (marking.markings[arc.from].totalCount() < arc.expression->getMinimalMarkingCount()) {
                 return false;
             }
-            if (!(arc.expression->getMinimalColorMarking().minimalMarkingMultiSet <= marking.markings[arc.from])) {
+            /*if (!(arc.expression->getMinimalColorMarking().minimalMarkingMultiSet <= marking.markings[arc.from])) {
                 return false;
-            }
+            }*/
         }
         return true;
     }
