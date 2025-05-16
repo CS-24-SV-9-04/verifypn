@@ -263,7 +263,7 @@ namespace PetriEngine::ExplicitColored {
         if (result == Result::UNKNOWN)
             return { Result::UNKNOWN, std::nullopt };
 
-        const bool queryResult = (result == Result::SATISFIED) != negated_answer;
+        const bool queryResult = (result == Result::SATISFIED) == negated_answer;
 
         return { queryResult ? Result::SATISFIED : Result::UNSATISFIED, std::nullopt };
     }
