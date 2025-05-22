@@ -570,7 +570,7 @@ int main(int argc, const char** argv) {
 int explicitColored(shared_string_set& stringSet, options_t& options, std::vector<Condition_ptr>& queries, const std::vector<std::string>& queryNames) {
     using namespace ExplicitColored;
 
-    if (!options.isCPN || queries.empty() || !isReachability(queries[0])) {
+    if (!options.isCPN || queries.empty()) {
         std::cerr << "Explicit state-space search is supported only for colored nets and reachability queries.";
         return to_underlying(ReturnValue::UnknownCode);
     }
@@ -586,11 +586,11 @@ int explicitColored(shared_string_set& stringSet, options_t& options, std::vecto
         ColoredResultPrinter resultPrinter(0, std::cout, queryNames[0], options.seed(), std::cerr);
         auto result = ecpnChecker.checkQuery(options.modelfile, queries[0], options, &resultPrinter);
 
-        if (result == ExplicitColoredModelChecker::Result::SATISFIED) {
+        if (result == Result::SATISFIED) {
             return to_underlying(ReturnValue::SuccessCode);
         }
 
-        if (result == ExplicitColoredModelChecker::Result::UNSATISFIED) {
+        if (result == Result::UNSATISFIED) {
             return to_underlying(ReturnValue::FailedCode);
         }
 

@@ -36,6 +36,8 @@
 
 namespace LTL {
 
+    std::tuple<PetriEngine::PQL::Condition_ptr, bool> to_ltl(const PetriEngine::PQL::Condition_ptr &formula, std::vector<std::string>& hyper_traces);
+
     class LTLSearch {
     private:
         const PetriEngine::PetriNet& _net;

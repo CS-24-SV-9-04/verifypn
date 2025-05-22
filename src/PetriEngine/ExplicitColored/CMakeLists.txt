@@ -4,8 +4,10 @@ add_library(ExplicitColored
     ArcCompiler.cpp
     ExplicitColoredPetriNetBuilder.cpp
     SuccessorGenerator/ColoredSuccessorGenerator.cpp
+    SuccessorGenerator/ProductStateGenerator.cpp
     Algorithms/ExplicitWorklist.cpp
     Algorithms/FireabilitySearch.cpp
+    Algorithms/LTLNdfs.cpp
     ColoredResultPrinter.cpp
     ExpressionCompilers/GuardCompiler.cpp
     ExpressionCompilers/ExplicitQueryPropositionCompiler.cpp
