@@ -39,7 +39,7 @@ namespace PetriEngine::ExplicitColored {
         } else {
             while (!currentState._markingGeneratorState.done()) {
                 for (; !currentState._iterState->done(); currentState._iterState->next()) {
-                    if (_check_condition(currentState._iterState->cond(), currentState._markingGeneratorState.marking, currentState._markingGeneratorState.id)) {
+                    if (_check_condition(currentState._iterState->cond(), currentState._currentSuccessor.marking, currentState._markingGeneratorState.id)) {
                         const auto dstState = currentState._iterState->dst();
                         currentState._currentSuccessor.buchiState = _buchiAutomaton.buchi().state_number(dstState);
                         dstState->destroy();
