@@ -69,7 +69,8 @@ namespace PetriEngine::ExplicitColored {
         [[nodiscard]] std::vector<TraceStep> _translateTraceStep(
             const std::vector<InternalTraceStep>& internalTrace,
             const ExplicitColoredPetriNetBuilder& cpnBuilder,
-            const ColoredPetriNet& net
+            const ColoredPetriNet& net,
+            const options_t& options
         ) const;
 
         [[nodiscard]] std::unordered_map<std::string, std::vector<std::pair<std::vector<std::string>, MarkingCount_t>>>
