@@ -5,8 +5,8 @@
 #include "PetriEngine/ExplicitColored/SuccessorGenerator/ColoredSuccessorGenerator.h"
 
 namespace PetriEngine::ExplicitColored{
-    ColoredSuccessorGenerator::ColoredSuccessorGenerator(const ColoredPetriNet& net)
-    : _net(net) {}
+    ColoredSuccessorGenerator::ColoredSuccessorGenerator(const ColoredPetriNet& net, const Binding_t constraintThreshold)
+    : _net(net), _constraintThreshold(constraintThreshold) {}
 
     void updateVariableMap(std::map<Variable_t, std::vector<uint32_t>>& map, const std::map<Variable_t, std::vector<uint32_t>>& newMap){
         for (auto&& pair : newMap){
@@ -42,6 +42,7 @@ namespace PetriEngine::ExplicitColored{
     }
 
     bool ColoredSuccessorGenerator::checkPresetAndGuard(const ColoredPetriNetMarking& state, const Transition_t tid, const Binding& binding) const {
+        checkedBindings++;
         if (_net._transitions[tid].guardExpression != nullptr && !_net._transitions[tid].guardExpression->eval(binding)){
             return false;
         }
@@ -180,7 +181,7 @@ namespace PetriEngine::ExplicitColored{
         }
 
         auto constraintDataIt = _constraintData.find(_getKey(stateId, tid));
-        if (totalBindings > 30 && constraintDataIt == _constraintData.end()) {
+        if (totalBindings > _constraintThreshold && constraintDataIt == _constraintData.end()) {
             bool noPossibleBinding = false;
             constraintDataIt = _calculateConstraintData(marking, stateId, tid, noPossibleBinding);
             if (noPossibleBinding) {
