@@ -221,10 +221,11 @@ void printHelp() {
         "                                       Useful for seeing the effect of colored reductions, without unfolding\n"
         "  -c, --cpn-overapproximation          Over approximate query on Colored Petri Nets (CPN only)\n"
         "  -C                                   Use explicit colored engine to answer query (CPN only).\n"
-        "                                       Only supports -R, -t, --colored-successor-generator and -s options.\n"
+        "                                       Only supports -R, -t, --constrained-successor-generator, --constrained-bindings-threshold and -s options.\n"
         "  --colored-successor-generator        Sets the the successor generator used in the explicit colored engine\n"
         "                                       - fixed   transitions and bindings are traversed in a fixed order\n"
         "                                       - even    transitions and bindings are checked evenly (default)\n"
+        "  --constrained-bindings-threshold     Decides at what number of bindings, the constrained binding generator should be used (-1 for never)\n"
         "  --disable-cfp                        Disable the computation of possible colors in the Petri Net (CPN only)\n"
         "  --disable-partitioning               Disable the partitioning of colors in the Petri Net (CPN only)\n"
         "  --disable-symmetry-vars              Disable search for symmetric variables (CPN only)\n"
@@ -576,7 +577,7 @@ bool options_t::parse(int argc, const char** argv) {
             if (argc == i + 1) {
                 throw base_error("Missing argument to --constrained-bindings-threshold");
             }
-            if (sscanf(argv[++i], "%llu", &constrained_bindings_threshold) != 1 || constrained_bindings_threshold < 0) {
+            if (sscanf(argv[++i], "%llu", &constrained_bindings_threshold) != 1) {
                 throw base_error("Argument Error: Invalid constrained bindings threshold argument ", std::quoted(argv[i]));
             }
         }
