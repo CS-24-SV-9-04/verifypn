@@ -11,6 +11,7 @@ namespace PetriEngine::ExplicitColored {
         uint32_t peakWaitingStates = 0;
         uint32_t discoveredStates = 0;
         size_t biggestEncoding = 0;
+        uint32_t checkedBindings = 0;
     };
 }
 

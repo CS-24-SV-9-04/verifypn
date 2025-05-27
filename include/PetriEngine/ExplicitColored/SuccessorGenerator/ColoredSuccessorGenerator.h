@@ -26,6 +26,7 @@ namespace PetriEngine::ExplicitColored {
     public:
         explicit ColoredSuccessorGenerator(const ColoredPetriNet& net);
         ~ColoredSuccessorGenerator() = default;
+        mutable uint32_t checkedBindings = 0;
 
         std::pair<ColoredPetriNetStateFixed, TraceMapStep> next(ColoredPetriNetStateFixed& state) const {
             return _nextFixed(state);

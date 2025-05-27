@@ -42,6 +42,7 @@ namespace PetriEngine::ExplicitColored{
     }
 
     bool ColoredSuccessorGenerator::checkPresetAndGuard(const ColoredPetriNetMarking& state, const Transition_t tid, const Binding& binding) const {
+        checkedBindings++;
         if (_net._transitions[tid].guardExpression != nullptr && !_net._transitions[tid].guardExpression->eval(binding)){
             return false;
         }
