@@ -223,7 +223,7 @@ namespace PetriEngine::ExplicitColored {
 
         auto net = cpnBuilder.takeNet();
 
-        ExplicitWorklist worklist(net, query, cpnBuilder.getPlaceIndices(), cpnBuilder.getTransitionIndices(), options.seed(), options.trace != TraceLevel::None);
+        ExplicitWorklist worklist(net, query, cpnBuilder.getPlaceIndices(), cpnBuilder.getTransitionIndices(), options.seed(), options.trace != TraceLevel::None, options.constrained_bindings_threshold);
         bool result = worklist.check(options.strategy, options.colored_sucessor_generator);
 
         if (searchStatistics) {
@@ -237,7 +237,7 @@ namespace PetriEngine::ExplicitColored {
             if (counterExample.has_value()) {
                 auto internalTrace  = worklist.getTraceTo(counterExample.value());
                 if (internalTrace.has_value()) {
-                    trace = _translateTraceStep(internalTrace.value(), cpnBuilder, net);
+                    trace = _translateTraceStep(internalTrace.value(), cpnBuilder, net, options);
                 }
             }
         }
@@ -272,7 +272,8 @@ namespace PetriEngine::ExplicitColored {
     std::vector<TraceStep> ExplicitColoredModelChecker::_translateTraceStep(
         const std::vector<InternalTraceStep> &internalTrace,
         const ExplicitColoredPetriNetBuilder& cpnBuilder,
-        const ColoredPetriNet& net
+        const ColoredPetriNet& net,
+        const options_t& options
     ) const {
         std::unordered_map<Transition_t, std::string> transitionToId;
         for (const auto& [key, value] : cpnBuilder.getTransitionIndices()) {
@@ -291,7 +292,7 @@ namespace PetriEngine::ExplicitColored {
 
         const auto& variableColorTypes = cpnBuilder.getUnderlyingVariableColorTypes();
 
-        ColoredSuccessorGenerator successorGenerator(net);
+        ColoredSuccessorGenerator successorGenerator(net, options.constrained_bindings_threshold);
         auto currentState = net.initial();
         std::vector<TraceStep> trace;
 

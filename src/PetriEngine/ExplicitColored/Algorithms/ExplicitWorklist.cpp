@@ -18,9 +18,10 @@ namespace PetriEngine::ExplicitColored {
         const std::unordered_map<std::string, uint32_t>& placeNameIndices,
         const std::unordered_map<std::string, Transition_t>& transitionNameIndices,
         const size_t seed,
-        bool createTrace
+        const bool createTrace,
+        const Binding_t constrainedBindingThreshold
     ) : _net(std::move(net)),
-        _successorGenerator(ColoredSuccessorGenerator{_net}),
+        _successorGenerator(ColoredSuccessorGenerator{_net, constrainedBindingThreshold}),
         _seed(seed),
         _createTrace(createTrace)
     {
