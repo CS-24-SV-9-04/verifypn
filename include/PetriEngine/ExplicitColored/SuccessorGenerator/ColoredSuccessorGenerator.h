@@ -24,7 +24,7 @@ namespace PetriEngine::ExplicitColored {
 
     class ColoredSuccessorGenerator {
     public:
-        explicit ColoredSuccessorGenerator(const ColoredPetriNet& net);
+        explicit ColoredSuccessorGenerator(const ColoredPetriNet& net, Binding_t constraintBindingThreshold);
         ~ColoredSuccessorGenerator() = default;
 
         std::pair<ColoredPetriNetStateFixed, TraceMapStep> next(ColoredPetriNetStateFixed& state) const {
@@ -55,9 +55,11 @@ namespace PetriEngine::ExplicitColored {
         void consumePreset(ColoredPetriNetMarking& state, Transition_t tid, const Binding& binding) const;
         void producePostset(ColoredPetriNetMarking& state, Transition_t tid, const Binding& binding) const;
     private:
-        mutable std::map<size_t, ConstraintData> _constraintData;
+        Binding_t _constraintBindingThreshold;
         mutable size_t _nextId = 1;
         const ColoredPetriNet& _net;
+        mutable std::map<size_t, ConstraintData> _constraintData;
+        void _fire(ColoredPetriNetMarking& state, Transition_t tid, const Binding& binding) const;
         std::map<size_t, ConstraintData>::iterator _calculateConstraintData(const ColoredPetriNetMarking& marking, size_t id, Transition_t transition, bool& noPossibleBinding) const;
         [[nodiscard]] bool _hasMinimalCardinality(const ColoredPetriNetMarking& marking, Transition_t tid) const;
         [[nodiscard]] bool _shouldEarlyTerminateTransition(const ColoredPetriNetMarking& marking, const Transition_t tid) const {
@@ -82,6 +84,7 @@ namespace PetriEngine::ExplicitColored {
                     newState.id = _nextId++;
                     fire(newState.marking, tid, binding);
                     state.nextBinding(nextBid);
+                    state._deadlock = false;
                     return std::make_pair(newState, TraceMapStep {
                         newState.id,
                         state.id,
@@ -102,19 +105,20 @@ namespace PetriEngine::ExplicitColored {
             Binding binding;
             //If bid is updated at the end optimizations seem to make the loop not work
             while (bid != std::numeric_limits<Binding_t>::max()) {
-                const auto nextBid = findNextValidBinding(state.marking, tid, bid, totalBindings, binding, state.id);
-                state.updatePair(tid, nextBid);
-                if (nextBid != std::numeric_limits<Binding_t>::max()) {
-                    auto newState = ColoredPetriNetStateEven{state, _net.getTransitionCount()};
-                    newState.id = _nextId++;
-                    fire(newState.marking, tid, binding);
-
-                    return std::make_pair(newState, TraceMapStep {
-                        newState.id,
-                        state.id,
-                        tid,
-                        nextBid
-                    });
+                {
+                    const auto nextBid = findNextValidBinding(state.marking, tid, bid, totalBindings, binding, state.id);
+                    state.updatePair(tid, nextBid);
+                    if (nextBid != std::numeric_limits<Binding_t>::max()) {
+                        auto newState = ColoredPetriNetStateEven{state, _net.getTransitionCount()};
+                        newState.id = _nextId++;
+                        fire(newState.marking, tid, binding);
+                        return std::make_pair(newState, TraceMapStep {
+                            newState.id,
+                            state.id,
+                            tid,
+                            nextBid
+                        });
+                    }
                 }
                 std::tie(tid, bid) = state.getNextPair();
                 totalBindings = _net._transitions[tid].totalBindings;

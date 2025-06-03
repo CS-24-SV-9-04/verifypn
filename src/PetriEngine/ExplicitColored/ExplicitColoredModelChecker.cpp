@@ -7,10 +7,12 @@
 #include <PetriEngine/PQL/Evaluation.h>
 #include <utils/NullStream.h>
 #include <sstream>
+#include <LTL/LTLSearch.h>
+#include <PetriEngine/ExplicitColored/Algorithms/LTLNdfs.h>
 #include <PetriEngine/ExplicitColored/Algorithms/FireabilitySearch.h>
 
 namespace PetriEngine::ExplicitColored {
-    ExplicitColoredModelChecker::Result ExplicitColoredModelChecker::checkQuery(
+    Result ExplicitColoredModelChecker::checkQuery(
         const std::string& modelPath,
         const Condition_ptr& query,
         options_t& options,
@@ -64,7 +66,7 @@ namespace PetriEngine::ExplicitColored {
         return Result::UNKNOWN;
     }
 
-    ExplicitColoredModelChecker::Result ExplicitColoredModelChecker::checkColorIgnorantLP(
+    Result ExplicitColoredModelChecker::checkColorIgnorantLP(
         const std::string& pnmlModel,
         const Condition_ptr& query,
         options_t& options
@@ -94,7 +96,7 @@ namespace PetriEngine::ExplicitColored {
         return checkCardinalityColorIgnorantLP(context, queries, builder, qnet, qm0, options);
     }
 
-    ExplicitColoredModelChecker::Result ExplicitColoredModelChecker::checkFireabilityColorIgnorantLP(
+    Result ExplicitColoredModelChecker::checkFireabilityColorIgnorantLP(
        const EvaluationContext& context,
        std::vector<std::shared_ptr<Condition>>& queries,
        PetriNetBuilder& builder,
@@ -168,7 +170,7 @@ namespace PetriEngine::ExplicitColored {
         return Result::UNKNOWN;
     }
 
-    ExplicitColoredModelChecker::Result ExplicitColoredModelChecker::checkCardinalityColorIgnorantLP(
+    Result ExplicitColoredModelChecker::checkCardinalityColorIgnorantLP(
         const EvaluationContext& context,
         std::vector<std::shared_ptr<Condition>>& queries,
         PetriNetBuilder& builder,
@@ -200,7 +202,7 @@ namespace PetriEngine::ExplicitColored {
         return Result::UNKNOWN;
     }
 
-    std::pair<ExplicitColoredModelChecker::Result, std::optional<std::vector<TraceStep>>> ExplicitColoredModelChecker::explicitColorCheck(
+    std::pair<Result, std::optional<std::vector<TraceStep>>> ExplicitColoredModelChecker::explicitColorCheck(
         const std::string& pnmlModel,
         const Condition_ptr& query,
         options_t& options,
@@ -221,27 +223,74 @@ namespace PetriEngine::ExplicitColored {
             throw base_error("Unknown builder error ", static_cast<uint32_t>(buildStatus));
         }
 
-        auto net = cpnBuilder.takeNet();
+        if (!isReachability(query)) {
+            return _explicitColorLTL(cpnBuilder, query, options, searchStatistics);
+        }
+        try {
+            return _explicitColorReachability(cpnBuilder, query, options, searchStatistics);
+        }
+        catch (const explicit_error& e) {
+            if (e.type == ExplicitErrorType::UNSUPPORTED_QUERY) {
+                std::cerr << "Query seemed to be reachability, but unsupported query was thrown. Falling back to LTL" << std::endl;
+                return _explicitColorLTL(cpnBuilder, query, options, searchStatistics);
+            }
+            throw;
+        }
+    }
 
-        ExplicitWorklist worklist(net, query, cpnBuilder.getPlaceIndices(), cpnBuilder.getTransitionIndices(), options.seed(), options.trace != TraceLevel::None);
-        bool result = worklist.check(options.strategy, options.colored_sucessor_generator);
+    std::pair<Result, std::optional<std::vector<TraceStep>>> ExplicitColoredModelChecker::_explicitColorLTL(
+        const ExplicitColoredPetriNetBuilder& cpnBuilder,
+        const PQL::Condition_ptr &query,
+        const options_t &options,
+        SearchStatistics *searchStatistics
+    ) const {
+        const auto& net = cpnBuilder.getNet();
+        std::vector<std::string> traces;
+        auto [negated_formula, negated_answer] = LTL::to_ltl(query, traces);
+
+        LTLNdfs ndfs(net, negated_formula, cpnBuilder.getPlaceIndices(), cpnBuilder.getTransitionIndices(), options.buchiOptimization, options.ltl_compress_aps);
+
+        const auto result = ndfs.check();
+
+        if (searchStatistics) {
+            *searchStatistics = ndfs.GetSearchStatistics();
+        }
+
+        if (result == Result::UNKNOWN)
+            return { Result::UNKNOWN, std::nullopt };
+
+        const bool queryResult = (result == Result::SATISFIED) == negated_answer;
+
+        return { queryResult ? Result::SATISFIED : Result::UNSATISFIED, std::nullopt };
+    }
+
+    std::pair<Result, std::optional<std::vector<TraceStep>>> ExplicitColoredModelChecker::
+    _explicitColorReachability(
+        const ExplicitColoredPetriNetBuilder &cpnBuilder,
+        const PQL::Condition_ptr &query,
+        options_t &options,
+        SearchStatistics *searchStatistics
+    ) const {
+        ExplicitWorklist worklist(cpnBuilder.getNet(), query, cpnBuilder.getPlaceIndices(), cpnBuilder.getTransitionIndices(), options.seed(), options.trace != TraceLevel::None);
+        auto result = worklist.check(options.strategy, options.colored_sucessor_generator);
+
+        std::optional<std::vector<TraceStep>> trace = std::nullopt;
+        if (options.trace != TraceLevel::None) {
+            const auto counterExample = worklist.getCounterExampleId();
+
+            if (counterExample.has_value()) {
+                const auto internalTrace  = worklist.getTraceTo(counterExample.value());
+                if (internalTrace.has_value()) {
+                    trace = _translateTraceStep(internalTrace.value(), cpnBuilder, cpnBuilder.getNet());
+                }
+            }
+        }
 
         if (searchStatistics) {
             *searchStatistics = worklist.GetSearchStatistics();
         }
 
-        std::optional<std::vector<TraceStep>> trace = std::nullopt;
-        if (options.trace != TraceLevel::None) {
-            auto counterExample = worklist.getCounterExampleId();
-
-            if (counterExample.has_value()) {
-                auto internalTrace  = worklist.getTraceTo(counterExample.value());
-                if (internalTrace.has_value()) {
-                    trace = _translateTraceStep(internalTrace.value(), cpnBuilder, net);
-                }
-            }
-        }
-        return std::make_pair(result ? Result::SATISFIED : Result::UNSATISFIED, trace);
+        return { result, trace };
     }
 
     void ExplicitColoredModelChecker::_reduce(
@@ -291,7 +340,7 @@ namespace PetriEngine::ExplicitColored {
 
         const auto& variableColorTypes = cpnBuilder.getUnderlyingVariableColorTypes();
 
-        ColoredSuccessorGenerator successorGenerator(net);
+        ColoredSuccessorGenerator successorGenerator(net, 30);
         auto currentState = net.initial();
         std::vector<TraceStep> trace;
 

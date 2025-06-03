@@ -28,6 +28,12 @@ namespace PetriEngine::ExplicitColored {
         bool isInitial;
     };
 
+    enum class Result {
+        SATISFIED,
+        UNSATISFIED,
+        UNKNOWN
+    };
+
     class IColoredResultPrinter {
     public:
         virtual void printResult(

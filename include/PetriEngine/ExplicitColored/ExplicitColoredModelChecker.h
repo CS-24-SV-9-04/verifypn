@@ -4,6 +4,8 @@
 #include "PetriEngine/PQL/PQL.h"
 #include "utils/structures/shared_string.h"
 #include <sstream>
+
+#include "ExplicitColoredPetriNetBuilder.h"
 #include "Visitors/ConditionCopyVisitor.h"
 
 #include "ColoredResultPrinter.h"
@@ -12,12 +14,6 @@
 namespace PetriEngine::ExplicitColored {
     class ExplicitColoredModelChecker {
     public:
-        enum class Result {
-            SATISFIED,
-            UNSATISFIED,
-            UNKNOWN
-        };
-
         explicit ExplicitColoredModelChecker(shared_string_set& stringSet, std::ostream& fullStatisticOut)
             : _stringSet(stringSet), _fullStatisticOut(fullStatisticOut)
             {}
@@ -37,6 +33,20 @@ namespace PetriEngine::ExplicitColored {
 
         std::pair<Result, std::optional<std::vector<TraceStep>>> explicitColorCheck(
             const std::string& pnmlModel,
+            const PQL::Condition_ptr& query,
+            options_t& options,
+            SearchStatistics* searchStatistics
+        ) const;
+        
+        std::pair<Result, std::optional<std::vector<TraceStep>>> _explicitColorLTL(
+            const ExplicitColoredPetriNetBuilder& cpnBuilder,
+            const PQL::Condition_ptr& query,
+            const options_t& options,
+            SearchStatistics* searchStatistics
+        ) const;
+
+        std::pair<Result, std::optional<std::vector<TraceStep>>> _explicitColorReachability(
+            const ExplicitColoredPetriNetBuilder& cpnBuilder,
             const PQL::Condition_ptr& query,
             options_t& options,
             SearchStatistics* searchStatistics

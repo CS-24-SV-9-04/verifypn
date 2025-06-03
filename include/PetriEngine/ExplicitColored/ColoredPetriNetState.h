@@ -3,12 +3,16 @@
 
 #include <queue>
 #include <utility>
+#include <spot/twa/twagraph.hh>
+
+#include "LTL/Structures/BuchiAutomaton.h"
 #include "ColoredPetriNetMarking.h"
+#include "CPNProductState.h"
 
 namespace PetriEngine::ExplicitColored {
     struct ColoredPetriNetStateFixed {
-        explicit ColoredPetriNetStateFixed(ColoredPetriNetMarking marking) : marking(std::move(marking)) {
-        };
+        explicit ColoredPetriNetStateFixed(ColoredPetriNetMarking marking)
+            : marking(std::move(marking)) {};
         ColoredPetriNetStateFixed(const ColoredPetriNetStateFixed& oldState) = default;
         ColoredPetriNetStateFixed(ColoredPetriNetStateFixed&&) = default;
         ColoredPetriNetStateFixed& operator=(const ColoredPetriNetStateFixed&) = default;
@@ -47,14 +51,56 @@ namespace PetriEngine::ExplicitColored {
             _currentBinding = bid + 1;
         }
 
+        [[nodiscard]] bool isDeadlock() const {
+            return _deadlock;
+        }
+
         ColoredPetriNetMarking marking;
-        size_t id;
+        size_t id = 0;
 
     private:
-        bool _done = false;
-
         Binding_t _currentBinding = 0;
         Transition_t _currentTransition = 0;
+        bool _done = false;
+        bool _deadlock = true;
+        friend class ColoredSuccessorGenerator;
+    };
+
+    struct BuchiStateIterDeleter {
+        const spot::twa_graph *_automaton;
+
+        void operator()(spot::twa_succ_iterator *iter) const
+        {
+            _automaton->release_iter(iter);
+        }
+    };
+
+
+    struct CPNProductStateFixed {
+        explicit CPNProductStateFixed(CPNProductState productState)
+            : _buchiState(productState.buchiState),
+            _markingGeneratorState(std::move(productState.marking)),
+            _currentSuccessor({}, {})
+        { }
+        CPNProductStateFixed(CPNProductStateFixed&&) noexcept = default;
+        CPNProductStateFixed& operator=(CPNProductStateFixed&&) noexcept = default;
+        CPNProductStateFixed(const CPNProductStateFixed&) = delete;
+        CPNProductStateFixed& operator=(const CPNProductStateFixed&) = delete;
+
+        [[nodiscard]] CPNProductState makeProductState() const {
+            return {_markingGeneratorState.marking, _buchiState};
+        }
+
+        [[nodiscard]] bool done() const {
+            return _done;
+        }
+    private:
+        size_t _buchiState;
+        ColoredPetriNetStateFixed _markingGeneratorState;
+        CPNProductState _currentSuccessor;
+        std::unique_ptr<spot::twa_succ_iterator, BuchiStateIterDeleter> _iterState = nullptr;
+        bool _done = false;
+        friend class ProductStateGenerator;
     };
 
     struct ColoredPetriNetStateEven {
@@ -125,7 +171,7 @@ namespace PetriEngine::ExplicitColored {
 
         ColoredPetriNetMarking marking;
         bool shuffle = false;
-        size_t id;
+        size_t id = 0;
 
     private:
         bool _done = false;

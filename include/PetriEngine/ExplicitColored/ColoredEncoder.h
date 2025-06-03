@@ -21,7 +21,8 @@ namespace PetriEngine::ExplicitColored {
 
     class ColoredEncoder {
     public:
-        typedef ptrie::binarywrapper_t scratchpad_t;
+        typedef std::vector<uint8_t> scratchpad_t;
+        friend class ProductColorEncoder;
 
         explicit ColoredEncoder(const std::vector<ColoredPetriNetPlace>& places) : _places(places),
             _placeSize(_convertToTypeSize(places.size())), _size(512) {
@@ -32,13 +33,9 @@ namespace PetriEngine::ExplicitColored {
             _scratchpad = scratchpad_t(_size * 8);
         }
 
-        ~ColoredEncoder() {
-            _scratchpad.release();
-        }
-
         //Encodes each place with its own encoding type, written as a prefix for each place
         size_t encode(const ColoredPetriNetMarking& marking) {
-            size_t offset = 0;
+            size_t offset = _isProductColor ? _productColorOffset : 0;
             auto pid = 0;
             for (const auto& place : marking.markings) {
                 const auto type = _getType(place, _places[pid].colorType->colorSize);
@@ -70,7 +67,7 @@ namespace PetriEngine::ExplicitColored {
         }
 
         ColoredPetriNetMarking decode(const unsigned char* encoding) const {
-            size_t offset = 0;
+            size_t offset = _isProductColor ? _productColorOffset : 0;
             ColoredPetriNetMarking marking{};
             marking.markings.reserve(_places.size());
             for (auto pid = 0; pid < _places.size(); ++pid) {
@@ -93,8 +90,8 @@ namespace PetriEngine::ExplicitColored {
             return marking;
         }
 
-        [[nodiscard]] const uchar* data() const {
-            return _scratchpad.const_raw();
+        [[nodiscard]] const uint8_t* data() const {
+            return _scratchpad.data();
         }
 
         size_t getBiggestEncoding() const {
@@ -111,10 +108,9 @@ namespace PetriEngine::ExplicitColored {
             return true;
         }
 
-        [[nodiscard]] bool isFullStatespace() const {
+        [[nodiscard]] bool isFullStateSpace() const {
             return _fullStatespace;
         }
-
     private:
         scratchpad_t _scratchpad;
         const std::vector<ColoredPetriNetPlace>& _places;
@@ -123,6 +119,8 @@ namespace PetriEngine::ExplicitColored {
         TYPE_SIZE _placeSize;
         std::vector<TYPE_SIZE> _placeColorSize = {};
         bool _fullStatespace = true;
+        bool _isProductColor = false;
+        size_t _productColorOffset = 0;
 
         //Writes the cardinality of each color in the place in order, including 0
         //Could possibly use bits to show whether a token is non-zero
@@ -193,7 +191,7 @@ namespace PetriEngine::ExplicitColored {
             return THIRTYTWO;
         }
 
-        static CPNMultiSet _decodeTokenCounts(const uchar* encoding, const Color_t colorNum, size_t& offset) {
+        static CPNMultiSet _decodeTokenCounts(const uint8_t* encoding, const Color_t colorNum, size_t& offset) {
             CPNMultiSet multiset{};
             const auto placeCountSize = static_cast<TYPE_SIZE>(_readFromEncoding(encoding, EIGHT, offset));
             for (size_t colorId = 0; colorId < colorNum; colorId++) {
@@ -205,7 +203,7 @@ namespace PetriEngine::ExplicitColored {
             return multiset;
         }
 
-        static CPNMultiSet _decodePlaceTokenCounts(const uchar* encoding, const TYPE_SIZE placeColorSize,
+        static CPNMultiSet _decodePlaceTokenCounts(const uint8_t* encoding, const TYPE_SIZE placeColorSize,
                                                    size_t& offset) {
             CPNMultiSet multiset{};
             const auto multisetCardinality = _readFromEncoding(encoding, placeColorSize, offset);
@@ -224,30 +222,30 @@ namespace PetriEngine::ExplicitColored {
         void _resizeScratchpad() {
             _size = _size * 2;
             auto newScratchpad = scratchpad_t(_size * 8);
-            newScratchpad.copy(_scratchpad, 0);
+            newScratchpad.resize(_size * 8);
             _scratchpad = newScratchpad;
         }
 
         template <typename T>
         void _writeToPad(const T element, const TYPE_SIZE typeSize, size_t& offset) {
             if (offset + typeSize > _size) {
-                if (_size == UINT16_MAX) {
+                if (_size >= UINT16_MAX) {
                     return;
                 }
                 _resizeScratchpad();
             }
             switch (typeSize) {
             case EIGHT: {
-                _scratchpad.raw()[offset] = static_cast<uint8_t>(element);
+                _scratchpad.data()[offset] = static_cast<uint8_t>(element);
                 break;
             }
             case SIXTEEN: {
-                const auto dest16 = (uint16_t*)(&_scratchpad.raw()[offset]);
+                const auto dest16 = (uint16_t*)(&_scratchpad.data()[offset]);
                 dest16[0] = static_cast<uint16_t>(element);
                 break;
             }
             case THIRTYTWO: {
-                const auto dest32 = (uint32_t*)(&_scratchpad.raw()[offset]);
+                const auto dest32 = (uint32_t*)(&_scratchpad.data()[offset]);
                 dest32[0] = static_cast<uint32_t>(element);
                 break;
             }
@@ -258,7 +256,7 @@ namespace PetriEngine::ExplicitColored {
         }
 
         [[nodiscard]] static uint32_t
-        _readFromEncoding(const uchar* encoding, const TYPE_SIZE typeSize, size_t& offset) {
+        _readFromEncoding(const uint8_t* encoding, const TYPE_SIZE typeSize, size_t& offset) {
             if (offset + typeSize > UINT16_MAX) {
                 //If encoding is too big then we decode to 0
                 return 0;
