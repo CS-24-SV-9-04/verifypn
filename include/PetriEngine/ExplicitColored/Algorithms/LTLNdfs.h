@@ -18,7 +18,9 @@ namespace PetriEngine::ExplicitColored {
             const ColoredPetriNet& net,
             const PQL::Condition_ptr& condition,
             const std::unordered_map<std::string, uint32_t>& placeNameIndices,
-            const std::unordered_map<std::string, Transition_t>& transitionNameIndices
+            const std::unordered_map<std::string, Transition_t>& transitionNameIndices,
+            LTL::BuchiOptimization buchOptimization,
+            LTL::APCompression apCompression
         );
         Result check();
         const SearchStatistics& GetSearchStatistics() const;

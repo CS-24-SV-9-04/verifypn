@@ -241,18 +241,14 @@ namespace PetriEngine::ExplicitColored {
     std::pair<Result, std::optional<std::vector<TraceStep>>> ExplicitColoredModelChecker::_explicitColorLTL(
         const ExplicitColoredPetriNetBuilder& cpnBuilder,
         const PQL::Condition_ptr &query,
-        options_t &options,
+        const options_t &options,
         SearchStatistics *searchStatistics
     ) const {
         const auto& net = cpnBuilder.getNet();
         std::vector<std::string> traces;
         auto [negated_formula, negated_answer] = LTL::to_ltl(query, traces);
 
-        const auto buchiAutomaton = make_buchi_automaton(negated_formula, LTL::BuchiOptimization::Low, LTL::APCompression::None);
-
-        ProductStateGenerator productStateGenerator(net, buchiAutomaton, cpnBuilder.getPlaceIndices(), cpnBuilder.getTransitionIndices());
-
-        LTLNdfs ndfs(net, negated_formula, cpnBuilder.getPlaceIndices(), cpnBuilder.getTransitionIndices());
+        LTLNdfs ndfs(net, negated_formula, cpnBuilder.getPlaceIndices(), cpnBuilder.getTransitionIndices(), options.buchiOptimization, options.ltl_compress_aps);
 
         const auto result = ndfs.check();
 

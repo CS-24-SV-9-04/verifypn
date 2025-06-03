@@ -41,7 +41,7 @@ namespace PetriEngine::ExplicitColored {
         std::pair<Result, std::optional<std::vector<TraceStep>>> _explicitColorLTL(
             const ExplicitColoredPetriNetBuilder& cpnBuilder,
             const PQL::Condition_ptr& query,
-            options_t& options,
+            const options_t& options,
             SearchStatistics* searchStatistics
         ) const;
 

@@ -8,10 +8,12 @@ namespace PetriEngine::ExplicitColored {
         const ColoredPetriNet& net,
         const PQL::Condition_ptr& condition,
         const std::unordered_map<std::string, uint32_t>& placeNameIndices,
-        const std::unordered_map<std::string, Transition_t>& transitionNameIndices
+        const std::unordered_map<std::string, Transition_t>& transitionNameIndices,
+        LTL::BuchiOptimization buchOptimization,
+        LTL::APCompression apCompression
         )
     :
-        _buchiAutomaton(make_buchi_automaton(condition, LTL::BuchiOptimization::Low, LTL::APCompression::None)),
+        _buchiAutomaton(make_buchi_automaton(condition, buchOptimization, apCompression)),
         _net(net),
         _placeNameIndices(placeNameIndices),
         _transitionNameIndices(transitionNameIndices),
