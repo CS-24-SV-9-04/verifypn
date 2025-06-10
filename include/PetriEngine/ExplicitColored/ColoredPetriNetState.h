@@ -55,6 +55,10 @@ namespace PetriEngine::ExplicitColored {
             return _deadlock;
         }
 
+        void setNotDeadlock() {
+            _deadlock = false;
+        }
+
         ColoredPetriNetMarking marking;
         size_t id = 0;
 
@@ -63,7 +67,6 @@ namespace PetriEngine::ExplicitColored {
         Transition_t _currentTransition = 0;
         bool _done = false;
         bool _deadlock = true;
-        friend class ColoredSuccessorGenerator;
     };
 
     struct BuchiStateIterDeleter {
@@ -100,7 +103,6 @@ namespace PetriEngine::ExplicitColored {
         CPNProductState _currentSuccessor;
         std::unique_ptr<spot::twa_succ_iterator, BuchiStateIterDeleter> _iterState = nullptr;
         bool _done = false;
-        friend class ProductStateGenerator;
     };
 
     struct ColoredPetriNetStateEven {
@@ -169,15 +171,88 @@ namespace PetriEngine::ExplicitColored {
             return _done;
         }
 
+        [[nodiscard]] bool isDeadlock() const {
+            return _deadlock;
+        }
+
+        void setNotDeadlock() {
+            _deadlock = false;
+        }
+
         ColoredPetriNetMarking marking;
         bool shuffle = false;
         size_t id = 0;
 
     private:
         bool _done = false;
+        bool _deadlock = true;
         std::vector<Binding_t> _map;
         uint32_t _currentIndex = 0;
         uint32_t _completedTransitions = 0;
+    };
+
+
+    template<typename SuccessorGeneratorState>
+    struct CPNProductStateSpecialized {
+        explicit CPNProductStateSpecialized(size_t buchiState, SuccessorGeneratorState state)
+            : _buchiState(buchiState),
+            _successorGeneratorState(std::move(state)),
+            _currentSuccessor({}, {})
+        { }
+        CPNProductStateSpecialized(CPNProductStateSpecialized&&) noexcept = default;
+        CPNProductStateSpecialized& operator=(CPNProductStateSpecialized&&) noexcept = default;
+        CPNProductStateSpecialized(const CPNProductStateSpecialized&) = delete;
+        CPNProductStateSpecialized& operator=(const CPNProductStateSpecialized&) = delete;
+
+        [[nodiscard]] CPNProductState makeProductState() const {
+            return {_successorGeneratorState.marking, _buchiState};
+        }
+
+        [[nodiscard]] bool done() const {
+            return _done;
+        }
+
+        [[nodiscard]] void setDone() {
+            _done = true;
+        }
+
+        spot::twa_succ_iterator* getIterState() {
+            return _iterState.get();
+        }
+
+        void setIterState(std::unique_ptr<spot::twa_succ_iterator, BuchiStateIterDeleter> iterState) {
+            _iterState = std::move(iterState);
+        }
+
+        size_t getBuchiState() const {
+            return _buchiState;
+        }
+
+        void setBuchiState(size_t buchiState) {
+            _buchiState = buchiState;
+        }
+
+        void setSuccessorMarking(ColoredPetriNetMarking marking) {
+            _currentSuccessor.marking = std::move(marking);
+        }
+
+        SuccessorGeneratorState& getSuccessorGeneratorState() {
+            return _successorGeneratorState;
+        }
+
+        ColoredPetriNetMarking& getSuccessorMarking() {
+            return _currentSuccessor.marking;
+        }
+
+        const CPNProductState& getSuccessor() const {
+            return _currentSuccessor;
+        }
+    private:
+        size_t _buchiState;
+        SuccessorGeneratorState _successorGeneratorState;
+        CPNProductState _currentSuccessor;
+        std::unique_ptr<spot::twa_succ_iterator, BuchiStateIterDeleter> _iterState = nullptr;
+        bool _done = false;
     };
 }
 

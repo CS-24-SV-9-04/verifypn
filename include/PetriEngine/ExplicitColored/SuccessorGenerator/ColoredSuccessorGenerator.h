@@ -84,7 +84,7 @@ namespace PetriEngine::ExplicitColored {
                     newState.id = _nextId++;
                     fire(newState.marking, tid, binding);
                     state.nextBinding(nextBid);
-                    state._deadlock = false;
+                    state.setNotDeadlock();
                     return std::make_pair(newState, TraceMapStep {
                         newState.id,
                         state.id,
@@ -112,6 +112,7 @@ namespace PetriEngine::ExplicitColored {
                         auto newState = ColoredPetriNetStateEven{state, _net.getTransitionCount()};
                         newState.id = _nextId++;
                         fire(newState.marking, tid, binding);
+                        state.setNotDeadlock();
                         return std::make_pair(newState, TraceMapStep {
                             newState.id,
                             state.id,
