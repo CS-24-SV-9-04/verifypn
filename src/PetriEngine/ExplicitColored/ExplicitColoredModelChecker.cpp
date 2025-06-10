@@ -9,6 +9,7 @@
 #include <sstream>
 #include <LTL/LTLSearch.h>
 #include <PetriEngine/ExplicitColored/Algorithms/LTLNdfs.h>
+#include <PetriEngine/ExplicitColored/Algorithms/LTLCorrectNdfs.h>
 #include <PetriEngine/ExplicitColored/Algorithms/FireabilitySearch.h>
 
 namespace PetriEngine::ExplicitColored {
@@ -249,7 +250,7 @@ namespace PetriEngine::ExplicitColored {
         Result result;
         auto [negated_formula, negated_answer] = LTL::to_ltl(query, traces);
         if (options.colored_sucessor_generator == ColoredSuccessorGeneratorOption::EVEN) {
-            auto ndfs = makeLTLNdfs<ColoredPetriNetStateEven>(net, negated_formula, cpnBuilder, options, [&](CPNProductState productState) -> CPNProductStateSpecialized<ColoredPetriNetStateEven> {
+            auto ndfs = makeCorrectLTLNdfs<ColoredPetriNetStateEven>(net, negated_formula, cpnBuilder, options, [&](CPNProductState productState) -> CPNProductStateSpecialized<ColoredPetriNetStateEven> {
                 return CPNProductStateSpecialized<ColoredPetriNetStateEven>(productState.buchiState, {std::move(productState.marking), net.getTransitionCount()});
             });
 
@@ -259,7 +260,7 @@ namespace PetriEngine::ExplicitColored {
                 *searchStatistics = ndfs.GetSearchStatistics();
             }
         } else {
-            auto ndfs = makeLTLNdfs<ColoredPetriNetStateFixed>(net, negated_formula, cpnBuilder, options, [&](CPNProductState productState) -> CPNProductStateSpecialized<ColoredPetriNetStateFixed> {
+            auto ndfs = makeCorrectLTLNdfs<ColoredPetriNetStateFixed>(net, negated_formula, cpnBuilder, options, [&](CPNProductState productState) -> CPNProductStateSpecialized<ColoredPetriNetStateFixed> {
                 return CPNProductStateSpecialized<ColoredPetriNetStateFixed>(productState.buchiState, ColoredPetriNetStateFixed(std::move(productState.marking)));
             });
 

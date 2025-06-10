@@ -1,3 +1,5 @@
+#ifndef PRODUCTSTATEGENERATOR
+#define PRODUCTSTATEGENERATOR
 #include <LTL/Structures/BuchiAutomaton.h>
 #include <PetriEngine/ExplicitColored/ColoredPetriNet.h>
 #include <PetriEngine/ExplicitColored/ExpressionCompilers/ExplicitQueryPropositionCompiler.h>
@@ -128,3 +130,4 @@ namespace PetriEngine {
         };
     }
 }
+#endif

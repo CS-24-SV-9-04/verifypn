@@ -68,9 +68,9 @@ namespace PetriEngine::ExplicitColored {
                 return true;
             }
             waiting.emplace(_stateFactory(std::move(initialState)));
-            _searchStatistics.exploredStates = 1;
-            _searchStatistics.discoveredStates = 1;
-            _searchStatistics.peakWaitingStates = waiting.size();
+            _searchStatistics.exploredStates += 1;
+            _searchStatistics.discoveredStates += 1;
+            _searchStatistics.peakWaitingStates = std::max(static_cast<uint32_t>(waiting.size()), _searchStatistics.peakWaitingStates);
             while (!waiting.empty()){
                 auto& state = waiting.top();
                 auto nextState = _productStateGenerator.next(state);
