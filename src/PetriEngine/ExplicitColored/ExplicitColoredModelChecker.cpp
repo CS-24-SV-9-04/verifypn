@@ -249,7 +249,7 @@ namespace PetriEngine::ExplicitColored {
         std::vector<std::string> traces;
         Result result;
         auto [negated_formula, negated_answer] = LTL::to_ltl(query, traces);
-        if (options.colored_sucessor_generator == ColoredSuccessorGeneratorOption::EVEN) {
+        /*if (options.colored_sucessor_generator == ColoredSuccessorGeneratorOption::EVEN) {
             auto ndfs = makeCorrectLTLNdfs<ColoredPetriNetStateEven>(net, negated_formula, cpnBuilder, options, [&](CPNProductState productState) -> CPNProductStateSpecialized<ColoredPetriNetStateEven> {
                 return CPNProductStateSpecialized<ColoredPetriNetStateEven>(productState.buchiState, {std::move(productState.marking), net.getTransitionCount()});
             });
@@ -259,7 +259,7 @@ namespace PetriEngine::ExplicitColored {
             if (searchStatistics) {
                 *searchStatistics = ndfs.GetSearchStatistics();
             }
-        } else {
+        } else {*/
             auto ndfs = makeCorrectLTLNdfs<ColoredPetriNetStateFixed>(net, negated_formula, cpnBuilder, options, [&](CPNProductState productState) -> CPNProductStateSpecialized<ColoredPetriNetStateFixed> {
                 return CPNProductStateSpecialized<ColoredPetriNetStateFixed>(productState.buchiState, ColoredPetriNetStateFixed(std::move(productState.marking)));
             });
@@ -269,7 +269,7 @@ namespace PetriEngine::ExplicitColored {
             if (searchStatistics) {
                 *searchStatistics = ndfs.GetSearchStatistics();
             }
-        }
+        //}
         if (result == Result::UNKNOWN)
             return { Result::UNKNOWN, std::nullopt };
 
