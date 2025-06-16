@@ -7,7 +7,9 @@
 #include <PetriEngine/PQL/Evaluation.h>
 #include <utils/NullStream.h>
 #include <sstream>
+#include <LTL/LTLSearch.h>
 #include <PetriEngine/ExplicitColored/Algorithms/FireabilitySearch.h>
+#include "PetriEngine/ExplicitColored/SuccessorGenerator/CPNProductSuccessorGenerator.h"
 
 namespace PetriEngine::ExplicitColored {
     ExplicitColoredModelChecker::Result ExplicitColoredModelChecker::checkQuery(
@@ -231,6 +233,17 @@ namespace PetriEngine::ExplicitColored {
         return Result::UNKNOWN;
     }
 
+    ExplicitColoredModelChecker::Result ExplicitColoredModelChecker::_explicitColorLTL(
+        const ExplicitColoredPetriNetBuilder &cpnBuilder, const PQL::Condition_ptr &query, const options_t &options,
+        SearchStatistics *searchStatistics) const {
+        const auto& net = cpnBuilder.getNet();
+        std::vector<std::string> traces;
+        Result result;
+        auto [negated_formula, negated_answer] = LTL::to_ltl(query, traces);
+
+        //auto ndfs = LTL::NestedDepthFirstSearch()
+    }
+
     std::pair<ExplicitColoredModelChecker::Result, std::optional<std::vector<TraceStep>>> ExplicitColoredModelChecker::explicitColorCheck(
         const std::string& pnmlModel,
         const Condition_ptr& query,
@@ -252,7 +265,7 @@ namespace PetriEngine::ExplicitColored {
             throw base_error("Unknown builder error ", static_cast<uint32_t>(buildStatus));
         }
 
-        auto net = cpnBuilder.takeNet();
+        const auto& net = cpnBuilder.getNet();
 
         ExplicitWorklist worklist(net, query, cpnBuilder.getPlaceIndices(), cpnBuilder.getTransitionIndices(), options.seed(), options.trace != TraceLevel::None);
         bool result = worklist.check(options.strategy, options.colored_sucessor_generator);
@@ -322,7 +335,7 @@ namespace PetriEngine::ExplicitColored {
 
         const auto& variableColorTypes = cpnBuilder.getUnderlyingVariableColorTypes();
 
-        ColoredSuccessorGenerator successorGenerator(net);
+        ColoredSuccessorGenerator successorGenerator(net, 30);
         auto currentState = net.initial();
         std::vector<TraceStep> trace;
 

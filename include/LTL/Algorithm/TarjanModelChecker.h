@@ -43,7 +43,7 @@ namespace LTL {
      *   https://doi.org/10.1016/j.tcs.2005.07.004
      * </p>
      */
-    class TarjanModelChecker : public ModelChecker {
+    class TarjanModelChecker : public ModelChecker<PetriEngine::PetriNet> {
     public:
         TarjanModelChecker(const PetriEngine::PetriNet& net, const PetriEngine::PQL::Condition_ptr &cond,
                            const Structures::BuchiAutomaton &buchi,

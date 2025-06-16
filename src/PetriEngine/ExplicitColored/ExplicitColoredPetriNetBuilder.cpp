@@ -178,7 +178,7 @@ namespace PetriEngine::ExplicitColored {
         return ColoredPetriNetBuilderStatus::OK;
     }
 
-    ColoredPetriNet ExplicitColoredPetriNetBuilder::takeNet() {
+    const ColoredPetriNet& ExplicitColoredPetriNetBuilder::getNet() const {
         return std::move(_currentNet);
     }
 

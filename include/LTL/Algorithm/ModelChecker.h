@@ -33,11 +33,11 @@
 #include <algorithm>
 
 namespace LTL {
-
+    template<typename N>
     class ModelChecker {
     public:
 
-        ModelChecker(const PetriEngine::PetriNet& net,
+        ModelChecker(const N& net,
                 const PetriEngine::PQL::Condition_ptr &condition,
                 const Structures::BuchiAutomaton &buchi)
         : _net(net), _formula(condition),
@@ -107,7 +107,7 @@ namespace LTL {
                     << "\tmax tokens:        " << max_tokens << std::endl;
         }
 
-        const PetriEngine::PetriNet& _net;
+        const N& _net;
         PetriEngine::PQL::Condition_ptr _formula;
         Structures::ProductStateFactory _factory;
         const Structures::BuchiAutomaton& _buchi;

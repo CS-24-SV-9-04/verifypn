@@ -3,6 +3,8 @@
 
 #include <queue>
 #include <utility>
+#include <spot/twa/twagraph.hh>
+
 #include "ColoredPetriNetMarking.h"
 
 namespace PetriEngine::ExplicitColored {
@@ -59,6 +61,34 @@ namespace PetriEngine::ExplicitColored {
                     oldBid = bid + 1;
                 }
             }
+        }
+    };
+
+    struct BuchiStateIterDeleter {
+        const spot::twa_graph *_automaton;
+
+        void operator()(spot::twa_succ_iterator *iter) const
+        {
+            _automaton->release_iter(iter);
+        }
+    };
+
+    template<typename MarkingSuccInfo>
+    struct CPNProductSuccessorInfo {
+        MarkingSuccInfo markingSuccInfo;
+        std::unique_ptr<spot::twa_succ_iterator, BuchiStateIterDeleter> iterState = nullptr;
+        ColoredPetriNetMarking currentSuccessorMarking;
+        bool has_prev_state() const {
+            return iterState != nullptr;
+        }
+    };
+
+    struct CPNProductState {
+        ColoredPetriNetMarking marking;
+        size_t buchiState;
+        bool accepting;
+        bool is_accepting() const {
+            return accepting;
         }
     };
 }

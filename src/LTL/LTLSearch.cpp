@@ -233,7 +233,7 @@ namespace LTL {
         switch (algorithm) {
             case Algorithm::NDFS:
             {
-                _checker = std::make_unique<NestedDepthFirstSearch>(_net, _negated_formula, _buchi, k_bound, _traces.size());
+                _checker = std::make_unique<NestedDepthFirstSearch<PetriNet>>(_net, _negated_formula, _buchi, k_bound, _traces.size());
                 break;
             }
             case Algorithm::Tarjan:

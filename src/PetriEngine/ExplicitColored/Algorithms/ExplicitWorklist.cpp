@@ -21,7 +21,7 @@ namespace PetriEngine::ExplicitColored {
         const size_t seed,
         bool createTrace
     ) : _net(std::move(net)),
-        _successorGenerator(ColoredSuccessorGenerator{_net}),
+        _successorGenerator(ColoredSuccessorGenerator{_net, 30}),
         _seed(seed),
         _createTrace(createTrace)
     {

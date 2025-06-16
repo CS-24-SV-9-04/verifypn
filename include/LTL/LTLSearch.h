@@ -35,6 +35,7 @@
 #include "Algorithm/NestedDepthFirstSearch.h"
 
 namespace LTL {
+    std::tuple<PetriEngine::PQL::Condition_ptr, bool> to_ltl(const PetriEngine::PQL::Condition_ptr &formula, std::vector<std::string>& hyper_traces);
 
     class LTLSearch {
     private:
@@ -45,7 +46,7 @@ namespace LTL {
         PetriEngine::PQL::Condition_ptr _negated_formula;
         bool _negated_answer = false;
         APCompression _compression;
-        std::unique_ptr<ModelChecker> _checker;
+        std::unique_ptr<ModelChecker<PetriEngine::PetriNet>> _checker;
         std::unique_ptr<Heuristic> _heuristic;
         bool _result;
 

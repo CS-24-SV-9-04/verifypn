@@ -59,6 +59,14 @@ namespace PetriEngine::ExplicitColored {
             options_t& options
         ) const;
 
+
+        Result _explicitColorLTL(
+            const ExplicitColoredPetriNetBuilder& cpnBuilder,
+            const PQL::Condition_ptr &query,
+            const options_t &options,
+            SearchStatistics *searchStatistics
+        ) const;
+
         void _reduce(
             const std::string& pnmlModel,
             std::stringstream& out,
