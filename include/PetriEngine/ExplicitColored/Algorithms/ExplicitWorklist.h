@@ -67,8 +67,15 @@ namespace PetriEngine::ExplicitColored {
         template <typename T>
         [[nodiscard]] bool _bestfs();
 
+        template <typename T>
+        struct WaitingState {
+            ColoredPetriNetMarking marking;
+            T succInfo;
+            size_t id;
+        };
+
         template <template <typename> typename WaitingList, typename T>
-        [[nodiscard]] bool _genericSearch(WaitingList<T> waiting);
+        [[nodiscard]] bool _genericSearch(WaitingList<WaitingState<T>> waiting);
         [[nodiscard]] bool _getResult(bool found, bool fullStatespace) const;
     };
 }

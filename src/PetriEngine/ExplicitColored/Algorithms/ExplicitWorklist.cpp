@@ -10,6 +10,7 @@
 #include "PetriEngine/ExplicitColored/Algorithms/ColoredSearchTypes.h"
 #include "PetriEngine/ExplicitColored/FireabilityChecker.h"
 #include "PetriEngine/ExplicitColored/ExplicitErrors.h"
+#include "PetriEngine/ExplicitColored/PassedList.h"
 
 namespace PetriEngine::ExplicitColored {
     ExplicitWorklist::ExplicitWorklist(
@@ -38,10 +39,10 @@ namespace PetriEngine::ExplicitColored {
 
     bool ExplicitWorklist::check(const Strategy searchStrategy, const ColoredSuccessorGeneratorOption coloredSuccessorGeneratorOption) {
         if (coloredSuccessorGeneratorOption == ColoredSuccessorGeneratorOption::FIXED) {
-            return _search<ColoredPetriNetStateFixed>(searchStrategy);
+            return _search<FixedSuccessorInfo>(searchStrategy);
         }
         if (coloredSuccessorGeneratorOption == ColoredSuccessorGeneratorOption::EVEN) {
-            return _search<ColoredPetriNetStateEven>(searchStrategy);
+            return _search<EvenSuccessorInfo>(searchStrategy);
         }
         throw explicit_error(ExplicitErrorType::UNSUPPORTED_GENERATOR);
     }
@@ -76,28 +77,24 @@ namespace PetriEngine::ExplicitColored {
     }
 
     template <template <typename> typename WaitingList, typename T>
-    bool ExplicitWorklist::_genericSearch(WaitingList<T> waiting) {
-        ptrie::set<uint8_t> passed;
+    bool ExplicitWorklist::_genericSearch(WaitingList<WaitingState<T>> waiting) {
         ColoredEncoder encoder = ColoredEncoder{_net.getPlaces()};
-        const auto& initialState = _net.initial();
+        PassedList<ColoredEncoder, ColoredPetriNetMarking> passedList(encoder);
+
         const auto earlyTerminationCondition = _quantifier == Quantifier::EF;
 
-        auto size = encoder.encode(initialState);
-        passed.insert(encoder.data(), size);
-        if constexpr (std::is_same_v<T, ColoredPetriNetStateEven>) {
-            auto initial = ColoredPetriNetStateEven{initialState, _net.getTransitionCount()};
-            initial.id = 0;
-            waiting.add(std::move(initial));
-        } else {
-            auto initial = ColoredPetriNetStateFixed{initialState};
-            initial.id = 0;
-            waiting.add(std::move(initial));
-        }
+        passedList.add(_net.initial());
+
+        waiting.add(WaitingState<T> {
+            _net.initial(),
+            _successorGenerator.getInitSuccInfo<T>(),
+            0
+        });
 
         _searchStatistics.exploredStates = 1;
         _searchStatistics.discoveredStates = 1;
 
-        if (_check(initialState, 0) == earlyTerminationCondition) {
+        if (_check(_net.initial(), 0) == earlyTerminationCondition) {
             _counterExampleId = 0;
             return _getResult(true, encoder.isFullStatespace());
         }
@@ -106,43 +103,48 @@ namespace PetriEngine::ExplicitColored {
         }
 
         while (!waiting.empty()){
-            auto& next = waiting.next();
-            auto [successor, traceStep] = _successorGenerator.next(next);
-            if (next.done()) {
-                waiting.remove();
-                _successorGenerator.shrinkState(next.id);
-                continue;
-            }
+            WaitingState<T>& next = waiting.next();
 
-            if constexpr (std::is_same_v<T, ColoredPetriNetStateEven>) {
-                if (next.shuffle){
-                    next.shuffle = false;
+            ColoredPetriNetMarking nextMarking = next.marking;
+
+            std::optional<TraceMapStep> opt = _successorGenerator.next(nextMarking, next.succInfo, next.id);
+
+            if constexpr (std::is_same_v<T, EvenSuccessorInfo>) {
+                if (next.succInfo.shuffle) {
+                    next.succInfo.shuffle = false;
                     waiting.shuffle();
                     continue;
                 }
             }
 
-            successor.shrink();
-            const auto& marking = successor.marking;
-            size = encoder.encode(marking);
-            _searchStatistics.discoveredStates++;
-            if (!passed.exists(encoder.data(), size).first) {
+            if (opt == std::nullopt) {
+                waiting.remove();
+                _successorGenerator.shrinkState(next.id);
+                continue;
+            }
+
+            auto nextMarkingId = opt.value().id;
+            nextMarking.shrink();
+            if (!passedList.existsOrAdd(nextMarking)) {
                 if (_createTrace) {
-                    _stateMap.transitions.emplace(successor.id, traceStep);
+                    _stateMap.transitions.emplace(nextMarkingId, opt.value());
                 }
                 _searchStatistics.exploredStates += 1;
-                if (_check(marking, successor.id) == earlyTerminationCondition) {
+                if (_check(nextMarking, nextMarkingId) == earlyTerminationCondition) {
                     _searchStatistics.endWaitingStates = waiting.size();
                     _searchStatistics.biggestEncoding = encoder.getBiggestEncoding();
-                    _counterExampleId = successor.id;
+                    _counterExampleId = nextMarkingId;
                     return _getResult(true, encoder.isFullStatespace());
                 }
-                waiting.add(std::move(successor));
-                passed.insert(encoder.data(), size);
+
+                waiting.add(WaitingState<T> {
+                    std::move(nextMarking),
+                    _successorGenerator.getInitSuccInfo<T>(),
+                    nextMarkingId
+                });
                 _searchStatistics.peakWaitingStates = std::max(waiting.size(), _searchStatistics.peakWaitingStates);
             }
         }
-
         _searchStatistics.endWaitingStates = waiting.size();
         _searchStatistics.biggestEncoding = encoder.getBiggestEncoding();
         return _getResult(false, encoder.isFullStatespace());
@@ -167,23 +169,23 @@ namespace PetriEngine::ExplicitColored {
 
     template <typename T>
     bool ExplicitWorklist::_dfs() {
-        return _genericSearch<DFSStructure>(DFSStructure<T> {});
+        return _genericSearch<DFSStructure, T>(DFSStructure<WaitingState<T>> {});
     }
 
     template <typename T>
     bool ExplicitWorklist::_bfs() {
-        return _genericSearch<BFSStructure>(BFSStructure<T> {});
+        return _genericSearch<BFSStructure, T>(BFSStructure<WaitingState<T>> {});
     }
 
     template <typename T>
     bool ExplicitWorklist::_rdfs() {
-        return _genericSearch<RDFSStructure>(RDFSStructure<T>(_seed));
+        return _genericSearch<RDFSStructure, T>(RDFSStructure<WaitingState<T>>(_seed));
     }
 
     template <typename T>
     bool ExplicitWorklist::_bestfs() {
-        return _genericSearch<BestFSStructure>(
-            BestFSStructure<T>(
+        return _genericSearch<BestFSStructure, T>(
+            BestFSStructure<WaitingState<T>>(
                 _seed,
                 _gammaQuery,
                 _quantifier == Quantifier::AG

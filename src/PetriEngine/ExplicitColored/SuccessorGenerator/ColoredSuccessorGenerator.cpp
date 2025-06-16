@@ -167,6 +167,60 @@ namespace PetriEngine::ExplicitColored{
         return true;
     }
 
+    std::optional<TraceMapStep> ColoredSuccessorGenerator::next(ColoredPetriNetMarking &marking,
+        FixedSuccessorInfo &fixedSuccessorInfo, size_t id) const {
+        const auto tid = fixedSuccessorInfo.currentTransition;
+        const auto bid = fixedSuccessorInfo.currentBinding;
+        Binding binding;
+        while (tid < _net.getTransitionCount()) {
+            const auto totalBindings = _net._transitions[tid].totalBindings;
+            const auto nextBid = findNextValidBinding(marking, tid, bid, totalBindings, binding, id);
+            if (nextBid != std::numeric_limits<Binding_t>::max()) {
+                auto step = TraceMapStep {
+                    _nextId++,
+                    id,
+                    tid,
+                    nextBid
+                };
+
+                fire(marking, tid, binding);
+                fixedSuccessorInfo.currentBinding += 1;
+                return step;
+            }
+            fixedSuccessorInfo.currentBinding = 0;
+            fixedSuccessorInfo.currentTransition += 1;
+        }
+        fixedSuccessorInfo.done = true;
+        return std::nullopt;
+    }
+
+    std::optional<TraceMapStep> ColoredSuccessorGenerator::next(ColoredPetriNetMarking &marking,
+                                                            EvenSuccessorInfo &evenSuccessorInfo, size_t id) const {
+        auto [tid, bid] = evenSuccessorInfo.getNextPair();
+        auto totalBindings = _net._transitions[tid].totalBindings;
+        Binding binding;
+        while (bid != std::numeric_limits<Binding_t>::max()) {
+            const auto nextBid = findNextValidBinding(marking, tid, bid, totalBindings, binding, id);
+            evenSuccessorInfo.updatePair(tid, nextBid);
+            if (nextBid != std::numeric_limits<Binding_t>::max()) {
+                //TODO: maybe remove id
+                auto step = TraceMapStep {
+                    _nextId++,
+                    id,
+                    tid,
+                    nextBid
+                };
+
+                fire(marking, tid, binding);
+
+                return step;
+            }
+            std::tie(tid, bid) = evenSuccessorInfo.getNextPair();
+            totalBindings = _net._transitions[tid].totalBindings;
+        }
+        return std::nullopt;
+    }
+
     Binding_t ColoredSuccessorGenerator::findNextValidBinding(const ColoredPetriNetMarking& marking, const Transition_t tid, Binding_t bid, const uint64_t totalBindings, Binding& binding, size_t stateId) const {
         if (bid == 0 && _shouldEarlyTerminateTransition(marking, tid)) {
             return std::numeric_limits<Binding_t>::max();
