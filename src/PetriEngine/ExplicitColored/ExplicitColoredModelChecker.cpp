@@ -236,12 +236,15 @@ namespace PetriEngine::ExplicitColored {
     ExplicitColoredModelChecker::Result ExplicitColoredModelChecker::_explicitColorLTL(
         const ExplicitColoredPetriNetBuilder &cpnBuilder, const PQL::Condition_ptr &query, const options_t &options,
         SearchStatistics *searchStatistics) const {
-        const auto& net = cpnBuilder.getNet();
-        std::vector<std::string> traces;
-        Result result;
-        auto [negated_formula, negated_answer] = LTL::to_ltl(query, traces);
+        ColoredPetriNetData cpnd = {
+            cpnBuilder.getNet(),
+            cpnBuilder
+        };
 
-        //auto ndfs = LTL::NestedDepthFirstSearch()
+        LTL::LTLSearch<ColoredPetriNet> ltlSearch(cpnd, query, options.buchiOptimization, options.ltl_compress_aps);
+        auto answer = ltlSearch.solve(false, 0, LTL::Algorithm::NDFS, LTL::LTLPartialOrder::None, Strategy::RDFS, LTL::LTLHeuristic::RDFS);
+        std::cout << "answer: " << answer << std::endl;
+        return answer ? Result::SATISFIED : Result::UNSATISFIED;
     }
 
     std::pair<ExplicitColoredModelChecker::Result, std::optional<std::vector<TraceStep>>> ExplicitColoredModelChecker::explicitColorCheck(
@@ -263,6 +266,10 @@ namespace PetriEngine::ExplicitColored {
             return std::make_pair(Result::UNKNOWN, std::nullopt);
         default:
             throw base_error("Unknown builder error ", static_cast<uint32_t>(buildStatus));
+        }
+
+        if (options.logic == TemporalLogic::LTL) {
+            return std::make_pair(_explicitColorLTL(cpnBuilder, query, options, searchStatistics), std::nullopt);
         }
 
         const auto& net = cpnBuilder.getNet();

@@ -169,21 +169,19 @@ namespace PetriEngine::ExplicitColored{
 
     std::optional<TraceMapStep> ColoredSuccessorGenerator::next(ColoredPetriNetMarking &marking,
         FixedSuccessorInfo &fixedSuccessorInfo, size_t id) const {
-        const auto tid = fixedSuccessorInfo.currentTransition;
-        const auto bid = fixedSuccessorInfo.currentBinding;
         Binding binding;
-        while (tid < _net.getTransitionCount()) {
-            const auto totalBindings = _net._transitions[tid].totalBindings;
-            const auto nextBid = findNextValidBinding(marking, tid, bid, totalBindings, binding, id);
+        while (fixedSuccessorInfo.currentTransition < _net.getTransitionCount()) {
+            const auto totalBindings = _net._transitions[fixedSuccessorInfo.currentTransition].totalBindings;
+            const auto nextBid = findNextValidBinding(marking, fixedSuccessorInfo.currentTransition, fixedSuccessorInfo.currentBinding, totalBindings, binding, id);
             if (nextBid != std::numeric_limits<Binding_t>::max()) {
                 auto step = TraceMapStep {
                     _nextId++,
                     id,
-                    tid,
+                    fixedSuccessorInfo.currentTransition,
                     nextBid
                 };
 
-                fire(marking, tid, binding);
+                fire(marking, fixedSuccessorInfo.currentTransition, binding);
                 fixedSuccessorInfo.currentBinding += 1;
                 return step;
             }

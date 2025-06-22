@@ -31,13 +31,29 @@
 
 #include <iomanip>
 #include <algorithm>
+#include <PetriEngine/ExplicitColored/ColoredPetriNet.h>
+#include <PetriEngine/ExplicitColored/ColoredPetriNetState.h>
+#include <PetriEngine/ExplicitColored/ExplicitColoredPetriNetBuilder.h>
 
 namespace LTL {
+    template<typename T>
+    using PetriNetDataType = std::conditional_t<
+        std::is_same_v<T, PetriEngine::PetriNet>,
+        PetriEngine::PetriNet,
+        PetriEngine::ExplicitColored::ColoredPetriNetData
+    >;
+
+    template<typename T>
+    using FactoryType = std::conditional_t<
+        std::is_same_v<T, PetriEngine::PetriNet>,
+        Structures::ProductStateFactory,
+        PetriEngine::ExplicitColored::CPNProductStateFactory
+    >;
+
     template<typename N>
     class ModelChecker {
     public:
-
-        ModelChecker(const N& net,
+        ModelChecker(const PetriNetDataType<N>& net,
                 const PetriEngine::PQL::Condition_ptr &condition,
                 const Structures::BuchiAutomaton &buchi)
         : _net(net), _formula(condition),
@@ -107,9 +123,9 @@ namespace LTL {
                     << "\tmax tokens:        " << max_tokens << std::endl;
         }
 
-        const N& _net;
+        const PetriNetDataType<N>& _net;
         PetriEngine::PQL::Condition_ptr _formula;
-        Structures::ProductStateFactory _factory;
+        FactoryType<N> _factory;
         const Structures::BuchiAutomaton& _buchi;
         bool _shortcircuitweak;
         bool _build_trace = false;

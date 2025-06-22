@@ -3,6 +3,7 @@
 
 #include <queue>
 #include <utility>
+#include <LTL/Structures/BuchiAutomaton.h>
 #include <spot/twa/twagraph.hh>
 
 #include "ColoredPetriNetMarking.h"
@@ -78,6 +79,8 @@ namespace PetriEngine::ExplicitColored {
         MarkingSuccInfo markingSuccInfo;
         std::unique_ptr<spot::twa_succ_iterator, BuchiStateIterDeleter> iterState = nullptr;
         ColoredPetriNetMarking currentSuccessorMarking;
+        size_t _last_state;
+        bool deadlock = false;
         bool has_prev_state() const {
             return iterState != nullptr;
         }
@@ -87,9 +90,38 @@ namespace PetriEngine::ExplicitColored {
         ColoredPetriNetMarking marking;
         size_t buchiState;
         bool accepting;
-        bool is_accepting() const {
+        [[nodiscard]] bool is_accepting() const {
             return accepting;
         }
+
+        size_t get_buchi_state() const {
+            return buchiState;
+        }
+
+
+    };
+
+    struct ColoredPetriNetData {
+        const PetriEngine::ExplicitColored::ColoredPetriNet& cpn;
+        const PetriEngine::ExplicitColored::ExplicitColoredPetriNetBuilder& builder;
+    };
+
+    class CPNProductStateFactory {
+    public:
+        CPNProductStateFactory(const ColoredPetriNetData& net, const LTL::Structures::BuchiAutomaton& aut)
+            : _net(net.cpn), _aut(aut) {}
+
+        CPNProductState new_state(size_t hyper_traces = 1) {
+            assert(hyper_traces == 1);
+            return CPNProductState {
+                _net.initial(),
+                _aut.buchi().get_init_state_number()
+            };
+        }
+
+    private:
+        const ColoredPetriNet& _net;
+        const LTL::Structures::BuchiAutomaton& _aut;
     };
 }
 

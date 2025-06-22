@@ -293,7 +293,7 @@ bool recursiveSolve(Condition* query, PetriEngine::PetriNet* net,
         }
         if(ok)
         {
-            LTL::LTLSearch search(*net, q, options.buchiOptimization, options.ltl_compress_aps);
+            LTL::LTLSearch<PetriNet> search(*net, q, options.buchiOptimization, options.ltl_compress_aps);
             auto r = search.solve(false, options.kbound, options.ltlalgorithm, options.ltl_por,
                             options.strategy, options.ltlHeuristic, options.ltluseweak, options.seed_offset);
             result.numberOfMarkings += search.markings();

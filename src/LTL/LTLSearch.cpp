@@ -105,9 +105,9 @@ namespace LTL {
     std::unique_ptr<Heuristic> make_heuristic(const PetriNet& net,
         const Condition_ptr &negated_formula,
         const Structures::BuchiAutomaton& automaton,
-        const Strategy search_strategy = Strategy::HEUR,
-        const LTLHeuristic heuristics = LTLHeuristic::Automaton,
-        const uint64_t seed = 0) {
+        const Strategy search_strategy,
+        const LTLHeuristic heuristics,
+        const uint64_t seed) {
         if (search_strategy == Strategy::RDFS || heuristics == LTLHeuristic::RDFS) {
             return std::make_unique<RandomHeuristic>(seed);
         }
@@ -127,128 +127,5 @@ namespace LTL {
             default:
                 throw base_error("Unknown LTL heuristics: ", to_underlying(heuristics));
         }
-    }
-
-    LTLSearch::LTLSearch(const PetriEngine::PetriNet& net,
-        const PetriEngine::PQL::Condition_ptr &query, const BuchiOptimization optimization, const APCompression compression)
-    : _net(net), _query(query), _compression(compression) {
-        if(!LTLValidator().isLTL(query))
-        {
-            std::stringstream ss;
-            query->toString(ss);
-            throw base_error("Formula is not in supported LTL or HyperLTL fragment: ", ss.str());
-        }
-        _traces.clear();
-        std::tie(_negated_formula, _negated_answer) = to_ltl(query, _traces);
-        _buchi = make_buchi_automaton(_negated_formula, optimization, compression);
-    }
-
-    void LTLSearch::print_buchi(std::ostream& out, const BuchiOutType type)
-    {
-        if(_compression != APCompression::None)
-            throw base_error("Printing of Büchi automata only supported with APCompression::None");
-        _buchi.output_buchi(out, type);
-    }
-
-    void LTLSearch::print_stats(std::ostream& out)
-    {
-        _checker->print_stats(out);
-    }
-
-    // TODO refactor this into a trace-printer, this does not belong in the solver.
-    void LTLSearch::_print_trace(const PetriEngine::Reducer& reducer, std::ostream& os) const {
-
-        const auto& trace = _checker->trace();
-        const size_t ntraces = _traces.empty() ? 1 : _traces.size();
-        std::string tindent = ntraces <= 1 ? "" : "  ";
-        std::string indent = tindent + "  ";
-        std::string token_indent = indent + "  ";
-        if(!_traces.empty())
-            os << "<trace-list>\n";
-        for(size_t j = 0; j < ntraces; ++j)
-        {
-            bool printed_deadlock = false;
-            os << tindent << "<trace";
-            if(!_traces.empty())
-                os << " name=\"" << _traces[j] << "\"";
-            os << ">\n";
-            reducer.initFire(os);
-            for (size_t i = 0; i < trace.size(); ++i) {
-                if (i == _checker->loop_index())
-                {
-                    if(trace[i][j] < std::numeric_limits<ptrie::uint>::max() - 1) // otherwise it is a deadlock.
-                        os << indent << "<loop/>\n";
-                }
-                assert(trace[i].size() == ntraces);
-                print_transition(trace[i][j], reducer, os, indent, token_indent, printed_deadlock);
-            }
-            os << std::endl << tindent << "</trace>" << std::endl;
-        }
-        if(!_traces.empty())
-            os << "</trace-list>\n";
-    }
-
-    std::ostream &
-    LTLSearch::print_transition(uint32_t transition, const PetriEngine::Reducer& reducer, std::ostream &os, const std::string& _indent, const std::string& _token_indent, bool& printed_deadlock) const {
-        if (transition >= std::numeric_limits<ptrie::uint>::max() - 1) {
-            if(!printed_deadlock)
-                os << _indent << "<deadlock/>";
-            printed_deadlock = true;
-            return os;
-        }
-
-        os << _indent << "<transition id="
-                // field width stuff obsolete without büchi state printing.
-                << std::quoted(*_net.transitionNames()[transition]);
-        os << ">\n";
-        reducer.tokenConsumption(os, *_net.transitionNames()[transition]);
-        os << std::endl;
-        os << _indent << "</transition>\n";
-        reducer.postFire(os, *_net.transitionNames()[transition]);
-        return os;
-    }
-
-    bool LTLSearch::print_trace(std::ostream& out, const PetriEngine::Reducer& reducer) const
-    {
-        if(!_result)
-        {
-            _print_trace(reducer, out);
-            return true;
-        }
-        else
-            return false;
-    }
-
-    bool LTLSearch::solve(  const bool trace,
-                            const uint64_t k_bound,
-                            const Algorithm algorithm,
-                            const LTL::LTLPartialOrder por,
-                            const Strategy search_strategy,
-                            const LTLHeuristic heuristics_flag,
-                            const bool utilize_weak,
-                            const uint64_t seed) {
-
-        _heuristic = make_heuristic(_net, _negated_formula, _buchi, search_strategy, heuristics_flag, seed);
-
-        switch (algorithm) {
-            case Algorithm::NDFS:
-            {
-                _checker = std::make_unique<NestedDepthFirstSearch<PetriNet>>(_net, _negated_formula, _buchi, k_bound, _traces.size());
-                break;
-            }
-            case Algorithm::Tarjan:
-                _checker = std::make_unique<TarjanModelChecker>(_net, _negated_formula, _buchi, k_bound, _traces.size());
-                break;
-            case Algorithm::None:
-            default:
-                assert(false);
-                std::cerr << "Error: cannot LTL verify with algorithm None";
-        }
-        _checker->set_utilize_weak(utilize_weak);
-        _checker->set_heuristic(_heuristic.get());
-        _checker->set_partial_order(por);
-        _checker->set_tracing(trace);
-        _result = _checker->check();
-        return _result xor _negated_answer;
     }
 }

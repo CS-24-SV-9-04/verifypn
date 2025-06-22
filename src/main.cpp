@@ -415,7 +415,7 @@ int main(int argc, const char** argv) {
                 options.usedltl = true;
 
                 for (auto qid : ltl_ids) {
-                    LTL::LTLSearch search(*net, queries[qid], options.buchiOptimization, options.ltl_compress_aps);
+                    LTL::LTLSearch<PetriNet> search(*net, queries[qid], options.buchiOptimization, options.ltl_compress_aps);
                     auto res = search.solve(options.trace != TraceLevel::None, options.kbound,
                         options.ltlalgorithm, options.stubbornreduction ? options.ltl_por : LTL::LTLPartialOrder::None,
                         options.strategy, options.ltlHeuristic, options.ltluseweak, options.seed_offset);
@@ -570,7 +570,7 @@ int main(int argc, const char** argv) {
 int explicitColored(shared_string_set& stringSet, options_t& options, std::vector<Condition_ptr>& queries, const std::vector<std::string>& queryNames) {
     using namespace ExplicitColored;
 
-    if (!options.isCPN || queries.empty() || !isReachability(queries[0])) {
+    if (!options.isCPN || queries.empty()) {
         std::cerr << "Explicit state-space search is supported only for colored nets and reachability queries.";
         return to_underlying(ReturnValue::UnknownCode);
     }
