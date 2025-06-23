@@ -48,6 +48,8 @@ namespace PetriEngine::ExplicitColored {
                 return result;
             }
         }
+
+        return Result::UNKNOWN;
         if (isOverApproximationOnly) {
             return Result::UNKNOWN;
         }
