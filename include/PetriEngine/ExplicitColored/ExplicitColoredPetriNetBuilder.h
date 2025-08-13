@@ -34,6 +34,7 @@ namespace PetriEngine::ExplicitColored {
         const std::shared_ptr<std::unordered_map<std::string, Variable_t>>& getVariableIndices() const;
         const std::vector<const Colored::ColorType*>& getUnderlyingVariableColorTypes() const;
         const Colored::ColorType* getPlaceUnderlyingColorType(Place_t place) const;
+        const ColoredPetriNet& getNet() const;
 
         ColoredPetriNetBuilderStatus build();
         ColoredPetriNet takeNet();

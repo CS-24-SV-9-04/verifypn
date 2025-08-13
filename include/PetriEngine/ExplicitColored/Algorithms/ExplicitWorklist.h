@@ -39,7 +39,7 @@ namespace PetriEngine::ExplicitColored {
             bool createTrace
         );
 
-        bool check(Strategy searchStrategy, ColoredSuccessorGeneratorOption coloredSuccessorGeneratorOption);
+        Result check(Strategy searchStrategy, ColoredSuccessorGeneratorOption coloredSuccessorGeneratorOption);
         [[nodiscard]] const SearchStatistics& GetSearchStatistics() const;
         std::optional<uint64_t> getCounterExampleId() const;
         std::optional<std::vector<InternalTraceStep>> getTraceTo(uint64_t counterExampleId) const;
@@ -55,21 +55,21 @@ namespace PetriEngine::ExplicitColored {
         StateMap _stateMap;
         SearchStatistics _searchStatistics;
         template <typename SuccessorGeneratorState>
-        [[nodiscard]] bool _search(Strategy searchStrategy);
+        [[nodiscard]] Result _search(Strategy searchStrategy);
         [[nodiscard]] bool _check(const ColoredPetriNetMarking& state, size_t id) const;
 
         template <typename T>
-        [[nodiscard]] bool _dfs();
+        [[nodiscard]] Result _dfs();
         template <typename T>
-        [[nodiscard]] bool _bfs();
+        [[nodiscard]] Result _bfs();
         template <typename T>
-        [[nodiscard]] bool _rdfs();
+        [[nodiscard]] Result _rdfs();
         template <typename T>
-        [[nodiscard]] bool _bestfs();
+        [[nodiscard]] Result _bestfs();
 
         template <template <typename> typename WaitingList, typename T>
-        [[nodiscard]] bool _genericSearch(WaitingList<T> waiting);
-        [[nodiscard]] bool _getResult(bool found, bool fullStatespace) const;
+        [[nodiscard]] Result _genericSearch(WaitingList<T> waiting);
+        [[nodiscard]] Result _getResult(bool found, bool fullStatespace) const;
     };
 }
 

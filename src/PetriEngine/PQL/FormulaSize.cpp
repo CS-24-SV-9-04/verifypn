@@ -109,6 +109,9 @@ void FormulaSizeVisitor::_accept(const UnfoldedIdentifierExpr *condition) {
 }
 
 void FormulaSizeVisitor::_accept(const ShallowCondition *condition) {
+    if (condition->getCompiled() == nullptr) {
+        RETURN(1,0)
+    }
     auto [x, y] = subvisit(condition->getCompiled());
     RETURN(x, y)
 }

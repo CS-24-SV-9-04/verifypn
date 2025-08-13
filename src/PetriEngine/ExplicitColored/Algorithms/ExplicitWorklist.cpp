@@ -1,6 +1,7 @@
 #ifndef EXPLICITWORKLIST_CPP
 #define EXPLICITWORKLIST_CPP
 
+#include <PetriEngine/ExplicitColored/PassedList.h>
 #include "PetriEngine/ExplicitColored/Algorithms/ExplicitWorklist.h"
 #include <PetriEngine/options.h>
 #include "PetriEngine/ExplicitColored/SuccessorGenerator/ColoredSuccessorGenerator.h"
@@ -20,7 +21,7 @@ namespace PetriEngine::ExplicitColored {
         const size_t seed,
         bool createTrace
     ) : _net(std::move(net)),
-        _successorGenerator(ColoredSuccessorGenerator{_net}),
+        _successorGenerator(ColoredSuccessorGenerator{_net, 30}),
         _seed(seed),
         _createTrace(createTrace)
     {
@@ -36,7 +37,7 @@ namespace PetriEngine::ExplicitColored {
         }
     }
 
-    bool ExplicitWorklist::check(const Strategy searchStrategy, const ColoredSuccessorGeneratorOption coloredSuccessorGeneratorOption) {
+    Result ExplicitWorklist::check(const Strategy searchStrategy, const ColoredSuccessorGeneratorOption coloredSuccessorGeneratorOption) {
         if (coloredSuccessorGeneratorOption == ColoredSuccessorGeneratorOption::FIXED) {
             return _search<ColoredPetriNetStateFixed>(searchStrategy);
         }
@@ -76,14 +77,16 @@ namespace PetriEngine::ExplicitColored {
     }
 
     template <template <typename> typename WaitingList, typename T>
-    bool ExplicitWorklist::_genericSearch(WaitingList<T> waiting) {
-        ptrie::set<uint8_t> passed;
-        ColoredEncoder encoder = ColoredEncoder{_net.getPlaces()};
+    Result ExplicitWorklist::_genericSearch(WaitingList<T> waiting) {
+        auto encoder = ColoredEncoder{_net.getPlaces()};
+        PassedList<ColoredEncoder, ColoredPetriNetMarking> passed(encoder);
+
         const auto& initialState = _net.initial();
         const auto earlyTerminationCondition = _quantifier == Quantifier::EF;
 
-        auto size = encoder.encode(initialState);
-        passed.insert(encoder.data(), size);
+
+        passed.add(initialState);
+
         if constexpr (std::is_same_v<T, ColoredPetriNetStateEven>) {
             auto initial = ColoredPetriNetStateEven{initialState, _net.getTransitionCount()};
             initial.id = 0;
@@ -99,10 +102,10 @@ namespace PetriEngine::ExplicitColored {
 
         if (_check(initialState, 0) == earlyTerminationCondition) {
             _counterExampleId = 0;
-            return _getResult(true, encoder.isFullStatespace());
+            return _getResult(true, passed.isFullStateSpace());
         }
         if (_net.getTransitionCount() == 0) {
-            return _getResult(false, encoder.isFullStatespace());
+            return _getResult(false, passed.isFullStateSpace());
         }
 
         while (!waiting.empty()){
@@ -124,32 +127,30 @@ namespace PetriEngine::ExplicitColored {
 
             successor.shrink();
             const auto& marking = successor.marking;
-            size = encoder.encode(marking);
             _searchStatistics.discoveredStates++;
-            if (!passed.exists(encoder.data(), size).first) {
+            if (!passed.existsOrAdd(marking)) {
                 if (_createTrace) {
                     _stateMap.transitions.emplace(successor.id, traceStep);
                 }
                 _searchStatistics.exploredStates += 1;
                 if (_check(marking, successor.id) == earlyTerminationCondition) {
                     _searchStatistics.endWaitingStates = waiting.size();
-                    _searchStatistics.biggestEncoding = encoder.getBiggestEncoding();
+                    _searchStatistics.biggestEncoding = passed.getBiggestEncoding();
                     _counterExampleId = successor.id;
-                    return _getResult(true, encoder.isFullStatespace());
+                    return _getResult(true, passed.isFullStateSpace());
                 }
                 waiting.add(std::move(successor));
-                passed.insert(encoder.data(), size);
                 _searchStatistics.peakWaitingStates = std::max(waiting.size(), _searchStatistics.peakWaitingStates);
             }
         }
 
         _searchStatistics.endWaitingStates = waiting.size();
-        _searchStatistics.biggestEncoding = encoder.getBiggestEncoding();
-        return _getResult(false, encoder.isFullStatespace());
+        _searchStatistics.biggestEncoding = passed.getBiggestEncoding();
+        return _getResult(false, passed.isFullStateSpace());
     }
 
     template<typename SuccessorGeneratorState>
-    bool ExplicitWorklist::_search(const Strategy searchStrategy) {
+    Result ExplicitWorklist::_search(const Strategy searchStrategy) {
         switch (searchStrategy) {
             case Strategy::DEFAULT:
             case Strategy::DFS:
@@ -166,22 +167,22 @@ namespace PetriEngine::ExplicitColored {
     }
 
     template <typename T>
-    bool ExplicitWorklist::_dfs() {
+    Result ExplicitWorklist::_dfs() {
         return _genericSearch<DFSStructure>(DFSStructure<T> {});
     }
 
     template <typename T>
-    bool ExplicitWorklist::_bfs() {
+    Result ExplicitWorklist::_bfs() {
         return _genericSearch<BFSStructure>(BFSStructure<T> {});
     }
 
     template <typename T>
-    bool ExplicitWorklist::_rdfs() {
+    Result ExplicitWorklist::_rdfs() {
         return _genericSearch<RDFSStructure>(RDFSStructure<T>(_seed));
     }
 
     template <typename T>
-    bool ExplicitWorklist::_bestfs() {
+    Result ExplicitWorklist::_bestfs() {
         return _genericSearch<BestFSStructure>(
             BestFSStructure<T>(
                 _seed,
@@ -191,18 +192,18 @@ namespace PetriEngine::ExplicitColored {
             );
     }
 
-    bool ExplicitWorklist::_getResult(const bool found, const bool fullStatespace) const {
-        Reachability::ResultPrinter::Result res;
+    Result ExplicitWorklist::_getResult(const bool found, const bool fullStatespace) const {
+        Result res;
         if (!found && !fullStatespace) {
-            res = Reachability::ResultPrinter::Result::Unknown;
-        }else {
+            res = Result::UNKNOWN;
+        } else {
             res = (
            (!found && _quantifier == Quantifier::AG) ||
            (found && _quantifier == Quantifier::EF))
-               ? Reachability::ResultPrinter::Result::Satisfied
-               : Reachability::ResultPrinter::Result::NotSatisfied;
+               ? Result::SATISFIED
+               : Result::UNSATISFIED;
         }
-        return res == Reachability::ResultPrinter::Result::Satisfied;
+        return res;
     }
 }
 

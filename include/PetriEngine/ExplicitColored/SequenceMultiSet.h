@@ -139,11 +139,11 @@ namespace PetriEngine::ExplicitColored {
             auto aIt = _counts.begin();
             auto bIt = other._counts.begin();
             while (aIt != _counts.end() && bIt != other._counts.end()) {
-                if (aIt->second == 0) {
+                if (aIt->second <= 0) {
                     ++aIt;
                     continue;
                 }
-                if (bIt->second == 0) {
+                if (bIt->second <= 0) {
                     ++bIt;
                     continue;
                 }

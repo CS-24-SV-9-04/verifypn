@@ -182,6 +182,10 @@ namespace PetriEngine::ExplicitColored {
         return std::move(_currentNet);
     }
 
+    const ColoredPetriNet & ExplicitColoredPetriNetBuilder::getNet() const {
+        return _currentNet;
+    }
+
     void ExplicitColoredPetriNetBuilder::_createArcsAndTransitions() {
         const auto transitions = _currentNet._transitions.size();
         auto transIndices = std::vector<std::pair<uint32_t,uint32_t>>(transitions + 1);
