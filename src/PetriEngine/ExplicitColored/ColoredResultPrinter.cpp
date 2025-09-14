@@ -14,7 +14,9 @@ namespace PetriEngine::ExplicitColored {
                 << "	explored states:       " << searchStatistics.exploredStates << std::endl
                 << "	peak waiting states:   " << searchStatistics.peakWaitingStates << std::endl
                 << "	end waiting states:    " << searchStatistics.endWaitingStates << std::endl
-                << "	biggest encoded state: " << searchStatistics.biggestEncoding << " bytes" << std::endl;
+                << "	biggest encoded state: " << searchStatistics.biggestEncoding << " bytes" << std::endl
+                << "	bindings generated:    " << searchStatistics.checkedBindings << std::endl;
+
         if (trace != nullptr) {
             _printTrace(*trace);
         }

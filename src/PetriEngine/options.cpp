@@ -572,6 +572,13 @@ bool options_t::parse(int argc, const char** argv) {
                 throw base_error("Invalid argument ", std::quoted(argv[i + 1]), " to --colored-successor-generator");
             }
             ++i;
+        } else if (std::strcmp(argv[i], "--constrained-bindings-threshold") == 0) {
+            if (argc == i + 1) {
+                throw base_error("Missing argument to --constrained-bindings-threshold");
+            }
+            if (sscanf(argv[++i], "%llu", &constrained_bindings_threshold) != 1 || constrained_bindings_threshold < 0) {
+                throw base_error("Argument Error: Invalid constrained bindings threshold argument ", std::quoted(argv[i]));
+            }
         }
 #ifdef VERIFYPN_MC_Simplification
         else if (std::strcmp(argv[i], "-z") == 0) {

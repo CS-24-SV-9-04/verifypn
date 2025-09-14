@@ -18,9 +18,10 @@ namespace PetriEngine::ExplicitColored {
         const std::unordered_map<std::string, uint32_t>& placeNameIndices,
         const std::unordered_map<std::string, Transition_t>& transitionNameIndices,
         const size_t seed,
-        bool createTrace
+        const bool createTrace,
+        const Binding_t constrainedBindingThreshold
     ) : _net(std::move(net)),
-        _successorGenerator(ColoredSuccessorGenerator{_net}),
+        _successorGenerator(ColoredSuccessorGenerator{_net, constrainedBindingThreshold}),
         _seed(seed),
         _createTrace(createTrace)
     {
@@ -96,7 +97,6 @@ namespace PetriEngine::ExplicitColored {
 
         _searchStatistics.exploredStates = 1;
         _searchStatistics.discoveredStates = 1;
-
         if (_check(initialState, 0) == earlyTerminationCondition) {
             _counterExampleId = 0;
             return _getResult(true, encoder.isFullStatespace());
@@ -134,6 +134,7 @@ namespace PetriEngine::ExplicitColored {
                 if (_check(marking, successor.id) == earlyTerminationCondition) {
                     _searchStatistics.endWaitingStates = waiting.size();
                     _searchStatistics.biggestEncoding = encoder.getBiggestEncoding();
+                    _searchStatistics.checkedBindings = _successorGenerator.checkedBindings;
                     _counterExampleId = successor.id;
                     return _getResult(true, encoder.isFullStatespace());
                 }
@@ -142,7 +143,7 @@ namespace PetriEngine::ExplicitColored {
                 _searchStatistics.peakWaitingStates = std::max(waiting.size(), _searchStatistics.peakWaitingStates);
             }
         }
-
+        _searchStatistics.checkedBindings = _successorGenerator.checkedBindings;
         _searchStatistics.endWaitingStates = waiting.size();
         _searchStatistics.biggestEncoding = encoder.getBiggestEncoding();
         return _getResult(false, encoder.isFullStatespace());

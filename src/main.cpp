@@ -566,7 +566,6 @@ int main(int argc, const char** argv) {
     return to_underlying(ReturnValue::SuccessCode);
 }
 
-
 int explicitColored(shared_string_set& stringSet, options_t& options, std::vector<Condition_ptr>& queries, const std::vector<std::string>& queryNames) {
     using namespace ExplicitColored;
 

@@ -13,6 +13,8 @@
 #include <iostream>
 #include <cstdint>
 
+#include "ExplicitColored/AtomicTypes.h"
+
 
 enum class Strategy {
     BFS,
@@ -117,6 +119,7 @@ struct options_t {
 
     bool explicit_colored = false;
     ColoredSuccessorGeneratorOption colored_sucessor_generator = ColoredSuccessorGeneratorOption::EVEN;
+    PetriEngine::ExplicitColored::Binding_t constrained_bindings_threshold = 30;
 
     std::string strategy_output;
 
